@@ -1,0 +1,17 @@
+{
+  "name": "brainSOL",
+  "short_name": "brainSOL",
+  "author": "Braian Plaku",
+  "description": "A dual axis solar tracker and its digital twin, live or simulated in the browser.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#111113",
+  "theme_color": "#111113",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
