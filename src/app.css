@@ -27,6 +27,21 @@
   --shadow: rgba(0, 0, 0, 0.4);
   --selection: rgba(209, 154, 102, 0.25);
 
+  /* charts: three series in a fixed order, checked for colour blind safety on
+     the surfaces. the accent is too light and too grey to tell series apart */
+  --chart-1: #5b8fc9;
+  --chart-2: #c4853f;
+  --chart-3: #8f6bb8;
+  --chart-neutral: #5a5a62;
+  --chart-track: #2a2a2e;
+  --chart-grid: #2e2e33;
+  /* one hue for heat maps and the sky scan, little to much */
+  --heat-1: #26221f;
+  --heat-2: #4a3a2b;
+  --heat-3: #7a5c3d;
+  --heat-4: #a87c52;
+  --heat-5: #d19a66;
+
   --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
   --font-editor: 'JetBrains Mono', monospace;
   --font-brand: 'Instrument Serif', serif;
@@ -43,6 +58,48 @@
   --space: 4px;
 
   color-scheme: dark;
+}
+
+/* for bright rooms and projectors: the nutribrain light palette on the same names */
+:root[data-theme='light'] {
+  --bg-deep: #f4f4f5;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f0f0f2;
+  --bg-hover: #e4e4e7;
+  --border: #e0e0e4;
+  --border-focus: #a8692a;
+
+  --text-strong: #111113;
+  --text-primary: #27272a;
+  --text-secondary: #52525b;
+  --text-muted: #71717a;
+
+  --accent: #a8692a;
+  --accent-hover: #935a22;
+  --accent-dim: rgba(168, 105, 42, 0.10);
+  --on-accent: #ffffff;
+
+  --success: #2f8f57;
+  --warning: #a97a12;
+  --error: #c4424d;
+
+  --scrim: rgba(0, 0, 0, 0.4);
+  --shadow: rgba(0, 0, 0, 0.12);
+  --selection: rgba(168, 105, 42, 0.2);
+
+  --chart-1: #3d74b8;
+  --chart-2: #b06f2c;
+  --chart-3: #7d57ad;
+  --chart-neutral: #b4b4bb;
+  --chart-track: #e4e4e7;
+  --chart-grid: #e0e0e4;
+  --heat-1: #f3ebe2;
+  --heat-2: #e6d0b8;
+  --heat-3: #d4ae86;
+  --heat-4: #bd8a55;
+  --heat-5: #a8692a;
+
+  color-scheme: light;
 }
 
 * {
