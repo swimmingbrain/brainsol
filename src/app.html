@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%sveltekit.assets%/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="author" content="Braian Plaku" />
+    <meta name="theme-color" content="#111113" />
+    <meta name="keywords" content="solar tracker, dual axis solar tracker, digital twin, raspberry pi, arduino, light tracking, photoresistor, open source, brainsol" />
+    <meta property="og:site_name" content="brainSOL" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <!-- app -->
+    <title>brainSOL | A dual axis solar tracker, live in your browser</title>
+    <meta name="description" content="A small dual axis solar tracker and its digital twin. Watch it follow the light live, or run the built in simulation right in the browser." />
+    <link rel="canonical" href="https://sol.swimmingbrain.dev/" />
+    <meta property="og:title" content="brainSOL | A dual axis solar tracker, live in your browser" />
+    <meta property="og:description" content="A small dual axis solar tracker and its digital twin, live or simulated in the browser." />
+    <meta property="og:url" content="https://sol.swimmingbrain.dev/" />
+    <meta name="twitter:title" content="brainSOL | A dual axis solar tracker, live in your browser" />
+    <meta name="twitter:description" content="A small dual axis solar tracker and its digital twin, live or simulated in the browser." />
+    <!-- /app -->
+    <link rel="manifest" href="%sveltekit.assets%/manifest.json" />
+    <style>
+      /* the page colour before the stylesheet arrives, so nothing flashes white or dark */
+      html { background: #111113; }
+      html[data-theme='light'] { background: #f4f4f5; }
+    </style>
+    <script>
+      // theme and language are applied before the first paint. the preferences
+      // store reads the same key later, keep the two in step
+      (function () {
+        var root = document.documentElement;
+        var prefs = {};
+        try {
+          prefs = JSON.parse(localStorage.getItem('brainsol-preferences') || '{}') || {};
+        } catch (e) {}
+        var theme = prefs.theme === 'light' ? 'light' : 'dark';
+        var lang = prefs.lang === 'de' || prefs.lang === 'en' ? prefs.lang : null;
+        if (!lang) {
+          var list = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || 'en'];
+          for (var i = 0; i < list.length && !lang; i++) {
+            var code = String(list[i]).slice(0, 2).toLowerCase();
+            if (code === 'de' || code === 'en') lang = code;
+          }
+        }
+        root.setAttribute('data-theme', theme);
+        root.setAttribute('lang', lang || 'en');
+        if (theme === 'light') {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f4f4f5');
+          document.querySelector('meta[name="color-scheme"]').setAttribute('content', 'light');
+        }
+      })();
+    </script>
+    %sveltekit.head%
+  </head>
+  <body data-sveltekit-preload-data="hover">
+    <div style="display: contents">%sveltekit.body%</div>
+  </body>
+</html>
