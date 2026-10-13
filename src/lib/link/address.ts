@@ -83,6 +83,15 @@ export function resolveAddress(input: string, page: PageLocation): AddressResult
   };
 }
 
+// host and port out of whatever was typed, for messages about an address that
+// did not resolve
+export function hostOf(input: string): string {
+  return input
+    .trim()
+    .replace(/^[a-z][a-z0-9+.-]*:\/\//i, '')
+    .replace(/[/?#].*$/, '');
+}
+
 export type AddressOrigin = 'query' | 'saved' | 'config';
 
 // ?pi= in the page address wins, then an address saved in this browser, then

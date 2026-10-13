@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isSim, pickAddress, resolveAddress } from './address';
+import { hostOf, isSim, pickAddress, resolveAddress } from './address';
 
 const https = { protocol: 'https:', host: 'sol.swimmingbrain.dev' };
 const http = { protocol: 'http:', host: 'brainsol.local:8080' };
@@ -75,6 +75,14 @@ describe('an address', () => {
     expect(isSim('SIM')).toBe(true);
     expect(isSim(null)).toBe(true);
     expect(isSim('pi.local')).toBe(false);
+  });
+});
+
+describe('the host of an address', () => {
+  it('drops the scheme and the path', () => {
+    expect(hostOf('ws://192.168.1.40:8080/ws')).toBe('192.168.1.40:8080');
+    expect(hostOf(' brainsol.local ')).toBe('brainsol.local');
+    expect(hostOf('https://abc.trycloudflare.com?x=1')).toBe('abc.trycloudflare.com');
   });
 });
 
