@@ -232,8 +232,9 @@ export class Connection {
     }
   }
 
-  // closes everything, for tests and for a page that goes away
+  // closes everything, for tests and for a page that goes away. a later init starts over
   stop(): void {
+    this.started = false;
     this.closeLive();
     this.sim?.close();
     this.active = null;

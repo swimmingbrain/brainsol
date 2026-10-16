@@ -209,6 +209,19 @@ describe('the connection', () => {
     connection.stop();
   });
 
+  it('starts over when the page comes back after a stop', async () => {
+    const { connection } = make('https://sol.swimmingbrain.dev/');
+    await connection.init();
+    await settle();
+    connection.stop();
+    expect(connection.status).toBe('closed');
+    await connection.init();
+    await settle();
+    expect(connection.status).toBe('open');
+    expect(connection.hello?.driver).toBe('sim');
+    connection.stop();
+  });
+
   it('passes frames on to telemetry', async () => {
     const { connection } = make('https://sol.swimmingbrain.dev/?pi=pi.example.org');
     await connection.init();
