@@ -53,6 +53,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    max-width: 480px;
   }
 
   .rows :global(.field) {
