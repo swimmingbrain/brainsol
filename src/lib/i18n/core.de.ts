@@ -73,6 +73,11 @@ export const coreDe: Record<keyof typeof coreEn, string> = {
   'q.level': 'Pegel',
   'q.mode': 'Modus',
   'q.state': 'Zustand',
+  'q.lat': 'Breite',
+  'q.lon': 'Länge',
+  'q.heading': 'Front zeigt nach',
+  'q.experiment': 'Versuch',
+  'q.progress': 'Fortschritt',
 
   'link.found': 'Tracker gefunden, die Seite ist jetzt live',
   'link.unreachable': 'Der Tracker unter {host} antwortet nicht. Bis er es tut, läuft die Simulation.',
