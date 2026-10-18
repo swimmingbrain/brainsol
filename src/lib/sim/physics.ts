@@ -2,7 +2,7 @@
 // side. four photoresistors behind shade walls on the panel, a BH1750 on the
 // panel plane, two servos with a speed limit
 
-import { clamp, direction, dot, normal, right, up } from './kinematics';
+import { clamp, DEG } from './kinematics';
 import type { Quad } from '$lib/link/protocol';
 
 // shade wall height over sensor width
@@ -84,20 +84,52 @@ export function shading(cn: number, cr: number, cv: number, k = K): Quad {
 // everything the sensors report at a pose. noise is a normal random source,
 // leave it out for the clean values
 export function sense(pan: number, tilt: number, light: Light, random?: () => number, k = K): Reading {
+  return senseInto(newReading(), pan, tilt, light, random, k);
+}
+
+export function newReading(): Reading {
+  return { E: 0, f: [0, 0, 0, 0], raw: [0, 0, 0, 0], lux: 0 };
+}
+
+// the same as sense, written into a reading that is reused tick after tick so
+// the loop allocates nothing. the noise is drawn in the same order as in sense
+export function senseInto(out: Reading, pan: number, tilt: number, light: Light, random?: () => number, k = K): Reading {
   const lux0 = light.on ? light.lux0 : 0;
-  const s = direction(light.az, light.el);
-  const n = normal(pan, tilt);
-  const cn = dot(s, n);
-  const cr = dot(s, right(pan));
-  const cv = dot(s, up(pan, tilt));
+  const a = light.az * DEG;
+  const e = light.el * DEG;
+  const sx = Math.sin(a) * Math.cos(e);
+  const sy = Math.cos(a) * Math.cos(e);
+  const sz = Math.sin(e);
+  const sp = Math.sin(pan * DEG);
+  const cp = Math.cos(pan * DEG);
+  const st = Math.sin(tilt * DEG);
+  const ct = Math.cos(tilt * DEG);
+  // s against the normal, the right edge and the top edge of the panel, with
+  // the products grouped like dot() so the numbers match sense bit for bit
+  const cn = sx * (sp * ct) + sy * (cp * ct) + sz * st;
+  const cr = sx * cp + sy * -sp + sz * 0;
+  const cv = sx * (-sp * st) + sy * (-cp * st) + sz * ct;
   const E = lux0 * Math.max(0, cn);
-  const f = shading(cn, cr, cv, k);
-  const raw = f.map((share) => {
-    const value = rawFor(E * share + light.amb) + (random ? gauss(random, 6) : 0);
-    return clamp(Math.round(value), 0, RAW_MAX);
-  }) as Quad;
+  const f = out.f;
+  if (cn <= GRAZE) {
+    f[0] = f[1] = f[2] = f[3] = 0;
+  } else {
+    const tx = cr / cn;
+    const ty = cv / cn;
+    f[0] = clamp(1 - k * Math.max(0, tx), 0, 1);
+    f[1] = clamp(1 - k * Math.max(0, -tx), 0, 1);
+    f[2] = clamp(1 - k * Math.max(0, -ty), 0, 1);
+    f[3] = clamp(1 - k * Math.max(0, ty), 0, 1);
+  }
+  const raw = out.raw;
+  for (let i = 0; i < 4; i++) {
+    const value = rawFor(E * f[i] + light.amb) + (random ? gauss(random, 6) : 0);
+    raw[i] = clamp(Math.round(value), 0, RAW_MAX);
+  }
   const lux = (E + light.amb) * (1 + (random ? gauss(random, 0.01) : 0));
-  return { E, f, raw, lux: Math.max(0, lux) };
+  out.E = E;
+  out.lux = Math.max(0, lux);
+  return out;
 }
 
 // one servo moves towards its command, never faster than it can
