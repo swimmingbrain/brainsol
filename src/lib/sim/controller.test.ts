@@ -3,20 +3,25 @@ import {
   aimPose,
   calibrationFor,
   controllerStep,
+  copyState,
   defaultParams,
   DT,
   gainAt,
+  gainToward,
   initialState,
   level,
   levels,
+  lightEstimate,
   LIMITS,
   linear,
   offAngle,
   panelPower,
+  senseLevels,
+  trackStep,
   type Calibration,
   type ControllerState
 } from './controller';
-import { azEl, direction, dot, normal, offAxis, poseFor } from './kinematics';
+import { angleBetween, azEl, direction, dot, normal, offAxis, poseFor } from './kinematics';
 import { mulberry32, PHONE_LIGHT, rawFor, RAW_MAX, sense, servoStep, type Light } from './physics';
 import type { Quad } from '$lib/link/protocol';
 
@@ -151,6 +156,44 @@ describe('one step of the loop', () => {
     step(before, [dim, lit, lit, lit]);
     expect(before).toEqual(copy);
   });
+
+  it('gives the same in place as the pure step, tick after tick', () => {
+    const random = mulberry32(9);
+    const light = { ...PHONE_LIGHT, az: -40, el: 60 };
+    let pure = initialState(30, 20, [0.5, 0.5, 0.5, 0.5]);
+    const inPlace = copyState(pure);
+    const f = inPlace.f;
+    for (let i = 0; i < 400; i++) {
+      const raw = sense(pure.pan, pure.tilt, light, random).raw;
+      pure = step(pure, raw);
+      senseLevels(inPlace, raw, calib, params.tau);
+      trackStep(inPlace, { params, calib, limits: LIMITS });
+      expect(inPlace).toEqual(pure);
+    }
+    // the filter array is the same one all along
+    expect(inPlace.f).toBe(f);
+  });
+
+  it('flips an axis with the polarity sign of the calibration', () => {
+    const plain = step(initialState(0, 45, [0.8, 1, 1, 1]), [dim, lit, lit, lit]);
+    const swapped = step(initialState(0, 45, [0.8, 1, 1, 1]), [dim, lit, lit, lit], { ...calib, sx: -1 });
+    expect(swapped.ex).toBeCloseTo(-plain.ex, 12);
+    expect(swapped.ey).toBeCloseTo(plain.ey, 12);
+    expect(Math.sign(swapped.vp)).toBe(-Math.sign(plain.vp));
+  });
+
+  it('brakes into a soft limit instead of hitting it at full speed', () => {
+    // the light is far round to the right, pan runs at it and has to stop at 88
+    let state = { ...initialState(60, 30, [0.2, 1, 1, 1]), vp: 60 };
+    let worst = 0;
+    for (let i = 0; i < 60; i++) {
+      const before = state.vp;
+      state = step(state, [Math.round(rawFor(200)), lit, lit, lit]);
+      worst = Math.max(worst, Math.abs(state.vp - before) / DT);
+    }
+    expect(state.pan).toBe(LIMITS.pan[1]);
+    expect(worst).toBeLessThanOrEqual(params.amax + 1e-6);
+  });
 });
 
 describe('the loop with the sensors and the servos', () => {
@@ -277,6 +320,25 @@ describe('the derived values', () => {
     const back = aimPose(88, 80, (g[1] - g[0]) / (g[1] + g[0]), (g[2] - g[3]) / (g[2] + g[3]), LIMITS);
     expect(back.tilt).toBeGreaterThan(90);
     expect(offAxis(back.pan, back.tilt, behind.az, behind.el)).toBeLessThan(5);
+  });
+
+  it('estimates the light direction from the errors as a unit vector', () => {
+    const light = { ...PHONE_LIGHT, az: 32, el: 44 };
+    const f = levels(sense(25, 40, light).raw, calib);
+    const s = lightEstimate(25, 40, (f[1] - f[0]) / (f[1] + f[0]), (f[2] - f[3]) / (f[2] + f[3]));
+    expect(Math.hypot(...s)).toBeCloseTo(1, 12);
+    const sky = azEl(s);
+    expect(offAxis(25, 40, sky.az, sky.el)).toBeGreaterThan(3);
+    expect(angleBetween(s, direction(32, 44))).toBeLessThan(3);
+  });
+
+  it('gives the gain against a known light and 1 when the panel is the reference', () => {
+    const s = direction(0, 30);
+    expect(gainToward(0, 90, 0, 90, s)).toBeCloseTo(1, 12);
+    // facing a light at 30 degrees elevation against a flat panel: 1 / sin 30
+    expect(gainToward(0, 30, 0, 90, s)).toBeCloseTo(2, 9);
+    // facing away from it the tracked panel gets nothing
+    expect(gainToward(90, 0, 0, 90, direction(-90, 0))).toBe(0);
   });
 
   it('keeps the aim inside the soft limits', () => {
