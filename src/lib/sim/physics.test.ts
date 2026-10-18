@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PHONE_LIGHT, RAW_MAX, gauss, mulberry32, rawFor, sense, servoStep, shading } from './physics';
+import { PHONE_LIGHT, RAW_MAX, gauss, mulberry32, newReading, rawFor, sense, senseInto, servoStep, shading } from './physics';
 import { poseFor } from './kinematics';
 
 describe('the sensor model', () => {
@@ -93,6 +93,21 @@ describe('the sensor model', () => {
     expect(sd).toBeGreaterThan(5);
     expect(sd).toBeLessThan(7);
     expect(luxSum / n).toBeCloseTo(960, -1);
+  });
+
+  it('reads the same into a reused reading as a fresh one, noise included', () => {
+    const a = mulberry32(5);
+    const b = mulberry32(5);
+    const out = newReading();
+    for (let pan = -90; pan <= 90; pan += 30) {
+      for (let tilt = 0; tilt <= 180; tilt += 20) {
+        const light = { ...PHONE_LIGHT, az: pan * 1.7 - 20, el: (tilt * 7) % 90 };
+        const fresh = sense(pan, tilt, light, a);
+        const reused = senseInto(out, pan, tilt, light, b);
+        expect(reused).toBe(out);
+        expect(reused).toEqual(fresh);
+      }
+    }
   });
 
   it('draws the same noise from the same seed', () => {
