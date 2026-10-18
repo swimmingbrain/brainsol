@@ -67,6 +67,31 @@ export function poseFor(az: number, el: number): { pan: number; tilt: number } {
   return { pan: a > 0 ? a - 180 : a + 180, tilt: 180 - el };
 }
 
+// a direction can be reached two ways: in front, or with pan turned half round
+// and tilt over the top. near the sides both end at a soft limit, so the pose
+// stays on the side the head is on until that side misses the light by more
+// than hold degrees beyond the other one. that keeps a target crawling along
+// the edge from flipping the head back and forth
+export function poseNear(
+  az: number,
+  el: number,
+  from: { pan: number; tilt: number },
+  limits: { pan: [number, number]; tilt: [number, number] },
+  hold = 3
+): { pan: number; tilt: number } {
+  const first = poseFor(az, el);
+  const other = { pan: first.pan > 0 ? first.pan - 180 : first.pan + 180, tilt: 180 - first.tilt };
+  const a = { pan: clamp(first.pan, limits.pan[0], limits.pan[1]), tilt: clamp(first.tilt, limits.tilt[0], limits.tilt[1]) };
+  const b = { pan: clamp(other.pan, limits.pan[0], limits.pan[1]), tilt: clamp(other.tilt, limits.tilt[0], limits.tilt[1]) };
+  const missA = offAxis(a.pan, a.tilt, az, el);
+  const missB = offAxis(b.pan, b.tilt, az, el);
+  const best = missA <= missB ? a : b;
+  const far = (p: { pan: number; tilt: number }) => Math.max(Math.abs(p.pan - from.pan), Math.abs(p.tilt - from.tilt));
+  const near = far(a) <= far(b) ? a : b;
+  if (near === best) return best;
+  return (near === a ? missA : missB) <= Math.min(missA, missB) + hold ? near : best;
+}
+
 // the angle in degrees between two directions
 export function angleBetween(a: Vec3, b: Vec3): number {
   const la = length(a) || 1;
