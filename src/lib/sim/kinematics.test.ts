@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { angleBetween, azEl, direction, dot, length, normal, offAxis, poseFor, right, up, wrap180, type Vec3 } from './kinematics';
+import { angleBetween, azEl, direction, dot, length, normal, offAxis, poseFor, poseNear, right, up, wrap180, type Vec3 } from './kinematics';
 
 function close(a: Vec3, b: Vec3, digits = 9) {
   a.forEach((value, i) => expect(value).toBeCloseTo(b[i], digits));
@@ -94,6 +94,31 @@ describe('kinematics', () => {
         expect(offAxis(pose.pan, pose.tilt, az, el)).toBeLessThan(1e-4);
       }
     }
+  });
+
+  it('picks the straight pose for a light well in front or well behind', () => {
+    const limits = { pan: [-88, 88] as [number, number], tilt: [4, 176] as [number, number] };
+    expect(poseNear(25, 40, { pan: 0, tilt: 90 }, limits)).toEqual({ pan: 25, tilt: 40 });
+    expect(poseNear(150, 30, { pan: 0, tilt: 40 }, limits)).toEqual({ pan: -30, tilt: 150 });
+  });
+
+  it('stays on the side the head is on while a light crawls along the edge', () => {
+    const limits = { pan: [-88, 88] as [number, number], tilt: [4, 176] as [number, number] };
+    // the light passes the left side from front to back at 20 degrees elevation
+    let pose = poseNear(-80, 20, { pan: 0, tilt: 20 }, limits);
+    const flips: number[] = [];
+    for (let az = -80; az >= -100; az -= 0.25) {
+      const next = poseNear(az, 20, pose, limits);
+      if (Math.abs(next.pan - pose.pan) > 20) flips.push(az);
+      pose = next;
+    }
+    // exactly one swing, and only once the front side misses by more than the hold
+    expect(flips).toHaveLength(1);
+    // the front side ends at pan -88 and misses by about (az + 88) cos 20 there
+    expect(flips[0]).toBeLessThan(-91);
+    expect(flips[0]).toBeGreaterThan(-93);
+    expect(pose.tilt).toBeGreaterThan(90);
+    expect(offAxis(pose.pan, pose.tilt, -100, 20)).toBeLessThan(1e-6);
   });
 
   it('measures the angle between two directions', () => {
