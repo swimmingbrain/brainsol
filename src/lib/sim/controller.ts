@@ -11,8 +11,12 @@
 // 2. when the loop cannot act on its error for half a second (pan pressed
 //    against a soft limit, or a light off to the side of a panel in the zenith
 //    band) it aims once at where the errors say the light is, then tracks on
+//
+// the engine runs the loop in place on one state object (senseLevels, then
+// trackStep), controllerStep is the same on a copy for code that wants a pure step
 
 import { azEl, clamp, DEG, dot, normal, poseFor, right, up, type Vec3 } from './kinematics';
+import { seekAxes, stepAxes, still } from './motion';
 import { GAMMA, K, RAW_MAX, rawFor } from './physics';
 import type { Param, ParamKey, Pose, Quad } from '$lib/link/protocol';
 
@@ -34,10 +38,13 @@ export interface Limits {
   tilt: [number, number];
 }
 
-// per sensor in the order L R U D: covered, and with the lamp on it
+// per sensor in the order L R U D: covered, and with the lamp on it. sx and sy
+// are the loop signs the polarity step learns, 1 when the wiring matches the docs
 export interface Calibration {
   dark: Quad;
   bright: Quad;
+  sx?: number;
+  sy?: number;
 }
 
 export type LoopState = 'tracking' | 'locked' | 'lowlight' | 'limit' | 'moving';
@@ -69,6 +76,8 @@ export const STUCK_TIME = 0.5;
 const ARRIVED = 1;
 // speed per degree of distance on a pose move, so it slows down into the target
 const MOVE_GAIN = 5;
+// floor for |cos tilt| in the pan gain, keeps pan responsive at steep tilt without blowing up
+export const MIN_COS = 0.35;
 
 // the tunables with their defaults, ranges and steps
 export const PARAMS: Record<ParamKey, Param> = {
@@ -118,10 +127,9 @@ export function linear(raw: number): number {
 export function level(raw: number, dark: number, bright: number): number {
   if (dark === bright) return 0;
   const flip = dark > bright;
-  const lin = (value: number) => linear(flip ? RAW_MAX - value : value);
-  const lo = lin(dark);
-  const hi = lin(bright);
-  return clamp((lin(raw) - lo) / (hi - lo), 0, 1);
+  const lo = linear(flip ? RAW_MAX - dark : dark);
+  const hi = linear(flip ? RAW_MAX - bright : bright);
+  return clamp((linear(flip ? RAW_MAX - raw : raw) - lo) / (hi - lo), 0, 1);
 }
 
 // what the dark and bright calibration steps would capture in a light scene:
@@ -159,6 +167,10 @@ export function initialState(pan: number, tilt: number, f: Quad = [0, 0, 0, 0]):
   };
 }
 
+export function copyState(state: ControllerState): ControllerState {
+  return { ...state, f: [state.f[0], state.f[1], state.f[2], state.f[3]] };
+}
+
 export interface StepContext {
   params: ControllerParams;
   calib: Calibration;
@@ -176,7 +188,7 @@ export interface AxisMove {
 }
 
 // speeds ramp towards the wanted speeds with the acceleration limit, the pose
-// follows and stops at the soft limits. shared by the loop and every pose move
+// follows and brakes into the soft limits. the shared limiter of motion.ts on a copy
 export function moveAxes(
   state: { pan: number; tilt: number; vp: number; vt: number },
   vx: number,
@@ -185,27 +197,13 @@ export function moveAxes(
   limits: Limits,
   dt = DT
 ): AxisMove {
-  const dv = p.amax * dt;
-  let vp = state.vp + clamp(vx - state.vp, -dv, dv);
-  let vt = state.vt + clamp(vy - state.vt, -dv, dv);
-  let pan = state.pan + vp * dt;
-  let tilt = state.tilt + vt * dt;
-  let limit = false;
-  if (pan < limits.pan[0] || pan > limits.pan[1]) {
-    pan = clamp(pan, limits.pan[0], limits.pan[1]);
-    vp = 0;
-    limit = true;
-  }
-  if (tilt < limits.tilt[0] || tilt > limits.tilt[1]) {
-    tilt = clamp(tilt, limits.tilt[0], limits.tilt[1]);
-    vt = 0;
-    limit = true;
-  }
-  return { pan, tilt, vp, vt, limit };
+  const m = { pan: state.pan, tilt: state.tilt, vp: state.vp, vt: state.vt };
+  const pushing = stepAxes(m, vx, vy, p.amax, limits, dt);
+  return { pan: m.pan, tilt: m.tilt, vp: m.vp, vt: m.vt, limit: pushing !== 0 };
 }
 
-// the speeds that bring a pose to a target and slow down into it, for manual
-// targets, park and the aim move
+// the speeds that bring a pose to a target and slow down into it, a simple
+// proportional profile. the engine moves with seekAxes of motion.ts instead
 export function approachSpeeds(state: Pose, target: Pose, p: { vmax: number }): { vx: number; vy: number; arrived: boolean } {
   const dp = target.pan - state.pan;
   const dt = target.tilt - state.tilt;
@@ -222,56 +220,57 @@ export function errorTangents(ex: number, ey: number, k = K): { tx: number; ty: 
   return { tx: (2 * ex) / (k * (1 + Math.abs(ex))), ty: (2 * ey) / (k * (1 + Math.abs(ey))) };
 }
 
-// the pose that faces where the errors say the light is. far off the axis the
-// model saturates and the guess falls short, the loop does the rest from there
-export function aimPose(pan: number, tilt: number, ex: number, ey: number, limits: Limits, k = K): Pose {
+// the direction the errors say the light comes from, a unit vector. far off
+// the axis the shade model saturates and the guess falls short
+export function lightEstimate(pan: number, tilt: number, ex: number, ey: number, k = K): Vec3 {
   const { tx, ty } = errorTangents(ex, ey, k);
   const n = normal(pan, tilt);
   const r = right(pan);
   const v = up(pan, tilt);
   const s: Vec3 = [n[0] + tx * r[0] + ty * v[0], n[1] + tx * r[1] + ty * v[1], n[2] + tx * r[2] + ty * v[2]];
-  const sky = azEl(s);
+  const len = Math.hypot(s[0], s[1], s[2]) || 1;
+  return [s[0] / len, s[1] / len, s[2] / len];
+}
+
+// the pose that faces where the errors say the light is. far off the axis the
+// model saturates and the guess falls short, the loop does the rest from there
+export function aimPose(pan: number, tilt: number, ex: number, ey: number, limits: Limits, k = K): Pose {
+  const sky = azEl(lightEstimate(pan, tilt, ex, ey, k));
   const pose = poseFor(sky.az, sky.el);
   return { pan: clamp(pose.pan, limits.pan[0], limits.pan[1]), tilt: clamp(pose.tilt, limits.tilt[0], limits.tilt[1]) };
 }
 
-// one tick of the loop. returns the next state, the one passed in stays as it was
-export function controllerStep(state: ControllerState, raw: Quad, ctx: StepContext): ControllerState {
-  const { params: p, calib, limits } = ctx;
+// new readings into the filtered levels and the errors, in place
+export function senseLevels(state: ControllerState, raw: Quad, calib: Calibration, tau: number, dt = DT): void {
+  const a = 1 - Math.exp(-dt / tau);
+  const f = state.f;
+  for (let i = 0; i < 4; i++) f[i] += (level(raw[i], calib.dark[i], calib.bright[i]) - f[i]) * a;
+  const L = f[0];
+  const R = f[1];
+  const U = f[2];
+  const D = f[3];
+  state.lvl = (L + R + U + D) / 4;
+  state.ex = (calib.sx ?? 1) * ((R - L) / (R + L + 1e-6));
+  state.ey = (calib.sy ?? 1) * ((U - D) / (U + D + 1e-6));
+}
+
+// the closed loop acting on the levels senseLevels left in the state: axis
+// speeds from the errors, the move through the limiter, the way out when stuck.
+// in place, the state afterwards holds the new pose, speeds and loop state
+export function trackStep(state: ControllerState, ctx: StepContext): void {
+  const { params: p, limits } = ctx;
   const dt = ctx.dt ?? DT;
-  const norm = levels(raw, calib);
-  const a = 1 - Math.exp(-dt / p.tau);
-  const f: Quad = [
-    state.f[0] + (norm[0] - state.f[0]) * a,
-    state.f[1] + (norm[1] - state.f[1]) * a,
-    state.f[2] + (norm[2] - state.f[2]) * a,
-    state.f[3] + (norm[3] - state.f[3]) * a
-  ];
-  const [L, R, U, D] = f;
-  const lvl = (L + R + U + D) / 4;
-  const ex = (R - L) / (R + L + 1e-6);
-  const ey = (U - D) / (U + D + 1e-6);
+  const { ex, ey } = state;
 
   // an aim move runs to its end before the loop looks at the light again
   if (state.aim) {
-    const go = approachSpeeds(state, state.aim, p);
-    const move = moveAxes(state, go.vx, go.vy, p, limits, dt);
-    const done = go.arrived && Math.abs(move.vp) < 0.5 && Math.abs(move.vt) < 0.5;
-    return {
-      pan: move.pan,
-      tilt: move.tilt,
-      vp: move.vp,
-      vt: move.vt,
-      f,
-      ax: false,
-      ay: false,
-      ex,
-      ey,
-      lvl,
-      st: done ? 'tracking' : 'moving',
-      stuck: 0,
-      aim: done ? null : state.aim
-    };
+    const done = seekAxes(state, state.aim.pan, state.aim.tilt, p.vmax, p.amax, limits, dt);
+    state.ax = false;
+    state.ay = false;
+    state.stuck = 0;
+    state.st = done ? 'tracking' : 'moving';
+    if (done) state.aim = null;
+    return;
   }
 
   let vx = 0;
@@ -279,45 +278,56 @@ export function controllerStep(state: ControllerState, raw: Quad, ctx: StepConte
   let ax = false;
   let ay = false;
   let blocked = false;
-  const low = lvl < p.min_light;
+  const low = state.lvl < p.min_light;
   const c = Math.cos(state.tilt * DEG);
   if (!low) {
     ax = state.ax ? Math.abs(ex) >= p.dead_in : Math.abs(ex) > p.dead_out;
     ay = state.ay ? Math.abs(ey) >= p.dead_in : Math.abs(ey) > p.dead_out;
     if (ay) vy = clamp(p.kp * ey, -p.vmax, p.vmax);
     if (Math.abs(state.tilt - 90) >= p.zenith_band) {
-      if (ax) vx = clamp((p.kp * ex * Math.sign(c)) / Math.max(Math.abs(c), 0.35), -p.vmax, p.vmax);
+      if (ax) vx = clamp((p.kp * ex * Math.sign(c)) / Math.max(Math.abs(c), MIN_COS), -p.vmax, p.vmax);
     } else {
       // pan rests in the band and an x error smaller than the band does not hold
       // off the lock. a bigger one is a light off to the side that tilt alone
       // never finds
-      const { tx } = errorTangents(ex, 0);
+      const tx = (2 * ex) / (K * (1 + Math.abs(ex)));
       blocked = Math.atan(Math.abs(tx)) / DEG > p.zenith_band;
       if (!blocked) ax = false;
     }
   }
 
-  const move = moveAxes(state, vx, vy, p, limits, dt);
+  const pushing = stepAxes(state, vx, vy, p.amax, limits, dt);
+  state.ax = ax;
+  state.ay = ay;
 
   // the error presses pan against a soft limit, the light is round the side.
   // the sign of cos(tilt) says which way pan wants to go
   const push = ex * Math.sign(c);
-  const atMin = move.pan <= limits.pan[0] + 1e-9;
-  const atMax = move.pan >= limits.pan[1] - 1e-9;
+  const atMin = state.pan <= limits.pan[0] + 1e-9;
+  const atMax = state.pan >= limits.pan[1] - 1e-9;
   const pressing = !low && Math.abs(ex) > p.dead_out && ((atMin && push < 0) || (atMax && push > 0));
-  const stuck = pressing || blocked ? state.stuck + dt : 0;
-  if (stuck >= STUCK_TIME) {
-    const aim = aimPose(move.pan, move.tilt, ex, ey, limits);
-    return { pan: move.pan, tilt: move.tilt, vp: move.vp, vt: move.vt, f, ax: false, ay: false, ex, ey, lvl, st: 'moving', stuck: 0, aim };
+  state.stuck = pressing || blocked ? state.stuck + dt : 0;
+  if (state.stuck >= STUCK_TIME) {
+    state.aim = aimPose(state.pan, state.tilt, ex, ey, limits);
+    state.ax = false;
+    state.ay = false;
+    state.stuck = 0;
+    state.st = 'moving';
+    return;
   }
 
-  let st: LoopState;
-  if (low) st = 'lowlight';
-  else if (move.limit) st = 'limit';
-  else if (!ax && !ay && Math.abs(move.vp) < 0.5 && Math.abs(move.vt) < 0.5) st = 'locked';
-  else st = 'tracking';
+  if (low) state.st = 'lowlight';
+  else if (pushing) state.st = 'limit';
+  else if (!ax && !ay && still(state)) state.st = 'locked';
+  else state.st = 'tracking';
+}
 
-  return { pan: move.pan, tilt: move.tilt, vp: move.vp, vt: move.vt, f, ax, ay, ex, ey, lvl, st, stuck, aim: null };
+// one tick of the loop. returns the next state, the one passed in stays as it was
+export function controllerStep(state: ControllerState, raw: Quad, ctx: StepContext): ControllerState {
+  const next = copyState(state);
+  senseLevels(next, raw, ctx.calib, ctx.params.tau, ctx.dt ?? DT);
+  trackStep(next, ctx);
+  return next;
 }
 
 // the estimated angle between the panel normal and the light, in degrees, from
@@ -331,6 +341,12 @@ export function offAngle(ex: number, ey: number, k = K): number {
 // pose, taking the light to be along the panel normal
 export function gainAt(pan: number, tilt: number, refPan: number, refTilt: number): number {
   return 1 / Math.max(dot(normal(pan, tilt), normal(refPan, refTilt)), 0.1);
+}
+
+// the same against a known light direction, for the modes that do not face
+// the light on purpose. the light is then taken from the sensor balance
+export function gainToward(pan: number, tilt: number, refPan: number, refTilt: number, light: Vec3): number {
+  return Math.max(dot(light, normal(pan, tilt)), 0) / Math.max(dot(light, normal(refPan, refTilt)), 0.1);
 }
 
 // estimated panel power in milliwatts. about 110 lux make a watt per square
