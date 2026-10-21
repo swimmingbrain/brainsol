@@ -5,6 +5,7 @@
 
 import { CommandError, isFields, num, oneOf, optBool, optNum, bool, text, type Fields } from './fields';
 import { wrap180 } from './kinematics';
+import { Scan, SCAN_STEP, STEP_MAX, STEP_MIN } from './scan';
 import { parseWhen, SPEED_MAX, SPEED_MIN } from './sun';
 import { MODES } from '$lib/link/protocol';
 import type { SimTracker } from './engine';
@@ -59,8 +60,10 @@ const handlers: Record<string, Handler> = {
     return { speed, t: r3(eng.setSun(speed, start)) };
   },
 
-  scan: () => {
-    throw new CommandError('scan is not ready in the simulation yet', 'unsupported');
+  scan: (eng, msg) => {
+    const step = optNum(msg, 'step', STEP_MIN, STEP_MAX) ?? SCAN_STEP;
+    const act = eng.startActivity(new Scan(eng, step));
+    return { id: act.id, cells: act.cells };
   },
 
   exp: () => {
