@@ -1,34 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { createEngine } from './engine';
+import { harness, START_MS } from './harness';
 import { offAxis } from './kinematics';
-import type { AckMessage, CmdMessage, ServerMessage, StateFrame } from '$lib/link/protocol';
+import type { ServerMessage } from '$lib/link/protocol';
 
-function setup() {
-  let ms = 1_700_000_000_000;
-  const engine = createEngine({ seed: 11, timers: false, now: () => ms, clock: () => ms });
-  const out: ServerMessage[] = [];
-  engine.start((message) => out.push(message));
-  const advance = (seconds: number) => {
-    // the clock moves with the loop, like it would in the browser
-    for (let i = 0; i < Math.round(seconds * 50); i++) {
-      ms += 20;
-      engine.advance(0.02);
-    }
-  };
-  let next = 0;
-  const cmd = (body: Record<string, unknown>) => {
-    const id = `t${++next}`;
-    engine.handle({ t: 'cmd', id, ...body } as CmdMessage);
-    return out.filter((m): m is AckMessage => m.t === 'ack' && m.id === id).pop();
-  };
-  const frames = () => out.filter((m): m is StateFrame => m.t === 's');
-  const last = () => frames().pop()!;
-  return { engine, out, advance, cmd, frames, last };
-}
+const setup = harness;
 
-describe('the placeholder engine', () => {
-  it('says hello first, as the simulation, then sends a frame and the system state', () => {
-    const { out } = setup();
+describe('the engine', () => {
+  it('says hello first, as the simulation, then a state frame, and the system state a second later', () => {
+    const { out, advance, of } = setup();
     expect(out[0]).toMatchObject({
       t: 'hello',
       proto: 1,
@@ -42,7 +21,9 @@ describe('the placeholder engine', () => {
     expect(hello.cfg.limits).toEqual({ pan: [-88, 88], tilt: [4, 176] });
     expect(hello.cfg.params.kp).toEqual({ v: 90, min: 10, max: 300, step: 1 });
     expect(out[1].t).toBe('s');
-    expect(out[2].t).toBe('sys');
+    expect(of('sys')).toHaveLength(0);
+    advance(1);
+    expect(of('sys')).toHaveLength(1);
   });
 
   it('sends 20 state frames and one sys frame per second', () => {
@@ -119,24 +100,32 @@ describe('the placeholder engine', () => {
     expect(again.pop()).toMatchObject({ t: 'ack', id: 'x', ok: false, err: 'admin' });
   });
 
-  it('holds the head where it is in hold mode and reports idle', () => {
-    const { engine, cmd, advance, last } = setup();
-    engine.handle({ t: 'auth', pin: '' });
+  it('comes to rest with the normal deceleration in hold mode and reports idle', () => {
+    const { cmd, unlock, advance, last, frames } = setup();
+    unlock();
     advance(0.3);
-    expect(cmd({ op: 'mode', mode: 'hold' })).toMatchObject({ ok: true });
-    const before = last();
+    expect(cmd({ op: 'mode', mode: 'hold' })).toMatchObject({ ok: true, data: { mode: 'hold' } });
+    const moving = last();
+    advance(0.5);
+    const rest = last();
     advance(2);
     const after = last();
     expect(after.st).toBe('idle');
     expect(after.mode).toBe('hold');
-    expect(after.pan).toBeCloseTo(before.pan, 0);
-    expect(after.tilt).toBeCloseTo(before.tilt, 0);
+    expect(after.vp).toBe(0);
+    expect(after.vt).toBe(0);
+    expect(after.pan).toBe(rest.pan);
+    expect(after.tilt).toBe(rest.tilt);
+    // it stopped within the braking distance of the speed it had
+    const v = Math.hypot(moving.vp, moving.vt);
+    expect(Math.hypot(rest.pan - moving.pan, rest.tilt - moving.tilt)).toBeLessThan((v * v) / (2 * 240) + 1);
+    expect(frames().length).toBeGreaterThan(50);
   });
 
   it('moves the light on simlight and follows it', () => {
-    const { engine, cmd, advance, last } = setup();
-    engine.handle({ t: 'auth', pin: '' });
-    expect(cmd({ op: 'simlight', az: -50, el: 25 })).toMatchObject({ ok: true });
+    const { cmd, unlock, advance, last } = setup();
+    unlock();
+    expect(cmd({ op: 'simlight', az: -50, el: 25 })).toMatchObject({ ok: true, data: { az: -50, el: 25, on: true } });
     advance(8);
     const frame = last();
     expect(frame.sim).toMatchObject({ az: -50, el: 25 });
@@ -144,8 +133,8 @@ describe('the placeholder engine', () => {
   });
 
   it('says lowlight with gain and offset null when the lamp goes out in a dark room', () => {
-    const { engine, cmd, advance, last } = setup();
-    engine.handle({ t: 'auth', pin: '' });
+    const { cmd, unlock, advance, last } = setup();
+    unlock();
     cmd({ op: 'simlight', az: 25, el: 40, on: false, amb: 2 });
     advance(2);
     const frame = last();
@@ -154,21 +143,20 @@ describe('the placeholder engine', () => {
     expect(frame.off).toBeNull();
   });
 
-  it('changes a tunable, keeps it in range and tells every page with cfg', () => {
-    const { engine, out, cmd } = setup();
-    engine.handle({ t: 'auth', pin: '' });
-    expect(cmd({ op: 'set', key: 'kp', value: 120 })).toMatchObject({ ok: true });
-    const cfg = out.filter((m) => m.t === 'cfg').pop() as Extract<ServerMessage, { t: 'cfg' }>;
-    expect(cfg.cfg.params.kp.v).toBe(120);
-    cmd({ op: 'set', key: 'vmax', value: 5000 });
-    expect(engine.cfg.params.vmax.v).toBe(180);
+  it('changes a tunable, refuses one out of range and tells every page with cfg', () => {
+    const { engine, of, cmd, unlock } = setup();
+    unlock();
+    expect(cmd({ op: 'set', key: 'kp', value: 120 })).toMatchObject({ ok: true, data: { key: 'kp', value: 120 } });
+    expect(of('cfg').pop()!.cfg.params.kp.v).toBe(120);
+    expect(cmd({ op: 'set', key: 'vmax', value: 5000 })).toMatchObject({ ok: false, err: 'bad' });
+    expect(engine.cfg.params.vmax.v).toBe(60);
     expect(cmd({ op: 'set', key: 'nope', value: 1 })).toMatchObject({ ok: false, err: 'bad' });
     expect(cmd({ op: 'set', key: 'kp', value: 'x' })).toMatchObject({ ok: false, err: 'bad' });
   });
 
   it('sends frames at the new rate after set rate', () => {
-    const { engine, out, cmd, advance } = setup();
-    engine.handle({ t: 'auth', pin: '' });
+    const { out, cmd, unlock, advance } = setup();
+    unlock();
     cmd({ op: 'set', key: 'rate', value: 10 });
     out.length = 0;
     advance(2);
@@ -176,17 +164,20 @@ describe('the placeholder engine', () => {
   });
 
   it('only sends events to an admin', () => {
-    const { engine, out, cmd } = setup();
-    engine.handle({ t: 'auth', pin: '' });
-    cmd({ op: 'mode', mode: 'auto' });
-    expect(out.some((m) => m.t === 'evt')).toBe(true);
+    const { out, cmd, unlock } = setup();
+    cmd({ op: 'mode', mode: 'hold' });
+    expect(out.some((m) => m.t === 'evt')).toBe(false);
+    unlock();
+    cmd({ op: 'mode', mode: 'park' });
+    expect(out.filter((m) => m.t === 'evt').pop()).toMatchObject({ lvl: 'info', msg: 'mode changed to park' });
   });
 
   it('answers what it cannot do yet with unsupported and nonsense with unknown', () => {
-    const { engine, cmd } = setup();
-    engine.handle({ t: 'auth', pin: '' });
-    expect(cmd({ op: 'mode', mode: 'sun' })).toMatchObject({ ok: false, err: 'unsupported' });
+    const { cmd, unlock } = setup();
+    unlock();
     expect(cmd({ op: 'scan' })).toMatchObject({ ok: false, err: 'unsupported' });
+    expect(cmd({ op: 'rec', on: true })).toMatchObject({ ok: false, err: 'unsupported' });
+    expect(cmd({ op: 'sys', action: 'reboot' })).toMatchObject({ ok: false, err: 'unsupported' });
     expect(cmd({ op: 'dance' })).toMatchObject({ ok: false, err: 'unknown' });
   });
 
@@ -196,5 +187,12 @@ describe('the placeholder engine', () => {
     const count = out.length;
     advance(1);
     expect(out.length).toBe(count);
+  });
+
+  it('stamps frames with the wall clock', () => {
+    const { advance, last, clock } = setup();
+    advance(1);
+    expect(last().ts).toBe((START_MS + 1000) / 1000);
+    expect(clock.ms).toBe(START_MS + 1000);
   });
 });
