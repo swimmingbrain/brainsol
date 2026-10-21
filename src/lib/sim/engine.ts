@@ -33,11 +33,12 @@ import { defaultConfig, setSite, setValue } from './config';
 import { CommandError, isFields, type Fields } from './fields';
 import { clamp } from './kinematics';
 import { makeMode, Manual, newRequest, Sun, type ModeHost, type Request, type SimMode } from './modes';
-import { seekAxes, stepAxes, still } from './motion';
+import { seekAxes, stepAxes, still, stopNow } from './motion';
+import type { Activity } from './activities';
 import { mulberry32, newReading, PHONE_LIGHT, senseInto, servoStep, type Light, type Reading } from './physics';
-import { defaultPanMap, defaultTiltMap, toAngle, toUs, type ServoMap } from './servo';
+import { defaultPanMap, defaultTiltMap, sameMap, toAngle, toUs, type ServoMap } from './servo';
 import { SunClock } from './sun';
-import { PROTO, type AckErr, type Config, type EventLevel, type HelloMessage, type Mode, type Pose, type ServerMessage, type SimLight, type St, type StateFrame, type SysFrame, type ClientMessage } from '$lib/link/protocol';
+import { PROTO, type AckErr, type ClientMessage, type Config, type EventLevel, type HelloMessage, type Mode, type Pose, type Quad, type ScanMessage, type ServerMessage, type SimLight, type St, type StateFrame, type SysFrame } from '$lib/link/protocol';
 import type { SimEngine } from '$lib/link/transport';
 import { version } from '$lib/version';
 
@@ -101,6 +102,11 @@ export class SimTracker implements SimEngine, ModeHost {
   cstate: St = 'idle';
   st: St = 'idle';
   lastSys: SysFrame | null = null;
+  // a new page gets the newest sky map straight after hello, like on the pi
+  lastScan: ScanMessage | null = null;
+  // the scan, experiment or calibration step that has the head, null when the mode has it
+  activity: Activity | null = null;
+  private ids = new Set<string>();
 
   private req: Request = newRequest();
   private ctx: StepContext;
@@ -160,6 +166,7 @@ export class SimTracker implements SimEngine, ModeHost {
     this.admin = false;
     this.send(this.hello());
     if (this.lastSys) this.send(this.lastSys);
+    if (this.lastScan) this.send(this.lastScan);
     this.wallNow = this.wall();
     this.behind = 0;
     this.send(this.frame());
@@ -224,9 +231,14 @@ export class SimTracker implements SimEngine, ModeHost {
     const p = this.cfg.params;
     senseInto(this.reading, this.servo.pan, this.servo.tilt, this.light, this.random, this.cfg.baffle);
     senseLevels(this.ctrl, this.reading.raw, this.calib, p.tau.v, DT);
-    this.current.step(this, this.req);
-    this.apply(this.req);
-    this.st = this.cstate;
+    let req = this.req;
+    const act = this.activity;
+    if (act) {
+      req = act.step();
+      if (act.done && this.activity === act) this.activity = null;
+    } else this.current.step(this, req);
+    this.apply(req);
+    this.st = this.activity ? this.activity.st : this.cstate;
     this.guard();
     // the servos turn towards the pulses of this command, at most 400 degrees per second
     this.servo.pan = servoStep(this.servo.pan, toAngle(TRUE_PAN, toUs(this.calib.pan, this.ctrl.pan)), DT);
@@ -378,7 +390,7 @@ export class SimTracker implements SimEngine, ModeHost {
       link: 'ok',
       fw: null,
       rec: false,
-      act: null
+      act: this.activity?.kind ?? null
     };
     this.lastSys = sys;
     this.send(sys);
@@ -449,6 +461,7 @@ export class SimTracker implements SimEngine, ModeHost {
   // the commands, the same steps as the methods of engine.py
 
   setMode(name: Mode): void {
+    this.endActivity('stopped by a mode change');
     if (name !== this.current.name || name === 'manual') this.switchMode(name);
   }
 
@@ -460,6 +473,7 @@ export class SimTracker implements SimEngine, ModeHost {
   }
 
   private manual(): Manual {
+    this.endActivity('stopped by manual control');
     if (!(this.current instanceof Manual)) this.switchMode('manual');
     return this.current as Manual;
   }
@@ -508,8 +522,62 @@ export class SimTracker implements SimEngine, ModeHost {
     return this.simLight();
   }
 
+  startActivity<T extends Activity>(act: T): T {
+    if (this.activity) throw new CommandError(`a ${this.activity.kind} is running, stop it first`, 'busy');
+    act.start();
+    this.activity = act;
+    return act;
+  }
+
   stopActivity(): boolean {
-    return false;
+    if (!this.activity) return false;
+    this.endActivity('stopped');
+    return true;
+  }
+
+  private endActivity(why: string): void {
+    const act = this.activity;
+    if (!act) return;
+    this.activity = null;
+    act.cancel(why);
+  }
+
+  // for the activities
+
+  get lux(): number | null {
+    return this.reading.lux;
+  }
+
+  get raw(): Quad {
+    return this.reading.raw;
+  }
+
+  newId(kind: string): string {
+    const d = new Date(this.now());
+    const two = (n: number) => String(n).padStart(2, '0');
+    const base = `${kind}-${d.getFullYear()}${two(d.getMonth() + 1)}${two(d.getDate())}-${two(d.getHours())}${two(d.getMinutes())}${two(d.getSeconds())}`;
+    let id = base;
+    for (let n = 2; this.ids.has(id); n++) id = `${base}-${n}`;
+    this.ids.add(id);
+    return id;
+  }
+
+  publish(message: ServerMessage): void {
+    if (message.t === 'scan') this.lastScan = message;
+    this.send(message);
+  }
+
+  // a new servo mapping must not move the head, so the pose follows the pulses
+  setCalibration(calib: SimCalibration): void {
+    const old = this.calib;
+    this.calib = calib;
+    this.ctx.calib = calib;
+    if (sameMap(old.pan, calib.pan) && sameMap(old.tilt, calib.tilt)) return;
+    const { pan: lp, tilt: lt } = this.cfg.limits;
+    const c = this.ctrl;
+    c.pan = clamp(toAngle(calib.pan, toUs(old.pan, c.pan)), lp[0], lp[1]);
+    c.tilt = clamp(toAngle(calib.tilt, toUs(old.tilt, c.tilt)), lt[0], lt[1]);
+    stopNow(c);
   }
 }
 
