@@ -5,6 +5,7 @@
 
 import { CommandError, isFields, num, oneOf, optBool, optNum, bool, text, type Fields } from './fields';
 import { wrap180 } from './kinematics';
+import { EXP_KINDS, makeExperiment } from './experiments';
 import { Scan, SCAN_STEP, STEP_MAX, STEP_MIN } from './scan';
 import { parseWhen, SPEED_MAX, SPEED_MIN } from './sun';
 import { MODES } from '$lib/link/protocol';
@@ -66,8 +67,10 @@ const handlers: Record<string, Handler> = {
     return { id: act.id, cells: act.cells };
   },
 
-  exp: () => {
-    throw new CommandError('experiments are not ready in the simulation yet', 'unsupported');
+  exp: (eng, msg) => {
+    const kind = oneOf(msg, 'kind', EXP_KINDS);
+    const act = eng.startActivity(makeExperiment(kind, eng));
+    return { id: act.id, kind };
   },
 
   stop: (eng) => ({ stopped: eng.stopActivity() }),
