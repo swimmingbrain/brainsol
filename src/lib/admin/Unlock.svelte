@@ -1,74 +1,156 @@
 <script lang="ts">
-  // a stand in for the unlock dialog until the admin stream replaces this file.
-  // the lock icon opens it. in the simulation there is no pin, against a real
-  // tracker the pi checks it
+  // the dialog behind the lock icon. against a tracker it asks for the pin, the
+  // pi checks it and locks the pin for a while after too many wrong tries. in the
+  // simulation there is nothing to protect, one button opens the tools
+  import { untrack } from 'svelte';
   import Dialog from '$lib/ui/Dialog.svelte';
   import Button from '$lib/ui/Button.svelte';
+  import Icon from '$lib/ui/Icon.svelte';
   import { connection } from '$lib/stores/connection.svelte';
   import { toast } from '$lib/stores/toasts.svelte';
   import { ui } from '$lib/stores/ui.svelte';
   import { errorText, t } from '$lib/i18n';
+  import { tick, waitText } from './countdown';
 
   let pin = $state('');
   let busy = $state(false);
-  let message = $state('');
+  let wrong = $state(false);
+  let failure = $state('');
+  // seconds the pin stays locked, and whether a lock just ran out
+  let left = $state(0);
+  let freed = $state(false);
+  let input = $state<HTMLInputElement | null>(null);
 
   const sim = $derived(connection.source === 'sim');
+  const ready = $derived(connection.status === 'open');
+  const host = $derived(connection.host ?? '');
+  const locked = $derived(left > 0);
+
+  $effect(() => {
+    if (!ui.unlockOpen) return;
+    const until = connection.lockedUntil;
+    // the callback writes left, it must not become a dependency of this effect
+    return untrack(() =>
+      tick(until, (seconds) => {
+        if (left > 0 && seconds === 0) {
+          freed = true;
+          queueMicrotask(() => input?.focus());
+        }
+        left = seconds;
+      })
+    );
+  });
 
   function close() {
     ui.unlockOpen = false;
     pin = '';
-    message = '';
+    wrong = false;
+    failure = '';
+    freed = false;
   }
 
-  async function unlock(e?: SubmitEvent) {
-    e?.preventDefault();
+  async function submit(e: SubmitEvent) {
+    e.preventDefault();
+    if (busy || locked || !ready || pin.length === 0) return;
     busy = true;
-    message = '';
-    const result = await connection.auth(sim ? '' : pin);
+    wrong = false;
+    failure = '';
+    freed = false;
+    const result = await connection.auth(pin);
     busy = false;
     if (result.ok) {
-      toast(t('lock.unlocked'), 'success');
+      toast(t('admin.unlock.opened'), 'success');
       close();
-    } else if (result.wait) {
-      message = t('lock.wait', { s: result.wait });
+      return;
+    }
+    pin = '';
+    // a wait comes with the try that set off the lock, the countdown says it all
+    if (!result.wait) {
+      if (result.err === 'pin') wrong = true;
+      else failure = errorText(result.err);
+    }
+    queueMicrotask(() => input?.focus());
+  }
+
+  async function openSim() {
+    busy = true;
+    failure = '';
+    const result = await connection.auth('');
+    busy = false;
+    if (result.ok) {
+      toast(t('admin.unlock.opened'), 'success');
+      close();
     } else {
-      message = errorText(result.err);
+      failure = errorText(result.err);
     }
   }
 
   function lock() {
     connection.logout();
-    toast(t('lock.locked'), 'info');
+    toast(t('admin.unlock.closed'), 'info');
     close();
   }
 </script>
 
 {#if ui.unlockOpen}
-  <Dialog title={t('lock.title')} width={360} onclose={close}>
-    {#if connection.admin}
-      <p class="note">{t('lock.unlocked')}</p>
-      <div class="actions">
-        <Button variant="secondary" icon="lock" onclick={lock}>{t('lock.lock')}</Button>
-      </div>
-    {:else if sim}
-      <p class="note">{t('lock.simNote')}</p>
-      <div class="actions">
-        <Button variant="primary" icon="unlock" disabled={busy} onclick={() => unlock()}>{t('lock.open')}</Button>
-      </div>
-    {:else}
-      <form onsubmit={unlock}>
-        <p class="note">{t('lock.liveNote')}</p>
-        <label class="pin">
-          <span>{t('lock.pin')}</span>
-          <input type="password" inputmode="numeric" autocomplete="off" bind:value={pin} />
-        </label>
+  <Dialog title={t('admin.unlock.title')} width={380} onclose={close}>
+    <div class="unlock">
+      {#if connection.admin}
+        <p class="note">{t('admin.unlock.isOpen')}</p>
         <div class="actions">
-          <Button variant="primary" type="submit" icon="unlock" disabled={busy || pin.length === 0}>{t('lock.unlock')}</Button>
+          <Button variant="ghost" size="lg" onclick={close}>{t('admin.unlock.close')}</Button>
+          <Button variant="secondary" size="lg" icon="lock" onclick={lock}>{t('admin.unlock.lock')}</Button>
         </div>
-      </form>
-    {/if}
-    {#if message}<p class="message">{message}</p>{/if}
+      {:else if sim}
+        <p class="note">{t('admin.unlock.sim')}</p>
+        <div class="actions">
+          <Button variant="primary" size="lg" icon="unlock" disabled={busy || !ready} onclick={openSim}>{t('admin.unlock.open')}</Button>
+        </div>
+      {:else}
+        <form onsubmit={submit} novalidate>
+          <p class="note">{ready ? t('admin.unlock.live', { host }) : t('admin.unlock.waiting', { host })}</p>
+          <label class="label" for="admin-pin">{t('admin.unlock.pin')}</label>
+          <input
+            id="admin-pin"
+            class="pin"
+            class:bad={wrong}
+            bind:this={input}
+            bind:value={pin}
+            type="password"
+            inputmode="numeric"
+            autocomplete="off"
+            enterkeyhint="go"
+            maxlength="32"
+            spellcheck="false"
+            disabled={locked || !ready}
+            aria-invalid={wrong}
+            aria-describedby="admin-pin-message"
+            oninput={() => (wrong = false)} />
+          <p id="admin-pin-message" class="message" class:error={wrong || failure} class:warn={locked} aria-live="polite">
+            {#if locked}
+              <Icon name="clock" size={13} />
+              <span>{t('admin.unlock.locked', { wait: waitText(left) })}</span>
+            {:else if wrong}
+              <Icon name="warning" size={13} />
+              <span>{t('admin.unlock.wrong')}</span>
+            {:else if failure}
+              <Icon name="warning" size={13} />
+              <span>{failure}</span>
+            {:else if freed}
+              <span>{t('admin.unlock.free')}</span>
+            {/if}
+          </p>
+          <div class="actions">
+            <Button variant="primary" size="lg" type="submit" icon="unlock" disabled={busy || locked || !ready || pin.length === 0}>
+              {busy ? t('admin.unlock.checking') : t('admin.unlock.submit')}
+            </Button>
+          </div>
+        </form>
+      {/if}
+      {#if failure && (sim || connection.admin)}
+        <p class="message error" aria-live="polite"><Icon name="warning" size={13} /><span>{failure}</span></p>
+      {/if}
+    </div>
   </Dialog>
 {/if}
 
@@ -79,41 +161,75 @@
     color: var(--text-secondary);
   }
 
-  .pin {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-top: 14px;
+  .label {
+    display: block;
+    margin-top: 16px;
+    margin-bottom: 6px;
     font-size: 11.5px;
     color: var(--text-secondary);
   }
 
-  .pin input {
-    height: 30px;
-    padding: 0 8px;
+  /* big enough for a thumb and for reading from a step away */
+  .pin {
+    display: block;
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
     font-family: var(--font-editor);
-    font-size: 14px;
-    letter-spacing: 0.2em;
-    color: var(--text-primary);
+    font-size: 20px;
+    letter-spacing: 0.35em;
+    color: var(--text-strong);
     background: var(--bg-elevated);
     border: 1px solid var(--border);
-    border-radius: 0;
+    border-radius: var(--radius-sm);
     outline: none;
+    transition: border-color 0.1s ease;
   }
 
-  .pin input:focus {
+  .pin:focus {
     border-color: var(--accent);
+  }
+
+  .pin.bad {
+    border-color: var(--error);
+  }
+
+  .pin:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .message {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 18px;
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--text-secondary);
+  }
+
+  .message.error {
+    color: var(--error);
+  }
+
+  .message.warn {
+    color: var(--warning);
   }
 
   .actions {
     display: flex;
     justify-content: flex-end;
+    gap: 8px;
     margin-top: 16px;
   }
 
-  .message {
-    margin-top: 10px;
-    font-size: 12px;
-    color: var(--error);
+  /* a phone gets full width buttons in the thumb zone */
+  @media (max-width: 480px), (pointer: coarse) {
+    .actions :global(.btn) {
+      flex: 1;
+      height: 44px;
+    }
   }
 </style>
