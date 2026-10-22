@@ -175,7 +175,7 @@ describe('the engine', () => {
   it('answers what it cannot do yet with unsupported and nonsense with unknown', () => {
     const { cmd, unlock } = setup();
     unlock();
-    expect(cmd({ op: 'exp', kind: 'cosine' })).toMatchObject({ ok: false, err: 'unsupported' });
+    expect(cmd({ op: 'calib', step: 'dark' })).toMatchObject({ ok: false, err: 'unsupported' });
     expect(cmd({ op: 'rec', on: true })).toMatchObject({ ok: false, err: 'unsupported' });
     expect(cmd({ op: 'sys', action: 'reboot' })).toMatchObject({ ok: false, err: 'unsupported' });
     expect(cmd({ op: 'dance' })).toMatchObject({ ok: false, err: 'unknown' });
