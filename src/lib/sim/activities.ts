@@ -6,7 +6,7 @@
 import type { ControllerState } from './controller';
 import { arrived } from './motion';
 import { askAuto, askSeek, askStop, newRequest, type Request } from './modes';
-import type { SimCalibration } from './engine';
+import type { SimCalibration } from './calibration';
 import type { Activity as ActivityKind, Config, EventLevel, Mode, Pose, Quad, ServerMessage, St } from '$lib/link/protocol';
 
 export const DT = 0.02;
@@ -27,6 +27,8 @@ export interface ActivityHost {
   // the newest raw sums, L R U D
   readonly raw: Quad;
   readonly calib: SimCalibration;
+  // false once the calibration changed and save has not run since
+  calibSaved: boolean;
   readonly mode: Mode;
   wall(): number;
   // a fresh id for a result, like scan-20261114-153000

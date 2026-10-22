@@ -27,7 +27,8 @@
   with advance(seconds), with a seed for the noise and their own clocks
 */
 
-import { calibrationFor, DT, gainAt, gainToward, initialState, levels, lightEstimate, offAngle, panelPower, paramValues, senseLevels, trackStep, type Calibration, type ControllerState, type StepContext } from './controller';
+import { defaultCalibration, type SimCalibration } from './calibration';
+import { DT, gainAt, gainToward, initialState, levels, lightEstimate, offAngle, panelPower, paramValues, senseLevels, trackStep, type ControllerState, type StepContext } from './controller';
 import { runCommand } from './commands';
 import { defaultConfig, setSite, setValue } from './config';
 import { CommandError, isFields, type Fields } from './fields';
@@ -36,7 +37,7 @@ import { makeMode, Manual, newRequest, Sun, type ModeHost, type Request, type Si
 import { seekAxes, stepAxes, still, stopNow } from './motion';
 import type { Activity } from './activities';
 import { mulberry32, newReading, PHONE_LIGHT, senseInto, servoStep, type Light, type Reading } from './physics';
-import { defaultPanMap, defaultTiltMap, sameMap, toAngle, toUs, type ServoMap } from './servo';
+import { defaultPanMap, defaultTiltMap, sameMap, toAngle, toUs } from './servo';
 import { SunClock } from './sun';
 import { PROTO, type AckErr, type ClientMessage, type Config, type EventLevel, type HelloMessage, type Mode, type Pose, type Quad, type ScanMessage, type ServerMessage, type SimLight, type St, type StateFrame, type SysFrame } from '$lib/link/protocol';
 import type { SimEngine } from '$lib/link/transport';
@@ -53,19 +54,7 @@ export interface EngineOptions {
   timers?: boolean;
 }
 
-// the calibration the engine works with: the sensor normalisation, the loop
-// signs and the servo maps
-export interface SimCalibration extends Calibration {
-  sx: number;
-  sy: number;
-  pan: ServoMap;
-  tilt: ServoMap;
-}
-
-// as if dark and bright had been taken under the phone light, like on the pi
-export function defaultCalibration(): SimCalibration {
-  return { ...calibrationFor(PHONE_LIGHT), sx: 1, sy: 1, pan: defaultPanMap(), tilt: defaultTiltMap() };
-}
+export { defaultCalibration, type SimCalibration } from './calibration';
 
 // a token lasts 12 hours, like on the pi
 const TOKEN_LIFE = 12 * 3600;
@@ -87,6 +76,8 @@ export class SimTracker implements SimEngine, ModeHost {
   light: Light = { ...PHONE_LIGHT };
   cfg: Config = defaultConfig();
   calib: SimCalibration = defaultCalibration();
+  // false once the calibration changed and save has not run since
+  calibSaved = true;
   // the filtered levels, the errors, the commanded pose and the speeds in one
   // object the loop changes in place
   ctrl: ControllerState;
@@ -116,6 +107,8 @@ export class SimTracker implements SimEngine, ModeHost {
   private emit: ((message: ServerMessage) => void) | null = null;
   private admin = false;
   private token: string | null = null;
+  // counts the pages, an answer that comes late only goes to the page that asked
+  private session = 0;
   private random: () => number;
   private now: () => number;
   private clock: () => number;
@@ -162,6 +155,7 @@ export class SimTracker implements SimEngine, ModeHost {
 
   start(emit: (message: ServerMessage) => void): void {
     this.stop();
+    this.session++;
     this.emit = emit;
     this.admin = false;
     this.send(this.hello());
@@ -445,6 +439,17 @@ export class SimTracker implements SimEngine, ModeHost {
   refuse(id: string, code: AckErr, what: string, why: string): void {
     this.send({ t: 'ack', id, ok: false, err: code });
     if (code !== 'admin') this.event('warn', `${what} refused, ${why}`);
+  }
+
+  // the ack of a command that started an activity, sent when it ends, the way
+  // the pi answers a calibration step once the capture is done
+  answerLater(id: string, act: Activity): void {
+    const session = this.session;
+    act.onDone((done) => {
+      if (session !== this.session) return;
+      if (done.ok) this.ack(id, done.result);
+      else this.send({ t: 'ack', id, ok: false, err: 'bad' });
+    });
   }
 
   // a cfg push right after the ack that changed it, unless one went out a moment ago

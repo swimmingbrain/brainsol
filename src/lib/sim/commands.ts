@@ -5,6 +5,7 @@
 
 import { CommandError, isFields, num, oneOf, optBool, optNum, bool, text, type Fields } from './fields';
 import { wrap180 } from './kinematics';
+import { CALIB_STEPS, Capture, Polarity, reset, save, setValues, zero } from './calibration';
 import { EXP_KINDS, makeExperiment } from './experiments';
 import { Scan, SCAN_STEP, STEP_MAX, STEP_MIN } from './scan';
 import { parseWhen, SPEED_MAX, SPEED_MIN } from './sun';
@@ -75,8 +76,24 @@ const handlers: Record<string, Handler> = {
 
   stop: (eng) => ({ stopped: eng.stopActivity() }),
 
-  calib: () => {
-    throw new CommandError('calibration is not ready in the simulation yet', 'unsupported');
+  calib: (eng, msg, id) => {
+    const step = oneOf(msg, 'step', CALIB_STEPS);
+    const values = msg.values;
+    if (step === 'dark' || step === 'bright') {
+      if (values !== undefined && values !== null) return setValues(eng, step, values);
+      eng.answerLater(id, eng.startActivity(new Capture(eng, step)));
+      return LATER;
+    }
+    if (step === 'polarity') {
+      eng.answerLater(id, eng.startActivity(new Polarity(eng)));
+      return LATER;
+    }
+    if (eng.activity) throw new CommandError(`a ${eng.activity.kind} is running, stop it first`, 'busy');
+    if (step === 'zero') {
+      const src = isFields(values) ? values : msg;
+      return zero(eng, optNum(src, 'pan_us', 500, 2500), optNum(src, 'tilt_us', 500, 2500));
+    }
+    return step === 'save' ? save(eng) : reset(eng);
   },
 
   simlight: (eng, msg) => {
