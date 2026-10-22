@@ -172,10 +172,9 @@ describe('the engine', () => {
     expect(out.filter((m) => m.t === 'evt').pop()).toMatchObject({ lvl: 'info', msg: 'mode changed to park' });
   });
 
-  it('answers what it cannot do yet with unsupported and nonsense with unknown', () => {
+  it('answers recording and system actions with unsupported and nonsense with unknown', () => {
     const { cmd, unlock } = setup();
     unlock();
-    expect(cmd({ op: 'calib', step: 'dark' })).toMatchObject({ ok: false, err: 'unsupported' });
     expect(cmd({ op: 'rec', on: true })).toMatchObject({ ok: false, err: 'unsupported' });
     expect(cmd({ op: 'sys', action: 'reboot' })).toMatchObject({ ok: false, err: 'unsupported' });
     expect(cmd({ op: 'dance' })).toMatchObject({ ok: false, err: 'unknown' });
