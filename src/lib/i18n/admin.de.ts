@@ -14,7 +14,6 @@ export const adminDe: Record<keyof typeof adminEn, string> = {
   'admin.unlock.open': 'Adminbereich öffnen',
   'admin.unlock.isOpen': 'Der Adminbereich ist offen. Er liegt neben der Bühne, am Handy darunter.',
   'admin.unlock.lock': 'Wieder sperren',
-  'admin.unlock.close': 'Schließen',
   'admin.unlock.opened': 'Der Adminbereich ist offen',
   'admin.unlock.closed': 'Der Adminbereich ist gesperrt'
 };

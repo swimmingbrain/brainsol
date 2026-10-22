@@ -98,7 +98,6 @@
       {#if connection.admin}
         <p class="note">{t('admin.unlock.isOpen')}</p>
         <div class="actions">
-          <Button variant="ghost" size="lg" onclick={close}>{t('admin.unlock.close')}</Button>
           <Button variant="secondary" size="lg" icon="lock" onclick={lock}>{t('admin.unlock.lock')}</Button>
         </div>
       {:else if sim}

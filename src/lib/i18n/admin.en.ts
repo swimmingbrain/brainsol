@@ -15,7 +15,6 @@ export const adminEn = {
   'admin.unlock.open': 'Open the admin tools',
   'admin.unlock.isOpen': 'The admin tools are open. They sit next to the stage, on a phone below it.',
   'admin.unlock.lock': 'Lock again',
-  'admin.unlock.close': 'Close',
   'admin.unlock.opened': 'Admin tools are open',
   'admin.unlock.closed': 'Admin tools are locked'
 } satisfies Record<`admin.${string}`, string>;
