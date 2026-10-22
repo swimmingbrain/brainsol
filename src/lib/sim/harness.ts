@@ -8,7 +8,8 @@ export const START_MS = 1_700_000_000_000;
 
 export function harness(options: EngineOptions = {}) {
   let ms = START_MS;
-  const engine = createEngine({ seed: 11, timers: false, now: () => ms, clock: () => ms, ...options });
+  // the lamp stays still unless a test asks for the idle wandering
+  const engine = createEngine({ seed: 11, timers: false, wander: false, now: () => ms, clock: () => ms, ...options });
   const out: ServerMessage[] = [];
   engine.start((message) => out.push(message));
   // calls back after every tick, for checks that look at each step

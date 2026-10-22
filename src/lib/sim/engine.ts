@@ -39,6 +39,7 @@ import type { Activity } from './activities';
 import { mulberry32, newReading, PHONE_LIGHT, senseInto, servoStep, type Light, type Reading } from './physics';
 import { defaultPanMap, defaultTiltMap, sameMap, toAngle, toUs } from './servo';
 import { SunClock } from './sun';
+import { Wander } from './wander';
 import { PROTO, type AckErr, type ClientMessage, type Config, type EventLevel, type HelloMessage, type Mode, type Pose, type Quad, type ScanMessage, type ServerMessage, type SimLight, type St, type StateFrame, type SysFrame } from '$lib/link/protocol';
 import type { SimEngine } from '$lib/link/transport';
 import { version } from '$lib/version';
@@ -52,6 +53,8 @@ export interface EngineOptions {
   clock?: () => number;
   // false leaves the timers out, a test calls advance() itself
   timers?: boolean;
+  // false keeps the lamp still from the start instead of letting it wander
+  wander?: boolean;
 }
 
 export { defaultCalibration, type SimCalibration } from './calibration';
@@ -93,6 +96,9 @@ export class SimTracker implements SimEngine, ModeHost {
   cstate: St = 'idle';
   st: St = 'idle';
   lastSys: SysFrame | null = null;
+  // the lamp drifts on its own until the first command that moves it, the mode or the head
+  wandering: boolean;
+  private wander = new Wander();
   // a new page gets the newest sky map straight after hello, like on the pi
   lastScan: ScanMessage | null = null;
   // the scan, experiment or calibration step that has the head, null when the mode has it
@@ -136,6 +142,7 @@ export class SimTracker implements SimEngine, ModeHost {
     this.now = options.now ?? (() => Date.now());
     this.clock = options.clock ?? (() => performance.now());
     this.timers = options.timers ?? true;
+    this.wandering = options.wander ?? true;
     this.born = this.clock();
     this.sysAt = this.born;
     this.wallNow = this.now() / 1000;
@@ -221,6 +228,7 @@ export class SimTracker implements SimEngine, ModeHost {
     this.t += DT;
     this.steps++;
     this.sunClock.advance(DT);
+    if (this.wandering) this.wander.step(DT, this.light);
     this.current.world(this);
     const p = this.cfg.params;
     senseInto(this.reading, this.servo.pan, this.servo.tilt, this.light, this.random, this.cfg.baffle);
@@ -463,9 +471,17 @@ export class SimTracker implements SimEngine, ModeHost {
     this.send({ t: 'cfg', cfg: structuredClone(this.cfg) });
   }
 
+  // someone took over: the lamp stays where it is now, for the rest of the visit
+  private calm(): void {
+    if (!this.wandering) return;
+    this.wandering = false;
+    this.event('info', 'the lamp stops wandering and stays where it is');
+  }
+
   // the commands, the same steps as the methods of engine.py
 
   setMode(name: Mode): void {
+    this.calm();
     this.endActivity('stopped by a mode change');
     if (name !== this.current.name || name === 'manual') this.switchMode(name);
   }
@@ -478,6 +494,7 @@ export class SimTracker implements SimEngine, ModeHost {
   }
 
   private manual(): Manual {
+    this.calm();
     this.endActivity('stopped by manual control');
     if (!(this.current instanceof Manual)) this.switchMode('manual');
     return this.current as Manual;
@@ -510,6 +527,7 @@ export class SimTracker implements SimEngine, ModeHost {
 
   // returns the sun time it runs from now, unix seconds
   setSun(speed: number, start: number | null): number {
+    this.calm();
     this.sunClock.set(speed, start, this.wall());
     if (this.current instanceof Sun) this.current.refresh(this);
     else this.setMode('sun');
@@ -518,6 +536,7 @@ export class SimTracker implements SimEngine, ModeHost {
 
   setSimlight(change: { az: number | null; el: number | null; on: boolean | null; lux: number | null; amb: number | null }): SimLight {
     if (this.current instanceof Sun) throw new CommandError('the sun moves the light in sun mode, pick another mode first', 'busy');
+    this.calm();
     const l = this.light;
     if (change.az !== null) l.az = change.az;
     if (change.el !== null) l.el = change.el;
@@ -529,6 +548,7 @@ export class SimTracker implements SimEngine, ModeHost {
 
   startActivity<T extends Activity>(act: T): T {
     if (this.activity) throw new CommandError(`a ${this.activity.kind} is running, stop it first`, 'busy');
+    this.calm();
     act.start();
     this.activity = act;
     return act;
