@@ -306,7 +306,7 @@ export class SimTracker implements SimEngine, ModeHost {
       this.sysAcc -= 1;
       this.sendSys();
     }
-    if (this.cfgDirty && this.t - this.cfgAt >= CFG_EVERY) this.pushCfg();
+    if (this.cfgDirty && this.t - this.cfgAt >= CFG_EVERY - 1e-9) this.pushCfg();
   }
 
   hello(): HelloMessage {
@@ -462,7 +462,7 @@ export class SimTracker implements SimEngine, ModeHost {
 
   // a cfg push right after the ack that changed it, unless one went out a moment ago
   afterCommand(): void {
-    if (this.cfgDirty && this.t - this.cfgAt >= CFG_EVERY) this.pushCfg();
+    if (this.cfgDirty && this.t - this.cfgAt >= CFG_EVERY - 1e-9) this.pushCfg();
   }
 
   private pushCfg(): void {
