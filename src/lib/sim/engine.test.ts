@@ -180,6 +180,46 @@ describe('the engine', () => {
     expect(cmd({ op: 'dance' })).toMatchObject({ ok: false, err: 'unknown' });
   });
 
+  it('tells an admin in plain words what happens and why a command was refused', () => {
+    const { cmd, unlock, advance, of } = setup();
+    unlock();
+    cmd({ op: 'mode', mode: 'park' });
+    cmd({ op: 'site', lat: 47.07, lon: 15.44, heading: 170 });
+    cmd({ op: 'sun', speed: 600, date: '2026-06-21T04:00Z' });
+    cmd({ op: 'set', key: 'vmax', value: 500 });
+    cmd({ op: 'rec', on: true });
+    cmd({ op: 'mode', mode: 'auto' });
+    cmd({ op: 'scan', step: 45 });
+    advance(1);
+    cmd({ op: 'stop' });
+    const lines = of('evt').map((e) => e.msg);
+    expect(lines).toEqual([
+      'admin unlocked in the simulation',
+      'mode changed to park',
+      'site set to latitude 47.07, longitude 15.44, the front facing 170 degrees',
+      'sun clock runs 600 times faster from 2026-06-21 04:00 utc',
+      'mode changed to sun',
+      'set refused, vmax must be from 5 to 180',
+      'rec refused, recording needs a tracker with a data folder, the simulation has none',
+      'mode changed to auto',
+      'scan started, 20 cells in steps of 45 degrees',
+      'scan ended early, stopped'
+    ]);
+    // plain ascii, a hyphen only inside an iso date, never as punctuation
+    for (const line of lines) {
+      expect(line).toMatch(/^[a-z][a-z0-9 ,.:-]*$/);
+      expect(line).not.toMatch(/\s-|-\s/);
+    }
+    expect(of('evt').every((e) => e.lvl === 'info' || e.lvl === 'warn')).toBe(true);
+  });
+
+  it('says when the sun clock is back on real time', () => {
+    const { cmd, unlock, of } = setup();
+    unlock();
+    cmd({ op: 'sun', speed: 1 });
+    expect(of('evt').map((e) => e.msg)).toContain('sun clock follows the real time');
+  });
+
   it('sends nothing after stop', () => {
     const { engine, out, advance } = setup();
     engine.stop();
