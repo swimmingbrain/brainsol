@@ -16,5 +16,20 @@ export const adminEn = {
   'admin.unlock.isOpen': 'The admin tools are open. They sit next to the stage, on a phone below it.',
   'admin.unlock.lock': 'Lock again',
   'admin.unlock.opened': 'Admin tools are open',
-  'admin.unlock.closed': 'Admin tools are locked'
+  'admin.unlock.closed': 'Admin tools are locked',
+
+  'admin.dock.label': 'Admin tools',
+  'admin.tab.control': 'Control',
+
+  'admin.group.mode': 'Mode',
+  'admin.mode.label': 'Mode of the tracker',
+  'admin.mode.waiting': 'Waiting for the first frame of the tracker.',
+  'admin.mode.unsupported': 'This tracker cannot do this mode yet',
+  'admin.mode.missing': 'This tracker cannot do these modes yet: {modes}.',
+  'admin.mode.about.auto': 'Follows the light with the four sensors.',
+  'admin.mode.about.manual': 'Goes where you send it, with the joystick or a target.',
+  'admin.mode.about.sun': 'Follows the computed sun for the site set below.',
+  'admin.mode.about.hold': 'Stays exactly where it is.',
+  'admin.mode.about.park': 'Lays the panel flat and rests.',
+  'admin.mode.about.demo': 'Plays a slow, calm choreography for an idle exhibit.'
 } satisfies Record<`admin.${string}`, string>;
