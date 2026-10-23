@@ -99,7 +99,7 @@
   .before,
   .unit {
     font-family: var(--font-editor);
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-muted);
   }
 
