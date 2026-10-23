@@ -521,6 +521,7 @@ export class SimTracker implements SimEngine, ModeHost {
   setSite(lat: number, lon: number, heading: number): Config['site'] {
     const site = setSite(this.cfg, lat, lon, heading);
     this.cfgDirty = true;
+    this.event('info', `site set to latitude ${site.lat}, longitude ${site.lon}, the front facing ${site.heading} degrees`);
     if (this.current instanceof Sun) this.current.refresh(this);
     return site;
   }
@@ -529,6 +530,10 @@ export class SimTracker implements SimEngine, ModeHost {
   setSun(speed: number, start: number | null): number {
     this.calm();
     this.sunClock.set(speed, start, this.wall());
+    const now = this.sunClock.now(this.wall());
+    const from = new Date(now * 1000).toISOString().slice(0, 16).replace('T', ' ');
+    const pace = speed === 1 ? 'in real time' : `${speed} times faster`;
+    this.event('info', this.sunClock.live ? 'sun clock follows the real time' : `sun clock runs ${pace} from ${from} utc`);
     if (this.current instanceof Sun) this.current.refresh(this);
     else this.setMode('sun');
     return this.sunClock.now(this.wall());
