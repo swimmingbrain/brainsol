@@ -1,0 +1,23 @@
+{
+  "units": "mm",
+  "frame": "x right, y forward, z up",
+  "parts": [
+    { "id": "base", "file": null, "joint": null, "color": "body" },
+    { "id": "neck", "file": null, "joint": "pan", "color": "dark" },
+    { "id": "head", "file": null, "joint": "tilt", "color": "dark" },
+    { "id": "panel", "file": null, "joint": "tilt", "color": "panel" }
+  ],
+  "joints": {
+    "pan": { "origin": [0, -30, 48], "axis": [0, 0, -1], "parent": null, "range": [-90, 90] },
+    "tilt": { "origin": [0, -30, 106], "axis": [1, 0, 0], "parent": "pan", "range": [0, 180] }
+  },
+  "sensors": {
+    "L": [-67.5, 7.05, 106],
+    "R": [67.5, 7.05, 106],
+    "U": [0, 7.05, 153.5],
+    "D": [0, 7.05, 58.5],
+    "lux": [-67.5, 7.05, 144]
+  },
+  "panel": { "center": [0, 5.8, 106], "size": [125, 85], "normal": [0, 1, 0], "up": [0, 0, 1] },
+  "bounds": { "min": [-78, -78, 0], "max": [78, 78, 161.5] }
+}
