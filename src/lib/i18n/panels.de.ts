@@ -13,10 +13,17 @@ export const panelsDe: Record<keyof typeof panelsEn, string> = {
   'panels.tiles.estimated': 'geschätzt',
   'panels.tiles.measured': 'gemessen',
   'panels.tiles.gain': 'Gewinn',
-  'panels.tiles.gainNote': 'gegenüber einem festen Panel',
+  'panels.tiles.gainNote': 'gegen ein festes Panel',
   'panels.tiles.off': 'Abweichung',
   'panels.tiles.offNote': 'aus den Sensoren gelesen',
   'panels.tiles.about': 'etwa',
   'panels.tiles.under': 'unter',
-  'panels.tiles.mode': 'Modus {mode}'
+  'panels.tiles.mode': 'Modus {mode}',
+
+  'panels.balance.aria': 'Das Licht auf den vier Sensoren und wohin der Fehler zeigt',
+  'panels.balance.ex': 'Fehler links, rechts',
+  'panels.balance.ey': 'Fehler unten, oben',
+  'panels.balance.band': 'Totzone',
+  'panels.balance.range': '{a} bis {b}',
+  'panels.balance.caption': 'Der Punkt wandert zur helleren Seite. Der Tracker dreht sich, bis er in der Mitte sitzt.'
 };

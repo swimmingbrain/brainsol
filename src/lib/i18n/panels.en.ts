@@ -19,5 +19,12 @@ export const panelsEn = {
   'panels.tiles.offNote': 'read from the sensors',
   'panels.tiles.about': 'about',
   'panels.tiles.under': 'under',
-  'panels.tiles.mode': '{mode} mode'
+  'panels.tiles.mode': '{mode} mode',
+
+  'panels.balance.aria': 'The light on the four sensors and where the error points',
+  'panels.balance.ex': 'Error left, right',
+  'panels.balance.ey': 'Error down, up',
+  'panels.balance.band': 'Dead band',
+  'panels.balance.range': '{a} to {b}',
+  'panels.balance.caption': 'The dot drifts toward the brighter side. The tracker turns until it sits in the middle.'
 } satisfies Record<`panels.${string}`, string>;
