@@ -28,7 +28,7 @@
 */
 
 import { defaultCalibration, type SimCalibration } from './calibration';
-import { DT, gainAt, gainToward, initialState, levels, lightEstimate, offAngle, panelPower, paramValues, senseLevels, trackStep, type ControllerState, type StepContext } from './controller';
+import { DT, gainFromErrors, initialState, levels, offAngle, panelPower, paramValues, senseLevels, trackStep, type ControllerState, type StepContext } from './controller';
 import { runCommand } from './commands';
 import { defaultConfig, setSite, setValue } from './config';
 import { CommandError, isFields, type Fields } from './fields';
@@ -334,9 +334,7 @@ export class SimTracker implements SimEngine, ModeHost {
       // while the loop faces the light it is taken to be along the normal, else
       // the sensor balance says where it is, the same as on the pi
       const closed = this.cstate === 'tracking' || this.cstate === 'locked' || this.cstate === 'limit';
-      gain = closed
-        ? gainAt(c.pan, c.tilt, p.ref_pan.v, p.ref_tilt.v)
-        : gainToward(c.pan, c.tilt, p.ref_pan.v, p.ref_tilt.v, lightEstimate(c.pan, c.tilt, c.ex, c.ey, k));
+      gain = closed ? gainFromErrors(c.pan, c.tilt, 0, 0, p.ref_pan.v, p.ref_tilt.v, k) : gainFromErrors(c.pan, c.tilt, c.ex, c.ey, p.ref_pan.v, p.ref_tilt.v, k);
     }
     const raw = this.reading.raw;
     return {

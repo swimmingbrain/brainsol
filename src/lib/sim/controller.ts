@@ -240,11 +240,43 @@ export function aimPose(pan: number, tilt: number, ex: number, ey: number, limit
   return { pan: clamp(pose.pan, limits.pan[0], limits.pan[1]), tilt: clamp(pose.tilt, limits.tilt[0], limits.tilt[1]) };
 }
 
+// the parts of level() that only change with the calibration, and the filter
+// factor that only changes with tau, kept between ticks like the pi does. the
+// numbers come out exactly as from level()
+const norm = {
+  dark: [NaN, NaN, NaN, NaN],
+  bright: [NaN, NaN, NaN, NaN],
+  lo: [0, 0, 0, 0],
+  span: [0, 0, 0, 0],
+  flip: [false, false, false, false],
+  tau: NaN,
+  dt: NaN,
+  alpha: 0
+};
+
+function normalised(i: number, raw: number, dark: number, bright: number): number {
+  if (norm.dark[i] !== dark || norm.bright[i] !== bright) {
+    const flip = dark > bright;
+    norm.dark[i] = dark;
+    norm.bright[i] = bright;
+    norm.flip[i] = flip;
+    norm.lo[i] = linear(flip ? RAW_MAX - dark : dark);
+    norm.span[i] = linear(flip ? RAW_MAX - bright : bright) - norm.lo[i];
+  }
+  if (dark === bright) return 0;
+  return clamp((linear(norm.flip[i] ? RAW_MAX - raw : raw) - norm.lo[i]) / norm.span[i], 0, 1);
+}
+
 // new readings into the filtered levels and the errors, in place
 export function senseLevels(state: ControllerState, raw: Quad, calib: Calibration, tau: number, dt = DT): void {
-  const a = 1 - Math.exp(-dt / tau);
+  if (norm.tau !== tau || norm.dt !== dt) {
+    norm.tau = tau;
+    norm.dt = dt;
+    norm.alpha = 1 - Math.exp(-dt / tau);
+  }
+  const a = norm.alpha;
   const f = state.f;
-  for (let i = 0; i < 4; i++) f[i] += (level(raw[i], calib.dark[i], calib.bright[i]) - f[i]) * a;
+  for (let i = 0; i < 4; i++) f[i] += (normalised(i, raw[i], calib.dark[i], calib.bright[i]) - f[i]) * a;
   const L = f[0];
   const R = f[1];
   const U = f[2];
@@ -347,6 +379,33 @@ export function gainAt(pan: number, tilt: number, refPan: number, refTilt: numbe
 // the light on purpose. the light is then taken from the sensor balance
 export function gainToward(pan: number, tilt: number, refPan: number, refTilt: number, light: Vec3): number {
   return Math.max(dot(light, normal(pan, tilt)), 0) / Math.max(dot(light, normal(refPan, refTilt)), 0.1);
+}
+
+// gainToward with the light taken from the sensor balance, worked out without
+// temporary vectors for every state frame. with both errors 0 the light is
+// along the normal and it is gainAt
+export function gainFromErrors(pan: number, tilt: number, ex: number, ey: number, refPan: number, refTilt: number, k = K): number {
+  const tx = (2 * ex) / (k * (1 + Math.abs(ex)));
+  const ty = (2 * ey) / (k * (1 + Math.abs(ey)));
+  const sp = Math.sin(pan * DEG);
+  const cp = Math.cos(pan * DEG);
+  const st = Math.sin(tilt * DEG);
+  const ct = Math.cos(tilt * DEG);
+  const nx = sp * ct;
+  const ny = cp * ct;
+  const nz = st;
+  // n + tx r + ty v, with r = (cos p, -sin p, 0) and v = (-sin p sin t, -cos p sin t, cos t)
+  let sx = nx + tx * cp - ty * sp * st;
+  let sy = ny - tx * sp - ty * cp * st;
+  let sz = nz + ty * ct;
+  const len = Math.sqrt(sx * sx + sy * sy + sz * sz) || 1;
+  sx /= len;
+  sy /= len;
+  sz /= len;
+  const rp = refPan * DEG;
+  const rt = refTilt * DEG;
+  const ref = sx * Math.sin(rp) * Math.cos(rt) + sy * Math.cos(rp) * Math.cos(rt) + sz * Math.sin(rt);
+  return Math.max(sx * nx + sy * ny + sz * nz, 0) / Math.max(ref, 0.1);
 }
 
 // estimated panel power in milliwatts. about 110 lux make a watt per square
