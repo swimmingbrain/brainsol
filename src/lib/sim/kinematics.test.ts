@@ -121,6 +121,40 @@ describe('kinematics', () => {
     expect(offAxis(pose.pan, pose.tilt, -100, 20)).toBeLessThan(1e-6);
   });
 
+  it('picks the same pose as the plain rule written with objects, into the object it is given', () => {
+    const limits = { pan: [-88, 88] as [number, number], tilt: [4, 176] as [number, number] };
+    // the rule spelled out: the side nearest the head, unless it misses by more than hold beyond the other
+    const plain = (az: number, el: number, from: { pan: number; tilt: number }) => {
+      const first = poseFor(az, el);
+      const other = { pan: first.pan > 0 ? first.pan - 180 : first.pan + 180, tilt: 180 - first.tilt };
+      const fit = (p: { pan: number; tilt: number }) => ({ pan: Math.min(Math.max(p.pan, -88), 88), tilt: Math.min(Math.max(p.tilt, 4), 176) });
+      const a = fit(first);
+      const b = fit(other);
+      const missA = offAxis(a.pan, a.tilt, az, el);
+      const missB = offAxis(b.pan, b.tilt, az, el);
+      const best = missA <= missB ? a : b;
+      const far = (p: { pan: number; tilt: number }) => Math.max(Math.abs(p.pan - from.pan), Math.abs(p.tilt - from.tilt));
+      const near = far(a) <= far(b) ? a : b;
+      if (near === best) return best;
+      return (near === a ? missA : missB) <= Math.min(missA, missB) + 3 ? near : best;
+    };
+    const out = { pan: 0, tilt: 0 };
+    for (let az = -180; az <= 180; az += 7.5) {
+      for (const el of [0, 5, 20, 45, 70, 88, 90]) {
+        for (const from of [
+          { pan: -88, tilt: 20 },
+          { pan: 88, tilt: 160 },
+          { pan: 0, tilt: 90 }
+        ]) {
+          expect(poseNear(az, el, from, limits, 3, out)).toBe(out);
+          const want = plain(az, el, from);
+          expect(out.pan).toBeCloseTo(want.pan, 9);
+          expect(out.tilt).toBeCloseTo(want.tilt, 9);
+        }
+      }
+    }
+  });
+
   it('measures the angle between two directions', () => {
     expect(angleBetween([1, 0, 0], [0, 1, 0])).toBeCloseTo(90, 9);
     expect(angleBetween([0, 0, 2], [0, 0, 1])).toBeCloseTo(0, 6);
