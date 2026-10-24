@@ -1,84 +1,187 @@
 <script lang="ts">
-  // a stand in for the live charts until the viewer stream replaces this file.
-  // it shows the way in: redraw when history.version changes, read the
-  // samples straight from the ring
+  // the last minutes as live charts. four views of the stream, each with one
+  // or two plots that share a time axis and never mix two units on one axis.
+  // a plot is built the first time its tab opens and then only fed, and only
+  // the open tab is fed at all
   import Panel from '$lib/ui/Panel.svelte';
+  import PanelTabs from '$lib/ui/PanelTabs.svelte';
+  import Segmented from '$lib/ui/Segmented.svelte';
+  import Plot, { type PlotSeries, type PlotView, type RangeSpec } from './chart/Plot.svelte';
   import { history } from '$lib/stores/history.svelte';
-  import { t } from '$lib/i18n';
+  import { connection } from '$lib/stores/connection.svelte';
+  import { fmt, t } from '$lib/i18n';
+  import { windowData, type Column } from './chart/window';
+  import { gainPercent, lux } from './format';
 
-  const W = 300;
-  const H = 64;
-  const SPAN = 120;
+  type TabId = 'light' | 'angles' | 'error' | 'power';
 
-  const scratch = new Float64Array(SPAN * 20);
-  const times = new Float64Array(SPAN * 20);
+  interface PlotSpec {
+    id: string;
+    series: PlotSeries[];
+    columns: Column[];
+    y: RangeSpec;
+    lines?: number[];
+  }
 
-  // the light of the last two minutes as one line
-  const path = $derived.by(() => {
-    void history.version;
-    const ring = history.ring;
-    const newest = ring.latest('time');
-    if (newest === null) return '';
-    const start = ring.since(newest - SPAN);
-    // until two minutes are there the line uses the width it has
-    const span = Math.max(10, Math.min(SPAN, newest - (ring.get('time', start) ?? newest)));
-    const values = ring.copy('lux', start, scratch);
-    const stamps = ring.copy('time', start, times);
-    let top = 1;
-    for (const value of values) if (value > top) top = value;
-    let d = '';
-    for (let i = 0; i < values.length; i++) {
-      if (Number.isNaN(values[i])) continue;
-      const x = W - ((newest - stamps[i]) / span) * W;
-      const y = H - 2 - (values[i] / top) * (H - 4);
-      d += `${d ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`;
-    }
-    return d;
+  let tab = $state<TabId>('light');
+  let minutes = $state<1 | 5 | 10>(1);
+  let hovering = $state(false);
+  // tabs that were open once keep their plots
+  let opened = $state<TabId[]>(['light']);
+
+  const signed = (value: number, digits: number) => {
+    const text = fmt(value, digits);
+    if (text === null) return null;
+    return value > 0 && Number(text.replace(',', '.')) !== 0 ? `+${text}` : text;
+  };
+
+  const hasLux = $derived(connection.caps ? connection.caps.lux : true);
+
+  const tabs = $derived<Record<TabId, PlotSpec[]>>({
+    light: [
+      ...(hasLux
+        ? [
+            {
+              id: 'lux',
+              series: [{ label: t('q.light'), color: 'series1', unit: 'lx', format: (v) => lux(v) }],
+              columns: [{ col: 'lux' }],
+              y: { include: [0], minSpan: 10 }
+            } satisfies PlotSpec
+          ]
+        : []),
+      {
+        id: 'level',
+        series: [{ label: t('panels.charts.level'), color: 'series2', unit: '%', digits: 0 }],
+        columns: [{ col: 'lvl', map: (v) => v * 100 }],
+        y: { min: 0, max: 100, include: [0, 100] }
+      }
+    ],
+    angles: [
+      {
+        id: 'angles',
+        series: [
+          { label: t('q.pan'), color: 'series1', unit: '°', digits: 1 },
+          { label: t('q.tilt'), color: 'series2', unit: '°', digits: 1 }
+        ],
+        columns: [{ col: 'pan' }, { col: 'tilt' }],
+        y: { minSpan: 10 }
+      }
+    ],
+    error: [
+      {
+        id: 'error',
+        series: [
+          { label: 'ex', color: 'series1', format: (v) => signed(v, 3) },
+          { label: 'ey', color: 'series2', format: (v) => signed(v, 3) }
+        ],
+        columns: [{ col: 'ex' }, { col: 'ey' }],
+        y: { symmetric: true, minSpan: 0.2 },
+        lines: [0]
+      },
+      {
+        id: 'off',
+        series: [{ label: t('panels.tiles.off'), color: 'series3', unit: '°', digits: 1 }],
+        columns: [{ col: 'off' }],
+        y: { min: 0, include: [0], minSpan: 5 }
+      }
+    ],
+    power: [
+      {
+        id: 'power',
+        series: [{ label: t('panels.tiles.power'), color: 'series1', unit: 'mW', digits: 1 }],
+        columns: [{ col: 'pmw' }],
+        y: { min: 0, include: [0], minSpan: 1 }
+      },
+      {
+        id: 'gain',
+        series: [{ label: t('panels.tiles.gain'), color: 'series2', unit: '%', format: (v) => gainPercent(1 + v / 100) }],
+        columns: [{ col: 'gain', map: (v) => (v - 1) * 100 }],
+        y: { include: [0], minSpan: 10 },
+        lines: [0]
+      }
+    ]
   });
+
+  const tabList = $derived([
+    { id: 'light', label: t('panels.charts.light') },
+    { id: 'angles', label: t('panels.charts.angles') },
+    { id: 'error', label: t('panels.charts.error') },
+    { id: 'power', label: t('panels.charts.power') }
+  ]);
+
+  const windows = $derived([
+    { value: '1', label: t('panels.charts.minutes', { n: 1 }) },
+    { value: '5', label: t('panels.charts.minutes', { n: 5 }) },
+    { value: '10', label: t('panels.charts.minutes', { n: 10 }) }
+  ]);
+
+  function choose(id: string) {
+    tab = id as TabId;
+    hovering = false;
+    if (!opened.includes(tab)) opened = [...opened, tab];
+  }
+
+  // one plot alone gets the room of two
+  const heightOf = (count: number) => (count > 1 ? 96 : 180);
+
+  // the window of a plot, read only by a plot that is open and not paused
+  function viewOf(spec: PlotSpec): PlotView {
+    void history.version;
+    return windowData(history.ring, spec.columns, minutes * 60);
+  }
 </script>
 
-<Panel title={t('section.charts')}>
-  <svg class="chart" viewBox="0 0 {W} {H}" preserveAspectRatio="none" aria-label={t('q.light')} role="img">
-    <line class="grid" x1="0" y1={H - 0.5} x2={W} y2={H - 0.5} />
-    <path class="line" d={path} />
-  </svg>
-  <p class="legend"><span class="swatch"></span>{t('q.light')}</p>
+<Panel title={t('section.charts')} flush>
+  {#snippet right()}
+    <div class="window">
+      <Segmented
+        size="sm"
+        value={String(minutes)}
+        options={windows}
+        label={t('panels.charts.window')}
+        onchange={(v) => (minutes = Number(v) as 1 | 5 | 10)} />
+    </div>
+  {/snippet}
+  <PanelTabs tabs={tabList} active={tab} onchange={choose} />
+  <div class="body">
+    {#each opened as id (id)}
+      <div class="tab" hidden={id !== tab}>
+        {#each tabs[id] as spec (spec.id)}
+          <Plot
+            series={spec.series}
+            view={id === tab ? viewOf(spec) : null}
+            y={spec.y}
+            lines={spec.lines}
+            height={heightOf(tabs[id].length)}
+            sync="live-{id}"
+            live
+            active={id === tab}
+            paused={hovering}
+            onhover={(on) => (hovering = on)}
+            hint={hovering ? '' : t('panels.charts.now')}
+            label={spec.series.map((s) => s.label).join(', ')} />
+        {/each}
+      </div>
+    {/each}
+  </div>
 </Panel>
 
 <style>
-  .chart {
-    display: block;
-    width: 100%;
-    height: 64px;
+  .window {
+    width: 156px;
   }
 
-  .grid {
-    stroke: var(--chart-grid);
-    stroke-width: 1;
-    vector-effect: non-scaling-stroke;
+  .body {
+    padding: 8px 12px 12px;
   }
 
-  .line {
-    fill: none;
-    stroke: var(--chart-1);
-    stroke-width: 2;
-    stroke-linejoin: round;
-    vector-effect: non-scaling-stroke;
-  }
-
-  .legend {
+  .tab {
     display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 6px;
-    font-size: 11px;
-    color: var(--text-muted);
+    flex-direction: column;
+    gap: 8px;
   }
 
-  .swatch {
-    width: 8px;
-    height: 8px;
-    border-radius: 1px;
-    background: var(--chart-1);
+  .tab[hidden] {
+    display: none;
   }
 </style>

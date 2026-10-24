@@ -26,5 +26,14 @@ export const panelsEn = {
   'panels.balance.ey': 'Error down, up',
   'panels.balance.band': 'Dead band',
   'panels.balance.range': '{a} to {b}',
-  'panels.balance.caption': 'The dot drifts toward the brighter side. The tracker turns until it sits in the middle.'
+  'panels.balance.caption': 'The dot drifts toward the brighter side. The tracker turns until it sits in the middle.',
+
+  'panels.charts.light': 'Light',
+  'panels.charts.angles': 'Angles',
+  'panels.charts.error': 'Error',
+  'panels.charts.power': 'Power',
+  'panels.charts.level': 'Level',
+  'panels.charts.minutes': '{n} min',
+  'panels.charts.window': 'Time window',
+  'panels.charts.now': 'now'
 } satisfies Record<`panels.${string}`, string>;

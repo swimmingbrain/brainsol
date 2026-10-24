@@ -25,5 +25,14 @@ export const panelsDe: Record<keyof typeof panelsEn, string> = {
   'panels.balance.ey': 'Fehler unten, oben',
   'panels.balance.band': 'Totzone',
   'panels.balance.range': '{a} bis {b}',
-  'panels.balance.caption': 'Der Punkt wandert zur helleren Seite. Der Tracker dreht sich, bis er in der Mitte sitzt.'
+  'panels.balance.caption': 'Der Punkt wandert zur helleren Seite. Der Tracker dreht sich, bis er in der Mitte sitzt.',
+
+  'panels.charts.light': 'Licht',
+  'panels.charts.angles': 'Winkel',
+  'panels.charts.error': 'Fehler',
+  'panels.charts.power': 'Leistung',
+  'panels.charts.level': 'Pegel',
+  'panels.charts.minutes': '{n} min',
+  'panels.charts.window': 'Zeitfenster',
+  'panels.charts.now': 'jetzt'
 };
