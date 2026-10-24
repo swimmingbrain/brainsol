@@ -170,7 +170,7 @@
   }
 
   .widget {
-    flex: 0 1 200px;
+    flex: 0 1 184px;
     min-width: 150px;
   }
 
