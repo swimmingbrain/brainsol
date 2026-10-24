@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { check, decimals, defaultValue, DEFAULTS, groupsOf, isDefault, sameValue, snap, UNITS } from './params';
+import { check, decimals, defaultValue, DEFAULTS, groupsOf, isDefault, resetOrder, sameValue, snap, UNITS } from './params';
 import { PARAM_KEYS, type Param } from '$lib/link/protocol';
 
 // the params block exactly as the python tracker sends it in hello
@@ -85,6 +85,37 @@ describe('defaults', () => {
     expect(isDefault('kp', { ...params.kp, v: 95 })).toBe(false);
     expect(isDefault('dead_in', { ...params.dead_in, v: 0.0250000001 })).toBe(true);
     expect(sameValue(0.1, 0.1 + 1e-7, params.tau)).toBe(true);
+  });
+});
+
+describe('resetOrder', () => {
+  const with2 = (dead_in: number, dead_out: number) => ({
+    ...params,
+    dead_in: { ...params.dead_in, v: dead_in },
+    dead_out: { ...params.dead_out, v: dead_out }
+  });
+
+  // replays the order against the rule of the tracker
+  function survives(keys: string[], start: Record<string, Param>): boolean {
+    const now = { in: start.dead_in.v, out: start.dead_out.v };
+    for (const key of resetOrder(keys, start)) {
+      if (key === 'dead_in') now.in = DEFAULTS.dead_in;
+      if (key === 'dead_out') now.out = DEFAULTS.dead_out;
+      if (now.in >= now.out) return false;
+    }
+    return true;
+  }
+
+  it('resets both thresholds in an order the tracker accepts', () => {
+    expect(survives(['dead_in', 'dead_out'], with2(0.1, 0.2))).toBe(true);
+    expect(survives(['dead_in', 'dead_out'], with2(0.01, 0.02))).toBe(true);
+    expect(survives(['dead_out', 'dead_in'], with2(0.19, 0.3))).toBe(true);
+    expect(survives(['dead_in', 'dead_out'], with2(0.005, 0.01))).toBe(true);
+  });
+
+  it('keeps the other keys and puts the pair last', () => {
+    expect(resetOrder(['dead_out', 'kp', 'dead_in', 'rate'], with2(0.01, 0.02))).toEqual(['kp', 'rate', 'dead_out', 'dead_in']);
+    expect(resetOrder(['kp'], params)).toEqual(['kp']);
   });
 });
 

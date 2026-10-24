@@ -93,7 +93,18 @@ export function isDefault(key: string, param: Param): boolean {
   return value === null || sameValue(param.v, value, param);
 }
 
-export type Check = { ok: true; value: number } | { ok: false; value: number; other: ParamKey };
+// the changed tunables in an order the tracker accepts one by one: of the two
+// thresholds the one goes first that keeps rest below start on the way. one of
+// the two orders always works, both defaults keep the order themselves
+export function resetOrder(keys: string[], params: Record<string, Param>): string[] {
+  const rest = keys.filter((key) => key !== 'dead_in' && key !== 'dead_out');
+  const pair = keys.filter((key) => key === 'dead_in' || key === 'dead_out');
+  if (pair.length < 2 || !params.dead_in || !params.dead_out) return [...rest, ...pair];
+  const restFirst = (defaultValue('dead_in', params.dead_in) ?? 0) < params.dead_out.v;
+  return [...rest, ...(restFirst ? ['dead_in', 'dead_out'] : ['dead_out', 'dead_in'])];
+}
+
+export type Check ={ ok: true; value: number } | { ok: false; value: number; other: ParamKey };
 
 // the one rule between two tunables: the rest threshold stays below the start
 // threshold, or an axis would never come to rest. the tracker refuses it too
