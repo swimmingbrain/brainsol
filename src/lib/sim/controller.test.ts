@@ -7,6 +7,7 @@ import {
   defaultParams,
   DT,
   gainAt,
+  gainFromErrors,
   gainToward,
   initialState,
   level,
@@ -339,6 +340,40 @@ describe('the derived values', () => {
     expect(gainToward(0, 30, 0, 90, s)).toBeCloseTo(2, 9);
     // facing away from it the tracked panel gets nothing
     expect(gainToward(90, 0, 0, 90, direction(-90, 0))).toBe(0);
+  });
+
+  it('gives the same gain without temporary vectors as with them, and gainAt for no error', () => {
+    const random = mulberry32(4);
+    for (let i = 0; i < 500; i++) {
+      const pan = random() * 176 - 88;
+      const tilt = 4 + random() * 172;
+      const ex = random() * 1.6 - 0.8;
+      const ey = random() * 1.6 - 0.8;
+      const refPan = random() * 176 - 88;
+      const refTilt = 4 + random() * 172;
+      const slow = gainToward(pan, tilt, refPan, refTilt, lightEstimate(pan, tilt, ex, ey));
+      expect(gainFromErrors(pan, tilt, ex, ey, refPan, refTilt)).toBeCloseTo(slow, 9);
+      expect(gainFromErrors(pan, tilt, 0, 0, refPan, refTilt)).toBeCloseTo(gainAt(pan, tilt, refPan, refTilt), 9);
+    }
+  });
+
+  it('normalises exactly like level, also when the calibration changes and flips', () => {
+    const random = mulberry32(6);
+    const state = initialState(0, 45, [0, 0, 0, 0]);
+    let check = initialState(0, 45, [0, 0, 0, 0]).f;
+    const tau = 0.12;
+    const a = 1 - Math.exp(-DT / tau);
+    for (let i = 0; i < 300; i++) {
+      // a new calibration every 50 ticks, some of them wired the other way round
+      const k = Math.floor(i / 50);
+      const dark = (k % 3 === 2 ? 7000 : 200) + k;
+      const bright = (k % 3 === 2 ? 600 : 7800) - k;
+      const c: Calibration = { dark: [dark, dark + 5, dark, dark], bright: [bright, bright, bright - 7, bright] };
+      const raw: Quad = [0, 1, 2, 3].map(() => Math.round(random() * RAW_MAX)) as Quad;
+      senseLevels(state, raw, c, tau);
+      check = check.map((f, j) => f + (level(raw[j], c.dark[j], c.bright[j]) - f) * a) as Quad;
+      expect(state.f).toEqual(check);
+    }
   });
 
   it('keeps the aim inside the soft limits', () => {
