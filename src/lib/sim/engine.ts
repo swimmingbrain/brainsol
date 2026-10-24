@@ -20,13 +20,27 @@
   no pin to check here, the simulation only runs in this browser, so any pin is
   taken. evt messages only go out to an admin.
 
-  inside it is built like engine.py on the pi: a fixed 50 Hz loop with an
-  accumulator, every mode asking one motion limiter for the loop, a seek or
-  axis speeds, the sensors read at the pose the simulated servos really have.
+  inside it is built like engine.py on the pi:
+
+    loop        a fixed 50 Hz step with an accumulator. a slow or hidden tab
+                catches up at most MAX_CATCH_UP seconds, then runs on
+    modes       auto, manual, sun, hold, park and demo (modes.ts) ask one
+                motion limiter (motion.ts) for the tracking loop, a seek or
+                axis speeds, so speed and acceleration caps hold everywhere
+                and a change of mode never jumps in speed
+    activities  the scan, the experiments and the calibration steps borrow
+                the head and give it back to the mode (activities.ts)
+    world       the lamp, the sun of sun mode, the idle wandering of the lamp
+                until the first command that takes over (wander.ts), and the
+                sensors read where the simulated servos really are
+    commands    checked field by field like on the pi (commands.ts)
+
   the test options leave the timers out (timers: false) and drive the loop
-  with advance(seconds), with a seed for the noise and their own clocks
+  with advance(seconds), with a seed for the noise, their own clocks and
+  wander: false for a lamp that stays where it is
 */
 
+import type { Activity } from './activities';
 import { defaultCalibration, type SimCalibration } from './calibration';
 import { DT, gainFromErrors, initialState, levels, offAngle, panelPower, paramValues, senseLevels, trackStep, type ControllerState, type StepContext } from './controller';
 import { runCommand } from './commands';
@@ -35,7 +49,6 @@ import { CommandError, isFields, type Fields } from './fields';
 import { clamp } from './kinematics';
 import { makeMode, Manual, newRequest, Sun, type ModeHost, type Request, type SimMode } from './modes';
 import { seekAxes, stepAxes, still, stopNow } from './motion';
-import type { Activity } from './activities';
 import { mulberry32, newReading, PHONE_LIGHT, senseInto, servoStep, type Light, type Reading } from './physics';
 import { defaultPanMap, defaultTiltMap, sameMap, toAngle, toUs } from './servo';
 import { SunClock } from './sun';
@@ -43,6 +56,8 @@ import { Wander } from './wander';
 import { PROTO, type AckErr, type ClientMessage, type Config, type EventLevel, type HelloMessage, type Mode, type Pose, type Quad, type ScanMessage, type ServerMessage, type SimLight, type St, type StateFrame, type SysFrame } from '$lib/link/protocol';
 import type { SimEngine } from '$lib/link/transport';
 import { version } from '$lib/version';
+
+export { defaultCalibration, type SimCalibration } from './calibration';
 
 export interface EngineOptions {
   // the same seed gives the same sensor noise, for tests
@@ -56,8 +71,6 @@ export interface EngineOptions {
   // false keeps the lamp still from the start instead of letting it wander
   wander?: boolean;
 }
-
-export { defaultCalibration, type SimCalibration } from './calibration';
 
 // a token lasts 12 hours, like on the pi
 const TOKEN_LIFE = 12 * 3600;
@@ -96,13 +109,14 @@ export class SimTracker implements SimEngine, ModeHost {
   cstate: St = 'idle';
   st: St = 'idle';
   lastSys: SysFrame | null = null;
-  // the lamp drifts on its own until the first command that moves it, the mode or the head
-  wandering: boolean;
-  private wander = new Wander();
   // a new page gets the newest sky map straight after hello, like on the pi
   lastScan: ScanMessage | null = null;
   // the scan, experiment or calibration step that has the head, null when the mode has it
   activity: Activity | null = null;
+  // the lamp drifts on its own until the first command that moves it, the mode or the head
+  wandering: boolean;
+
+  private wander = new Wander();
   private ids = new Set<string>();
 
   private req: Request = newRequest();
