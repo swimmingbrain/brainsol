@@ -3,6 +3,8 @@
   import Note from '../parts/Note.svelte';
   import ModeSwitch from '../parts/ModeSwitch.svelte';
   import MoveGroup from './control/MoveGroup.svelte';
+  import LightGroup from './control/LightGroup.svelte';
+  import { connection } from '$lib/stores/connection.svelte';
   import { telemetry } from '$lib/stores/telemetry.svelte';
   import { MODES, type Mode } from '$lib/link/protocol';
   import { modeName, t, type Key } from '$lib/i18n';
@@ -45,6 +47,10 @@
 </Group>
 
 <MoveGroup />
+
+{#if connection.caps?.simlight}
+  <LightGroup />
+{/if}
 
 <style>
   .about {

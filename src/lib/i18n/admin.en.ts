@@ -56,5 +56,25 @@ export const adminEn = {
   'admin.pose.front.title': 'Panel upright, facing forward',
   'admin.pose.left.title': 'Turned left and half raised',
   'admin.pose.right.title': 'Turned right and half raised',
-  'admin.pose.back.title': 'Over the top, facing backwards'
+  'admin.pose.back.title': 'Over the top, facing backwards',
+
+  'admin.group.light': 'Simulated light',
+  'admin.light.hint': 'The light the simulated sensors see. Drag it and watch the panel follow.',
+  'admin.light.on': 'Light on',
+  'admin.light.az': 'Direction',
+  'admin.light.azHint': 'Where the light is, clockwise from the front',
+  'admin.light.el': 'Height',
+  'admin.light.elHint': 'How high the light stands above the horizon',
+  'admin.light.lux': 'Brightness',
+  'admin.light.luxHint': 'Light on a surface that faces the lamp straight on',
+  'admin.light.amb': 'Ambient',
+  'admin.light.ambHint': 'Light that comes from everywhere, like a lit room',
+  'admin.light.scenes': 'Light scenes',
+  'admin.light.phone': 'Phone light',
+  'admin.light.phoneTitle': 'A phone torch in front of the tracker, 900 lx in a room with 60 lx',
+  'admin.light.sun': 'Sun',
+  'admin.light.sunTitle': 'Daylight, 80000 lx direct and 9000 lx from the sky',
+  'admin.light.sunMode': 'In sun mode the computed sun moves the light. Pick another mode to move it by hand.',
+  'admin.light.unsupported': 'This tracker cannot move its light yet.',
+  'admin.light.waiting': 'Waiting for the light of the simulation.'
 } satisfies Record<`admin.${string}`, string>;

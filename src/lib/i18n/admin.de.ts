@@ -55,5 +55,25 @@ export const adminDe: Record<keyof typeof adminEn, string> = {
   'admin.pose.front.title': 'Modul aufrecht, Blick nach vorne',
   'admin.pose.left.title': 'Nach links gedreht und halb aufgerichtet',
   'admin.pose.right.title': 'Nach rechts gedreht und halb aufgerichtet',
-  'admin.pose.back.title': 'Über den Scheitel, Blick nach hinten'
+  'admin.pose.back.title': 'Über den Scheitel, Blick nach hinten',
+
+  'admin.group.light': 'Simuliertes Licht',
+  'admin.light.hint': 'Das Licht, das die simulierten Sensoren sehen. Zieh es herum und schau, wie das Modul folgt.',
+  'admin.light.on': 'Licht an',
+  'admin.light.az': 'Richtung',
+  'admin.light.azHint': 'Wo das Licht steht, im Uhrzeigersinn von vorne',
+  'admin.light.el': 'Höhe',
+  'admin.light.elHint': 'Wie hoch das Licht über dem Horizont steht',
+  'admin.light.lux': 'Helligkeit',
+  'admin.light.luxHint': 'Licht auf einer Fläche, die genau zur Lampe zeigt',
+  'admin.light.amb': 'Umgebung',
+  'admin.light.ambHint': 'Licht, das von überall kommt, wie in einem hellen Raum',
+  'admin.light.scenes': 'Lichtszenen',
+  'admin.light.phone': 'Handylicht',
+  'admin.light.phoneTitle': 'Eine Handylampe vor dem Tracker, 900 lx in einem Raum mit 60 lx',
+  'admin.light.sun': 'Sonne',
+  'admin.light.sunTitle': 'Tageslicht, 80000 lx direkt und 9000 lx vom Himmel',
+  'admin.light.sunMode': 'Im Sonnenmodus bewegt die berechnete Sonne das Licht. Wähl einen anderen Modus, um es selbst zu bewegen.',
+  'admin.light.unsupported': 'Dieser Tracker kann sein Licht noch nicht bewegen.',
+  'admin.light.waiting': 'Warte auf das Licht der Simulation.'
 };
