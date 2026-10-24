@@ -75,5 +75,24 @@ export const adminDe: Record<keyof typeof adminEn, string> = {
   'admin.light.sunTitle': 'Tageslicht, 80000 lx direkt und 9000 lx vom Himmel',
   'admin.light.sunMode': 'Im Sonnenmodus bewegt die berechnete Sonne das Licht. Wähl einen anderen Modus, um es selbst zu bewegen.',
   'admin.light.unsupported': 'Dieser Tracker kann sein Licht noch nicht bewegen.',
-  'admin.light.waiting': 'Warte auf das Licht der Simulation.'
+  'admin.light.waiting': 'Warte auf das Licht der Simulation.',
+
+  'admin.group.sun': 'Sonne',
+  'admin.sun.hint': 'Ein Tempo oder ein Datum startet den Sonnenmodus. Der Standort sagt dem Tracker, wo auf der Erde er steht.',
+  'admin.sun.now': 'Sonne gerade',
+  'admin.sun.none': 'nicht im Sonnenmodus',
+  'admin.sun.below': 'unter dem Horizont, der Tracker parkt',
+  'admin.sun.at': 'Richtung {az}°, Höhe {el}°',
+  'admin.sun.speed': 'Zeitraffer',
+  'admin.sun.speed.1': 'Echtzeit',
+  'admin.sun.speed.60': 'Eine Minute pro Sekunde',
+  'admin.sun.speed.600': 'Zehn Minuten pro Sekunde',
+  'admin.sun.speed.3600': 'Eine Stunde pro Sekunde',
+  'admin.sun.date': 'Datum',
+  'admin.sun.go': 'Los',
+  'admin.sun.unsupported': 'Dieser Tracker kann die Sonne noch nicht laufen lassen.',
+  'admin.sun.headingHint': 'Kompasskurs der Vorderseite, 180 ist Süden',
+  'admin.sun.undo': 'Zurück',
+  'admin.sun.save': 'Standort speichern',
+  'admin.sun.noSite': 'Dieser Tracker kann seinen Standort noch nicht ändern.'
 };

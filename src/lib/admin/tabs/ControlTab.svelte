@@ -4,6 +4,7 @@
   import ModeSwitch from '../parts/ModeSwitch.svelte';
   import MoveGroup from './control/MoveGroup.svelte';
   import LightGroup from './control/LightGroup.svelte';
+  import SunGroup from './control/SunGroup.svelte';
   import { connection } from '$lib/stores/connection.svelte';
   import { telemetry } from '$lib/stores/telemetry.svelte';
   import { MODES, type Mode } from '$lib/link/protocol';
@@ -51,6 +52,8 @@
 {#if connection.caps?.simlight}
   <LightGroup />
 {/if}
+
+<SunGroup />
 
 <style>
   .about {

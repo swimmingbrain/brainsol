@@ -76,5 +76,24 @@ export const adminEn = {
   'admin.light.sunTitle': 'Daylight, 80000 lx direct and 9000 lx from the sky',
   'admin.light.sunMode': 'In sun mode the computed sun moves the light. Pick another mode to move it by hand.',
   'admin.light.unsupported': 'This tracker cannot move its light yet.',
-  'admin.light.waiting': 'Waiting for the light of the simulation.'
+  'admin.light.waiting': 'Waiting for the light of the simulation.',
+
+  'admin.group.sun': 'Sun',
+  'admin.sun.hint': 'A speed or a date starts sun mode. The site tells the tracker where on earth it stands.',
+  'admin.sun.now': 'Sun right now',
+  'admin.sun.none': 'not in sun mode',
+  'admin.sun.below': 'below the horizon, the tracker parks',
+  'admin.sun.at': 'direction {az}°, height {el}°',
+  'admin.sun.speed': 'Time lapse',
+  'admin.sun.speed.1': 'Real time',
+  'admin.sun.speed.60': 'One minute per second',
+  'admin.sun.speed.600': 'Ten minutes per second',
+  'admin.sun.speed.3600': 'One hour per second',
+  'admin.sun.date': 'Date',
+  'admin.sun.go': 'Go',
+  'admin.sun.unsupported': 'This tracker cannot run the sun yet.',
+  'admin.sun.headingHint': 'Compass bearing of the front, 180 is south',
+  'admin.sun.undo': 'Undo',
+  'admin.sun.save': 'Save site',
+  'admin.sun.noSite': 'This tracker cannot change its site yet.'
 } satisfies Record<`admin.${string}`, string>;
