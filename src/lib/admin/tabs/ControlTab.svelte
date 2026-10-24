@@ -2,6 +2,7 @@
   import Group from '../parts/Group.svelte';
   import Note from '../parts/Note.svelte';
   import ModeSwitch from '../parts/ModeSwitch.svelte';
+  import MoveGroup from './control/MoveGroup.svelte';
   import { telemetry } from '$lib/stores/telemetry.svelte';
   import { MODES, type Mode } from '$lib/link/protocol';
   import { modeName, t, type Key } from '$lib/i18n';
@@ -42,6 +43,8 @@
     <Note tone="warn">{t('admin.mode.missing', { modes: missing.map(modeName).join(', ') })}</Note>
   {/if}
 </Group>
+
+<MoveGroup />
 
 <style>
   .about {
