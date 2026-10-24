@@ -99,6 +99,24 @@ describe('a scan', () => {
     expect(last()).toMatchObject({ mode: 'park', st: 'idle', pan: 0, tilt: 90 });
   });
 
+  it('ends when someone takes the head by hand, with a target or the joystick', () => {
+    for (const body of [
+      { op: 'target', pan: -20, tilt: 70 },
+      { op: 'rate', pan: 0.5, tilt: 0 }
+    ]) {
+      const { cmd, advance, last, of } = setup();
+      cmd({ op: 'scan', step: 30 });
+      advance(3);
+      expect(cmd(body)).toMatchObject({ ok: true });
+      expect(of('scan').pop()!.done).toBe(true);
+      // the scan ends first, then the mode changes
+      expect(of('evt').map((e) => e.msg).slice(-2)).toEqual(['scan ended early, stopped by manual control', 'mode changed to manual']);
+      advance(0.2);
+      expect(last()).toMatchObject({ mode: 'manual' });
+      expect(last().st).not.toBe('scanning');
+    }
+  });
+
   it('goes back to the mode it borrowed the head from', () => {
     const { cmd, advance, last } = setup();
     cmd({ op: 'mode', mode: 'demo' });
