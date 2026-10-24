@@ -166,6 +166,7 @@ export class Rig {
       if (object instanceof Mesh) geometries.add(object.geometry);
     });
     for (const geometry of geometries) geometry.dispose();
+    this.materials.panel.map?.dispose();
     for (const material of Object.values(this.materials)) material.dispose();
     this.plain.dispose();
     for (const eye of this.eyes) eye.material.dispose();
