@@ -137,6 +137,10 @@ export class Sun extends SimMode {
   // when the position was worked out last, in loop seconds and in sun seconds
   private lastT = -Infinity;
   private lastSun = -Infinity;
+  // reused every tick, sun mode allocates nothing in a fast time lapse
+  private position = { caz: 0, el: 0 };
+  private glow = { lux: 0, amb: 0 };
+  private pose = { pan: 0, tilt: 0 };
 
   enter(host: ModeHost): void {
     this.saved = { ...host.light };
@@ -168,11 +172,14 @@ export class Sun extends SimMode {
     this.lastT = host.t;
     this.lastSun = now;
     const site = host.cfg.site;
-    const { caz, el } = sunPosition(site.lat, site.lon, now);
+    const { caz, el } = sunPosition(site.lat, site.lon, now, this.position);
     this.az = relativeAz(caz, site.heading);
     this.el = el;
-    host.sun = { az: this.az, el };
-    const { lux, amb } = sunLight(el);
+    if (host.sun) {
+      host.sun.az = this.az;
+      host.sun.el = el;
+    } else host.sun = { az: this.az, el };
+    const { lux, amb } = sunLight(el, this.glow);
     const light = host.light;
     light.az = this.az;
     light.el = Math.min(Math.max(el, 0), 90);
@@ -183,7 +190,7 @@ export class Sun extends SimMode {
 
   step(host: ModeHost, r: Request): void {
     if (this.el > 0) {
-      const pose = poseNear(this.az, this.el, host.ctrl, host.cfg.limits);
+      const pose = poseNear(this.az, this.el, host.ctrl, host.cfg.limits, 3, this.pose);
       askSeek(r, pose.pan, pose.tilt);
       return;
     }

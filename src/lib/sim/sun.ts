@@ -16,10 +16,12 @@ const when = new Date(0);
 
 // compass azimuth (north 0, east 90) and elevation in degrees at a unix time in
 // seconds. suncalc gives the apparent elevation, refraction included, like astral
-export function sunPosition(lat: number, lon: number, time: number): { caz: number; el: number } {
+export function sunPosition(lat: number, lon: number, time: number, out = { caz: 0, el: 0 }): { caz: number; el: number } {
   when.setTime(time * 1000);
   const p = getPosition(when, lat, lon);
-  return { caz: p.azimuth, el: p.altitude };
+  out.caz = p.azimuth;
+  out.el = p.altitude;
+  return out;
 }
 
 // azimuth seen from the device, clockwise from its front
@@ -29,14 +31,18 @@ export function relativeAz(caz: number, heading: number): number {
 
 // direct and ambient lux of the sun scene, thinner near the horizon through
 // more air, a dim sky in the dusk and a dark one at night
-export function sunLight(el: number): { lux: number; amb: number } {
-  const [direct, ambient] = [SUN_LIGHT.lux0, SUN_LIGHT.amb];
-  if (el <= 0) return { lux: 0, amb: Math.min(ambient, Math.max(5, ambient * (1 + el / 6))) };
+export function sunLight(el: number, out = { lux: 0, amb: 0 }): { lux: number; amb: number } {
+  const direct = SUN_LIGHT.lux0;
+  const ambient = SUN_LIGHT.amb;
+  if (el <= 0) {
+    out.lux = 0;
+    out.amb = Math.min(ambient, Math.max(5, ambient * (1 + el / 6)));
+    return out;
+  }
   const air = 1 / Math.max(Math.sin((el * Math.PI) / 180), 0.02);
-  return {
-    lux: (direct * Math.pow(0.7, Math.pow(air, 0.678))) / 0.7,
-    amb: ambient * Math.min(1, 0.3 + el / 30)
-  };
+  out.lux = (direct * Math.pow(0.7, Math.pow(air, 0.678))) / 0.7;
+  out.amb = ambient * Math.min(1, 0.3 + el / 30);
+  return out;
 }
 
 // real time or time lapse. the time lapse runs on the seconds of the loop, so

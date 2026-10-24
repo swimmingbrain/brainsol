@@ -72,24 +72,41 @@ export function poseFor(az: number, el: number): { pan: number; tilt: number } {
 // stays on the side the head is on until that side misses the light by more
 // than hold degrees beyond the other one. that keeps a target crawling along
 // the edge from flipping the head back and forth
+// sun mode asks every tick, so it works on plain numbers and writes into out
 export function poseNear(
   az: number,
   el: number,
   from: { pan: number; tilt: number },
   limits: { pan: [number, number]; tilt: [number, number] },
-  hold = 3
+  hold = 3,
+  out = { pan: 0, tilt: 0 }
 ): { pan: number; tilt: number } {
-  const first = poseFor(az, el);
-  const other = { pan: first.pan > 0 ? first.pan - 180 : first.pan + 180, tilt: 180 - first.tilt };
-  const a = { pan: clamp(first.pan, limits.pan[0], limits.pan[1]), tilt: clamp(first.tilt, limits.tilt[0], limits.tilt[1]) };
-  const b = { pan: clamp(other.pan, limits.pan[0], limits.pan[1]), tilt: clamp(other.tilt, limits.tilt[0], limits.tilt[1]) };
-  const missA = offAxis(a.pan, a.tilt, az, el);
-  const missB = offAxis(b.pan, b.tilt, az, el);
-  const best = missA <= missB ? a : b;
-  const far = (p: { pan: number; tilt: number }) => Math.max(Math.abs(p.pan - from.pan), Math.abs(p.tilt - from.tilt));
-  const near = far(a) <= far(b) ? a : b;
-  if (near === best) return best;
-  return (near === a ? missA : missB) <= Math.min(missA, missB) + hold ? near : best;
+  const w = wrap180(az);
+  const front = Math.abs(w) <= 90;
+  const firstPan = front ? w : w > 0 ? w - 180 : w + 180;
+  const firstTilt = front ? el : 180 - el;
+  const aPan = clamp(firstPan, limits.pan[0], limits.pan[1]);
+  const aTilt = clamp(firstTilt, limits.tilt[0], limits.tilt[1]);
+  const bPan = clamp(firstPan > 0 ? firstPan - 180 : firstPan + 180, limits.pan[0], limits.pan[1]);
+  const bTilt = clamp(180 - firstTilt, limits.tilt[0], limits.tilt[1]);
+  const missA = miss(aPan, aTilt, az, el);
+  const missB = miss(bPan, bTilt, az, el);
+  const bestIsA = missA <= missB;
+  const nearIsA = Math.max(Math.abs(aPan - from.pan), Math.abs(aTilt - from.tilt)) <= Math.max(Math.abs(bPan - from.pan), Math.abs(bTilt - from.tilt));
+  const useA = nearIsA === bestIsA ? bestIsA : (nearIsA ? missA : missB) <= Math.min(missA, missB) + hold ? nearIsA : bestIsA;
+  out.pan = useA ? aPan : bPan;
+  out.tilt = useA ? aTilt : bTilt;
+  return out;
+}
+
+// offAxis on plain numbers, both are unit vectors
+function miss(pan: number, tilt: number, az: number, el: number): number {
+  const p = pan * DEG;
+  const t = tilt * DEG;
+  const a = az * DEG;
+  const e = el * DEG;
+  const d = Math.sin(p) * Math.cos(t) * Math.sin(a) * Math.cos(e) + Math.cos(p) * Math.cos(t) * Math.cos(a) * Math.cos(e) + Math.sin(t) * Math.sin(e);
+  return Math.acos(clamp(d, -1, 1)) / DEG;
 }
 
 // the angle in degrees between two directions
