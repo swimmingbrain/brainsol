@@ -13,7 +13,9 @@ import type { Vec3 } from '$lib/sim/kinematics';
 import { STANDIN, STANDIN_ASSEMBLY, type Assembly } from './assembly';
 import { settle, spring, springStep } from './damp';
 import { Glide } from './glide';
+import { Dome } from './dome';
 import { Ground } from './ground';
+import { LineKit } from './lines';
 import { cameraPosition, Orbit, type View } from './orbit';
 import { readPalette, type Palette } from './palette';
 import { panelTexture } from './panelface';
@@ -21,7 +23,7 @@ import { Rig } from './rig';
 import { standinPieces, type Piece } from './standin';
 
 // the sky sphere around the tilt axis, in millimetres
-export const DOME_RADIUS = 210;
+export const DOME_RADIUS = 190;
 // stiffness of the joint springs, the glide already gives the pace
 const JOINT_OMEGA = 22;
 // the pose before the first frame: parked, panel flat
@@ -60,6 +62,8 @@ export class Twin {
   private target: Vec3 = [0, 0, 80];
   private palette: Palette;
   private ground: Ground | null = null;
+  private dome: Dome | null = null;
+  private kit = new LineKit();
   private rig: Rig | null = null;
   private assembly: Assembly = STANDIN_ASSEMBLY;
   private lights: { hemi: HemisphereLight; key: DirectionalLight; fill: DirectionalLight; rim: DirectionalLight; ambient: AmbientLight };
@@ -118,6 +122,8 @@ export class Twin {
     this.rig?.dispose();
     this.ground?.object.removeFromParent();
     this.ground?.dispose();
+    this.dome?.object.removeFromParent();
+    this.dome?.dispose();
     this.assembly = assembly;
     this.rig = new Rig(assembly, pieces, panelTexture(this.renderer, ...(assembly.panel?.size ?? [125, 85])));
     this.front.add(this.rig.root);
@@ -127,9 +133,11 @@ export class Twin {
     const footprint = bounds
       ? { x: (bounds.min[0] + bounds.max[0]) / 2, y: (bounds.min[1] + bounds.max[1]) / 2, w: bounds.max[0] - bounds.min[0], d: bounds.max[1] - bounds.min[1], r: s.r }
       : { x: 0, y: 0, w: s.w, d: s.d, r: s.r };
-    this.ground = new Ground([centre[0], centre[1]], this.groundRadius, footprint);
+    this.ground = new Ground(this.kit, [centre[0], centre[1]], this.groundRadius, footprint);
+    this.dome = new Dome(this.kit, centre, DOME_RADIUS);
+    this.back.add(this.dome.object);
     this.back.add(this.ground.object);
-    this.target = [centre[0], centre[1] + 12, centre[2] * 0.62];
+    this.target = [centre[0], centre[1] + 10, centre[2] * 1.02];
     this.rig.setPose(this.pan.spring.x, this.tilt.spring.x);
     this.applyPalette();
     this.dirty = true;
@@ -152,8 +160,8 @@ export class Twin {
     const aspect = this.size.w / Math.max(1, this.size.h);
     const half = (FOV / 2) * (Math.PI / 180);
     const fit = Math.min(Math.tan(half), Math.tan(half) * aspect);
-    const radius = DOME_RADIUS * 0.78;
-    return { az: 38, el: 16, dist: radius / fit };
+    const radius = DOME_RADIUS * 1.06;
+    return { az: 38, el: 18, dist: radius / fit };
   }
 
   setPalette(): void {
@@ -165,6 +173,7 @@ export class Twin {
     const p = this.palette;
     this.renderer.setClearColor(new Color().setRGB(...p.bg, SRGBColorSpace), 1);
     this.ground?.setPalette(p);
+    this.dome?.setPalette(p);
     const { hemi, key, fill, rim, ambient } = this.lights;
     // a bright room asks for softer contrast, the dark page for a clearer rim
     hemi.color.set(p.light ? 0xffffff : 0xf2efe9);
@@ -239,6 +248,7 @@ export class Twin {
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
+    this.kit.resize(w, h);
     this.orbit.setHome(this.homeView(), !this.started);
     this.dirty = true;
     this.wake();
@@ -320,6 +330,7 @@ export class Twin {
     for (const cleanup of this.cleanups.splice(0)) cleanup();
     this.rig?.dispose();
     this.ground?.dispose();
+    this.dome?.dispose();
     this.renderer.dispose();
     this.renderer.forceContextLoss();
   }

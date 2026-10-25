@@ -1,9 +1,14 @@
-// the table under the tracker: a flat disc in the surface colour of the page
-// and a soft contact shadow under the base. both are flat colour, no lights
-// touch them, so they sit as quiet as the panels around the stage
+// the table under the tracker: a flat disc in the surface colour of the page,
+// a soft contact shadow under the base, quiet tick marks around the rim every
+// 15 degrees and a copper mark where the front of the tracker looks. all flat
+// colour, no lights touch them, so they sit as quiet as the panels around
 
-import { CanvasTexture, CircleGeometry, Group, Mesh, MeshBasicMaterial, PlaneGeometry, SRGBColorSpace } from 'three';
+import { CanvasTexture, CircleGeometry, Group, Mesh, MeshBasicMaterial, PlaneGeometry, Shape, ShapeGeometry, SRGBColorSpace } from 'three';
+import type { LineSegments2 } from 'three/examples/jsm/lines/LineSegments2.js';
+import { DEG, type Vec3 } from '$lib/sim/kinematics';
+import { segments, setLineColor, type LineKit } from './lines';
 import type { Palette } from './palette';
+import { mix } from './ramp';
 
 export interface Footprint {
   x: number;
@@ -43,9 +48,17 @@ export class Ground {
   readonly object = new Group();
   private discMaterial = new MeshBasicMaterial({ depthTest: false, depthWrite: false });
   private shadowMaterial: MeshBasicMaterial;
+  private markMaterial = new MeshBasicMaterial({ depthTest: false, depthWrite: false });
   private texture: CanvasTexture | null;
+  private rim: LineSegments2;
+  private ticks: LineSegments2;
 
-  constructor(centre: [number, number], radius: number, footprint: Footprint) {
+  constructor(
+    private kit: LineKit,
+    centre: [number, number],
+    radius: number,
+    footprint: Footprint
+  ) {
     this.object.name = 'ground';
     const disc = new Mesh(new CircleGeometry(radius, 128), this.discMaterial);
     disc.position.set(centre[0], centre[1], 0);
@@ -58,19 +71,48 @@ export class Ground {
     shadow.position.set(footprint.x, footprint.y, 0.1);
     shadow.renderOrder = 1;
     this.object.add(shadow);
+
+    const at = (az: number, r: number): Vec3 => [centre[0] + r * Math.sin(az * DEG), centre[1] + r * Math.cos(az * DEG), 0];
+    const rim: Vec3[] = [];
+    for (let i = 0; i <= 160; i++) rim.push(at((i / 160) * 360, radius));
+    this.rim = kit.make(segments(rim), { width: 1, depthTest: false });
+    const ticks: number[] = [];
+    // the front gets the copper mark instead of a tick
+    for (let az = 15; az < 360; az += 15) ticks.push(...at(az, radius), ...at(az, radius - (az % 45 === 0 ? 11 : 5)));
+    this.ticks = kit.make(ticks, { width: 1, depthTest: false });
+    this.rim.renderOrder = 2;
+    this.ticks.renderOrder = 2;
+    this.object.add(this.rim, this.ticks);
+
+    // a small arrow at the rim that points the way the tracker faces at pan 0
+    const arrow = new Shape();
+    arrow.moveTo(0, 0);
+    arrow.lineTo(-5.5, -9);
+    arrow.lineTo(5.5, -9);
+    arrow.closePath();
+    const mark = new Mesh(new ShapeGeometry(arrow), this.markMaterial);
+    mark.position.set(centre[0], centre[1] + radius - 2, 0.2);
+    mark.renderOrder = 2;
+    this.object.add(mark);
   }
 
   setPalette(p: Palette): void {
     this.discMaterial.color.setRGB(...p.surface, SRGBColorSpace);
     this.shadowMaterial.opacity = p.light ? 0.2 : 0.62;
+    this.markMaterial.color.setRGB(...p.accent, SRGBColorSpace);
+    setLineColor(this.rim, mix(p.border, p.muted, 0.28));
+    setLineColor(this.ticks, mix(p.border, p.muted, 0.45));
   }
 
   dispose(): void {
     this.object.traverse((o) => {
       if (o instanceof Mesh) o.geometry.dispose();
     });
+    this.kit.dispose(this.rim);
+    this.kit.dispose(this.ticks);
     this.discMaterial.dispose();
     this.shadowMaterial.dispose();
+    this.markMaterial.dispose();
     this.texture?.dispose();
   }
 }
