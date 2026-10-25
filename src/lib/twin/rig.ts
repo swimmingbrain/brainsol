@@ -71,7 +71,7 @@ export class Rig {
       body: matte(ROLE_COLORS.body, 0.88),
       dark: matte(ROLE_COLORS.dark, 0.82),
       accent: matte(ROLE_COLORS.accent, 0.62),
-      panel: matte(ROLE_COLORS.panel, 0.55)
+      panel: matte(ROLE_COLORS.panel, 0.72)
     };
     this.plain = matte(ROLE_COLORS.panel, 0.7);
     if (face) {
@@ -157,7 +157,7 @@ export class Rig {
 
   // 0 for no light on the panel, 1 for the panel square to the light
   setWarmth(amount: number, accent: Color): void {
-    this.materials.panel.emissive.copy(accent).multiplyScalar(0.16 * amount);
+    this.materials.panel.emissive.copy(accent).multiplyScalar(0.035 * amount);
   }
 
   dispose(): void {

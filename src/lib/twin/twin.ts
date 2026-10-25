@@ -10,14 +10,15 @@ import { AmbientLight, Color, DirectionalLight, HemisphereLight, PerspectiveCame
 import { telemetry } from '$lib/stores/telemetry.svelte';
 import type { StateFrame } from '$lib/link/protocol';
 import type { Vec3 } from '$lib/sim/kinematics';
-import { STANDIN, STANDIN_ASSEMBLY, type Assembly } from './assembly';
-import { settle, spring, springStep } from './damp';
+import { EYES, ROLE_COLORS, STANDIN, STANDIN_ASSEMBLY, type Assembly } from './assembly';
+import { follow, settle, spring, springStep } from './damp';
 import { Glide } from './glide';
 import { Dome } from './dome';
 import { Ground } from './ground';
 import { LineKit } from './lines';
 import { cameraPosition, Orbit, type View } from './orbit';
 import { readPalette, type Palette } from './palette';
+import { mix, parseColor, ramp, steps, type Rgb } from './ramp';
 import { panelTexture } from './panelface';
 import { Rig } from './rig';
 import { standinPieces, type Piece } from './standin';
@@ -30,6 +31,10 @@ const JOINT_OMEGA = 22;
 const PARK = { pan: 0, tilt: 90 };
 const FOV = 28;
 const MAX_PIXEL_RATIO = 2;
+// the eyes sit on the charcoal head in both themes, so they glow along the
+// dark theme ramp, from the colour of the head up to copper
+const EYE_RAMP: Rgb[] = ['#26221f', '#4a3a2b', '#7a5c3d', '#a87c52', '#d19a66'].map((c) => parseColor(c) as Rgb);
+const COPPER = new Color(ROLE_COLORS.accent);
 
 export interface TwinOptions {
   // the 3D context went away or came back
@@ -71,6 +76,8 @@ export class Twin {
   private pan = { glide: new Glide(), spring: spring(PARK.pan) };
   private tilt = { glide: new Glide(), spring: spring(PARK.tilt) };
   private seen: StateFrame | null = null;
+  private eyes: { now: Rgb; drawn: Rgb }[] = EYES.map(() => ({ now: [...EYE_RAMP[0]] as Rgb, drawn: [-1, -1, -1] as Rgb }));
+  private warmth = { now: 0, drawn: -1 };
   private started = false;
 
   private raf = 0;
@@ -284,8 +291,53 @@ export class Twin {
     }
     if (this.rig?.setPose(this.pan.spring.x, this.tilt.spring.x)) this.dirty = true;
 
+    const frame = telemetry.frame;
+    if (this.glow(frame, dt)) busy = true;
+    if (this.warm(frame, dt)) busy = true;
+
     if (this.orbit.step(dt)) {
       busy = true;
+      this.dirty = true;
+    }
+    return busy;
+  }
+
+  // each eye shows the level its sensor reports, eased so a 20 Hz stream does
+  // not flicker. a change too small to see costs no frame
+  private glow(frame: StateFrame | null, dt: number): boolean {
+    const rig = this.rig;
+    if (!rig) return false;
+    let busy = false;
+    const k = follow(10, dt);
+    for (const eye of rig.eyes) {
+      const i = EYES.indexOf(eye.name);
+      const state = this.eyes[i];
+      if (!state) continue;
+      const level = num(frame?.ldr?.[i], 0);
+      const goal = ramp(EYE_RAMP, level);
+      state.now = mix(state.now, goal, k);
+      if (steps(state.now, goal) > 0.5) busy = true;
+      else state.now = goal;
+      if (steps(state.now, state.drawn) >= 1) {
+        state.drawn = [...state.now];
+        eye.material.color.setRGB(...state.now, SRGBColorSpace);
+        this.dirty = true;
+      }
+    }
+    return busy;
+  }
+
+  // the panel warms a little the closer it faces the light, nothing in low light
+  private warm(frame: StateFrame | null, dt: number): boolean {
+    const off = frame?.off;
+    const goal = typeof off === 'number' && Number.isFinite(off) ? Math.max(0, 1 - Math.abs(off) / 35) ** 2 : 0;
+    const w = this.warmth;
+    w.now += (goal - w.now) * follow(6, dt);
+    const busy = Math.abs(goal - w.now) > 0.002;
+    if (!busy) w.now = goal;
+    if (Math.abs(w.now - w.drawn) > 0.004) {
+      w.drawn = w.now;
+      this.rig?.setWarmth(w.now, COPPER);
       this.dirty = true;
     }
     return busy;
