@@ -5,11 +5,15 @@
   import { untrack } from 'svelte';
   import DockTabs, { type DockTab } from './parts/DockTabs.svelte';
   import ControlTab from './tabs/ControlTab.svelte';
+  import TuningTab from './tabs/TuningTab.svelte';
   import { connection } from '$lib/stores/connection.svelte';
   import { t } from '$lib/i18n';
   import { runner, session, type TabId } from './session.svelte';
 
-  const tabs = $derived<DockTab<TabId>[]>([{ id: 'control', label: t('admin.tab.control'), icon: 'move' }]);
+  const tabs = $derived<DockTab<TabId>[]>([
+    { id: 'control', label: t('admin.tab.control'), icon: 'move' },
+    { id: 'tuning', label: t('admin.tab.tuning'), icon: 'sliders' }
+  ]);
 
   // a fresh hello is a new tracker or a restarted one, what it cannot do is found out again
   $effect(() => {
@@ -25,6 +29,8 @@
   <div class="panel" id="admin-panel-{session.tab}" role="tabpanel" aria-labelledby="admin-tab-{session.tab}">
     {#if session.tab === 'control'}
       <ControlTab />
+    {:else if session.tab === 'tuning'}
+      <TuningTab />
     {/if}
   </div>
 </div>
