@@ -9,10 +9,12 @@
 import { AmbientLight, Color, DirectionalLight, HemisphereLight, PerspectiveCamera, Scene, SRGBColorSpace, WebGLRenderer } from 'three';
 import { telemetry } from '$lib/stores/telemetry.svelte';
 import type { StateFrame } from '$lib/link/protocol';
-import type { Vec3 } from '$lib/sim/kinematics';
+import { dot, type Vec3 } from '$lib/sim/kinematics';
 import { EYES, ROLE_COLORS, STANDIN, STANDIN_ASSEMBLY, type Assembly } from './assembly';
 import { follow, settle, spring, springStep } from './damp';
 import { Glide } from './glide';
+import { transformDir, transformPoint } from './joints';
+import { Arcs } from './arcs';
 import { Dome } from './dome';
 import { Ground } from './ground';
 import { LineKit } from './lines';
@@ -21,6 +23,7 @@ import { readPalette, type Palette } from './palette';
 import { mix, parseColor, ramp, steps, type Rgb } from './ramp';
 import { panelTexture } from './panelface';
 import { Rig } from './rig';
+import { sub } from './sky';
 import { standinPieces, type Piece } from './standin';
 
 // the sky sphere around the tilt axis, in millimetres
@@ -68,6 +71,7 @@ export class Twin {
   private palette: Palette;
   private ground: Ground | null = null;
   private dome: Dome | null = null;
+  private arcs: Arcs | null = null;
   private kit = new LineKit();
   private rig: Rig | null = null;
   private assembly: Assembly = STANDIN_ASSEMBLY;
@@ -131,6 +135,7 @@ export class Twin {
     this.ground?.dispose();
     this.dome?.object.removeFromParent();
     this.dome?.dispose();
+    this.arcs?.dispose();
     this.assembly = assembly;
     this.rig = new Rig(assembly, pieces, panelTexture(this.renderer, ...(assembly.panel?.size ?? [125, 85])));
     this.front.add(this.rig.root);
@@ -144,8 +149,23 @@ export class Twin {
     this.dome = new Dome(this.kit, centre, DOME_RADIUS);
     this.back.add(this.dome.object);
     this.back.add(this.ground.object);
+    const panJoint = assembly.joints.pan;
+    const tiltJoint = assembly.joints.tilt;
+    const reach = bounds ? Math.max(-bounds.min[0], bounds.max[0]) : s.w / 2;
+    this.arcs = new Arcs(
+      this.kit,
+      [panJoint?.origin[0] ?? centre[0], panJoint?.origin[1] ?? centre[1]],
+      this.groundRadius - 16,
+      panJoint?.range ?? [-90, 90],
+      centre,
+      reach + 12,
+      62
+    );
+    this.front.add(this.arcs.pan);
+    this.rig.group(tiltJoint?.parent ?? 'pan').add(this.arcs.tilt);
     this.target = [centre[0], centre[1] + 10, centre[2] * 1.02];
     this.rig.setPose(this.pan.spring.x, this.tilt.spring.x);
+    this.arcs.set(this.pan.spring.x, this.tilt.spring.x);
     this.applyPalette();
     this.dirty = true;
     this.wake();
@@ -168,7 +188,7 @@ export class Twin {
     const half = (FOV / 2) * (Math.PI / 180);
     const fit = Math.min(Math.tan(half), Math.tan(half) * aspect);
     const radius = DOME_RADIUS * 1.06;
-    return { az: 38, el: 18, dist: radius / fit };
+    return { az: -35, el: 18, dist: radius / fit };
   }
 
   setPalette(): void {
@@ -181,6 +201,7 @@ export class Twin {
     this.renderer.setClearColor(new Color().setRGB(...p.bg, SRGBColorSpace), 1);
     this.ground?.setPalette(p);
     this.dome?.setPalette(p);
+    this.arcs?.setPalette(p);
     const { hemi, key, fill, rim, ambient } = this.lights;
     // a bright room asks for softer contrast, the dark page for a clearer rim
     hemi.color.set(p.light ? 0xffffff : 0xf2efe9);
@@ -289,7 +310,10 @@ export class Twin {
       springStep(joint.spring, goal, JOINT_OMEGA, dt);
       if (!settle(joint.spring, goal, 0.002) || joint.glide.moving(now)) busy = true;
     }
-    if (this.rig?.setPose(this.pan.spring.x, this.tilt.spring.x)) this.dirty = true;
+    if (this.rig?.setPose(this.pan.spring.x, this.tilt.spring.x)) {
+      this.arcs?.set(this.pan.spring.x, this.tilt.spring.x);
+      this.dirty = true;
+    }
 
     const frame = telemetry.frame;
     if (this.glow(frame, dt)) busy = true;
@@ -362,12 +386,24 @@ export class Twin {
     this.tilt.glide.push(tilt, at);
   }
 
+  // the tilt protractor moves to the side of the head the camera sees. a small
+  // dead zone keeps it from flipping while the camera looks along the panel
+  private sideOfArc(camera: Vec3): void {
+    if (!this.rig || !this.arcs) return;
+    const m = this.rig.matrixOf(this.assembly.joints.tilt?.parent ?? 'pan');
+    const across = transformDir(m, [1, 0, 0]);
+    const toCamera = sub(camera, transformPoint(m, this.centre));
+    const k = dot(across, toCamera) / Math.max(1, Math.hypot(...toCamera));
+    if (Math.abs(k) > 0.08) this.arcs.side(k > 0, this.centre[0]);
+  }
+
   private render(): void {
     this.dirty = false;
     const view = this.orbit.view;
     const p = cameraPosition(this.target, view);
     this.camera.position.set(p[0], p[1], p[2]);
     this.camera.lookAt(this.target[0], this.target[1], this.target[2]);
+    this.sideOfArc(p);
     this.renderer.clear();
     this.renderer.render(this.back, this.camera);
     this.renderer.clearDepth();
@@ -383,6 +419,7 @@ export class Twin {
     this.rig?.dispose();
     this.ground?.dispose();
     this.dome?.dispose();
+    this.arcs?.dispose();
     this.renderer.dispose();
     this.renderer.forceContextLoss();
   }

@@ -82,7 +82,7 @@ export class Rig {
     this.materials.panel.emissive.set(0x000000);
 
     for (const part of assembly.parts) {
-      const group = this.groupOf(part.joint);
+      const group = this.group(part.joint);
       for (const piece of pieces[part.id] ?? []) {
         let material = this.materials[piece.role];
         if (piece.role === 'panel') {
@@ -100,7 +100,8 @@ export class Rig {
     this.setPose(0, 90);
   }
 
-  private groupOf(joint: string | null): Group {
+  // the group that moves with a joint, the fixed group for none
+  group(joint: string | null): Group {
     return (joint && this.groups.get(joint)) || this.fixed;
   }
 
@@ -108,7 +109,7 @@ export class Rig {
     const normal = new Vector3(...(this.assembly.panel?.normal ?? [0, 1, 0])).normalize();
     const turn = new Quaternion().setFromUnitVectors(new Vector3(0, 0, 1), normal);
     const geometry = new CircleGeometry(EYE_RADIUS, 28);
-    const group = this.groupOf(this.panelGroup);
+    const group = this.group(this.panelGroup);
     for (const name of EYES) {
       const at = this.assembly.sensors[name];
       if (!at) continue;

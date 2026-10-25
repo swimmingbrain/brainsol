@@ -3,7 +3,7 @@
 // scene uses the line addon of three.js and keeps every material at the size of
 // the stage
 
-import { SRGBColorSpace, Vector3 } from 'three';
+import { DoubleSide, SRGBColorSpace, Vector3 } from 'three';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 import { LineSegments2 } from 'three/examples/jsm/lines/LineSegments2.js';
 import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry.js';
@@ -37,7 +37,9 @@ export class LineKit {
       transparent: true,
       opacity: style.opacity ?? 1,
       depthTest: style.depthTest ?? true,
-      depthWrite: false
+      depthWrite: false,
+      // a mirrored arc turns its quads around, they must still show
+      side: DoubleSide
     });
     material.resolution.set(this.size.w, this.size.h);
     this.materials.add(material);
