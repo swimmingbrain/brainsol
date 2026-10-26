@@ -17,6 +17,7 @@ import { transformDir, transformPoint } from './joints';
 import { Arcs } from './arcs';
 import { Dome } from './dome';
 import { Ground } from './ground';
+import { Lights } from './light';
 import { LineKit } from './lines';
 import { cameraPosition, Orbit, type View } from './orbit';
 import { readPalette, type Palette } from './palette';
@@ -72,6 +73,9 @@ export class Twin {
   private ground: Ground | null = null;
   private dome: Dome | null = null;
   private arcs: Arcs | null = null;
+  private light: Lights | null = null;
+  private glyphs: { lamp: HTMLElement | null; sun: HTMLElement | null } = { lamp: null, sun: null };
+  private lightSeen = '';
   private kit = new LineKit();
   private rig: Rig | null = null;
   private assembly: Assembly = STANDIN_ASSEMBLY;
@@ -136,6 +140,7 @@ export class Twin {
     this.dome?.object.removeFromParent();
     this.dome?.dispose();
     this.arcs?.dispose();
+    this.light?.dispose();
     this.assembly = assembly;
     this.rig = new Rig(assembly, pieces, panelTexture(this.renderer, ...(assembly.panel?.size ?? [125, 85])));
     this.front.add(this.rig.root);
@@ -163,6 +168,9 @@ export class Twin {
     );
     this.front.add(this.arcs.pan);
     this.rig.group(tiltJoint?.parent ?? 'pan').add(this.arcs.tilt);
+    this.light = new Lights(this.kit, centre, DOME_RADIUS);
+    this.light.bind(this.glyphs.lamp, this.glyphs.sun);
+    this.front.add(this.light.object);
     this.target = [centre[0], centre[1] + 10, centre[2] * 1.02];
     this.rig.setPose(this.pan.spring.x, this.tilt.spring.x);
     this.arcs.set(this.pan.spring.x, this.tilt.spring.x);
@@ -202,6 +210,7 @@ export class Twin {
     this.ground?.setPalette(p);
     this.dome?.setPalette(p);
     this.arcs?.setPalette(p);
+    this.light?.setPalette(p);
     const { hemi, key, fill, rim, ambient } = this.lights;
     // a bright room asks for softer contrast, the dark page for a clearer rim
     hemi.color.set(p.light ? 0xffffff : 0xf2efe9);
@@ -319,6 +328,17 @@ export class Twin {
     if (this.glow(frame, dt)) busy = true;
     if (this.warm(frame, dt)) busy = true;
 
+    // the lights on the sky, a render only when what they show has changed
+    if (this.light) {
+      if (this.light.step(now, dt)) busy = true;
+      const lamp = this.light.lampSky;
+      const seen = `${this.light.showsLamp}${lamp ? `${lamp.az.toFixed(2)} ${lamp.el.toFixed(2)}` : ''}${this.light.signature}`;
+      if (seen !== this.lightSeen) {
+        this.lightSeen = seen;
+        this.dirty = true;
+      }
+    }
+
     if (this.orbit.step(dt)) {
       busy = true;
       this.dirty = true;
@@ -372,8 +392,12 @@ export class Twin {
     const frame = telemetry.frame;
     if (frame === this.seen) return;
     this.seen = frame;
-    if (!frame) return;
+    if (!frame) {
+      this.light?.clear();
+      return;
+    }
     const at = telemetry.at || performance.now();
+    this.light?.intake(frame, at);
     const pan = num(frame.pan, this.pan.glide.has ? this.pan.glide.end : this.pan.spring.x);
     const tilt = num(frame.tilt, this.tilt.glide.has ? this.tilt.glide.end : this.tilt.spring.x);
     if (!this.started) {
@@ -384,6 +408,14 @@ export class Twin {
     }
     this.pan.glide.push(pan, at);
     this.tilt.glide.push(tilt, at);
+  }
+
+  // the html glyphs of lamp and sun, the scene keeps them on their lights
+  bindGlyphs(lamp: HTMLElement | null, sun: HTMLElement | null): void {
+    this.glyphs = { lamp, sun };
+    this.light?.bind(lamp, sun);
+    this.dirty = true;
+    this.wake();
   }
 
   // the tilt protractor moves to the side of the head the camera sees. a small
@@ -404,6 +436,9 @@ export class Twin {
     this.camera.position.set(p[0], p[1], p[2]);
     this.camera.lookAt(this.target[0], this.target[1], this.target[2]);
     this.sideOfArc(p);
+    this.camera.updateMatrixWorld();
+    this.front.updateMatrixWorld();
+    if (this.rig && this.light) this.light.place(this.camera, this.size, { centre: this.rig.panelCentre(), normal: this.rig.panelNormal() }, this.rig.meshes);
     this.renderer.clear();
     this.renderer.render(this.back, this.camera);
     this.renderer.clearDepth();
@@ -420,6 +455,7 @@ export class Twin {
     this.ground?.dispose();
     this.dome?.dispose();
     this.arcs?.dispose();
+    this.light?.dispose();
     this.renderer.dispose();
     this.renderer.forceContextLoss();
   }

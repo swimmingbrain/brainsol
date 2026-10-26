@@ -3,6 +3,7 @@
   // loads with this component, a browser without webgl 2 gets the flat drawing
   import { onMount } from 'svelte';
   import Stat from '$lib/ui/Stat.svelte';
+  import Icon from '$lib/ui/Icon.svelte';
   import { telemetry } from '$lib/stores/telemetry.svelte';
   import { preferences } from '$lib/stores/preferences.svelte';
   import { stateSentence, t } from '$lib/i18n';
@@ -12,6 +13,8 @@
   let { present = false }: { present?: boolean } = $props();
 
   let canvas = $state<HTMLCanvasElement | null>(null);
+  let lampGlyph = $state<HTMLElement | null>(null);
+  let sunGlyph = $state<HTMLElement | null>(null);
   let twin = $state.raw<Twin | null>(null);
   // 3d until we know better, so a capable browser never flashes the drawing
   let flat = $state(false);
@@ -28,6 +31,7 @@
           return;
         }
         made = new module.Twin(canvas);
+        made.bindGlyphs(lampGlyph, sunGlyph);
         twin = made;
       } catch (error) {
         console.error('brainsol: the 3D view could not start', error);
@@ -55,6 +59,13 @@
     <Flat />
   {:else}
     <canvas bind:this={canvas} class="scene"></canvas>
+    <!-- the scene moves these onto the lights, style stays with it -->
+    <div class="glyph lamp" bind:this={lampGlyph} style="visibility: hidden" aria-hidden="true">
+      <span class="core"></span>
+    </div>
+    <div class="glyph sun" bind:this={sunGlyph} style="visibility: hidden" aria-hidden="true">
+      <Icon name="sun" size={22} />
+    </div>
   {/if}
 
   <div class="overlay">
@@ -84,6 +95,42 @@
     width: 100%;
     height: 100%;
     display: block;
+  }
+
+  .glyph {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 36px;
+    height: 36px;
+    margin: -18px 0 0 -18px;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    will-change: transform;
+  }
+
+  /* the scene sets these flags, svelte cannot see them in the markup */
+  .glyph:global([data-behind]) {
+    opacity: 0.4;
+  }
+
+  .lamp .core {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-dim);
+  }
+
+  .lamp:global([data-off]) .core {
+    background: var(--bg-deep);
+    border: 1.5px solid var(--text-muted);
+    box-shadow: none;
+  }
+
+  .sun {
+    color: var(--accent);
   }
 
   .overlay {
