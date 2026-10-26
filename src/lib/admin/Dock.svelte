@@ -6,13 +6,15 @@
   import DockTabs, { type DockTab } from './parts/DockTabs.svelte';
   import ControlTab from './tabs/ControlTab.svelte';
   import TuningTab from './tabs/TuningTab.svelte';
+  import CalibrateTab from './tabs/CalibrateTab.svelte';
   import { connection } from '$lib/stores/connection.svelte';
   import { t } from '$lib/i18n';
   import { runner, session, type TabId } from './session.svelte';
 
   const tabs = $derived<DockTab<TabId>[]>([
     { id: 'control', label: t('admin.tab.control'), icon: 'move' },
-    { id: 'tuning', label: t('admin.tab.tuning'), icon: 'sliders' }
+    { id: 'tuning', label: t('admin.tab.tuning'), icon: 'sliders' },
+    { id: 'calib', label: t('admin.tab.calib'), icon: 'target' }
   ]);
 
   // a fresh hello is a new tracker or a restarted one, what it cannot do is found out again
@@ -31,6 +33,8 @@
       <ControlTab />
     {:else if session.tab === 'tuning'}
       <TuningTab />
+    {:else if session.tab === 'calib'}
+      <CalibrateTab />
     {/if}
   </div>
 </div>

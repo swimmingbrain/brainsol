@@ -7,6 +7,19 @@ import { toast } from '$lib/stores/toasts.svelte';
 import { errorText } from '$lib/i18n';
 import { Runner } from './runner.svelte';
 import type { SunSpeed } from '$lib/link/protocol';
+import type { FlowStep } from './calib';
+
+export type StepState = 'running' | 'done' | 'failed' | 'unclear';
+
+// what one calibration step did, as the tab shows it
+export interface StepResult {
+  state: StepState;
+  // the sentence for the person at the tracker
+  note?: string;
+  tone?: 'ok' | 'info' | 'warn' | 'error';
+  // what the tracker itself said, in its own words
+  detail?: string;
+}
 
 export type TabId = 'control' | 'tuning' | 'calib' | 'scan' | 'exp' | 'system' | 'link';
 
@@ -27,6 +40,10 @@ class Session {
   // the time lapse the admin picked last, the tracker does not report it
   sunSpeed = $state<SunSpeed>(1);
   sunDate = $state(today());
+  // the calibration of this visit: each step and where dark and bright landed
+  calib = $state<Partial<Record<FlowStep, StepResult>>>({});
+  dark = $state.raw<number[] | null>(null);
+  bright = $state.raw<number[] | null>(null);
 }
 
 export const session = new Session();
