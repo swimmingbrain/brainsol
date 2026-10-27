@@ -109,7 +109,7 @@
   const size = $derived(present ? 'xl' : 'lg');
 </script>
 
-<div class="stage" class:present>
+<div class="stage" class:present class:lost>
   {#if flat}
     <Flat />
   {:else}
@@ -190,6 +190,11 @@
     place-items: center;
     pointer-events: none;
     will-change: transform;
+  }
+
+  /* while the 3d view is paused the glyphs would point at nothing */
+  .lost .glyph {
+    display: none;
   }
 
   /* the scene sets these flags, svelte cannot see them in the markup */
@@ -314,7 +319,7 @@
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    max-width: min(360px, calc(100% - 32px));
+    max-width: min(440px, calc(100% - 32px));
     padding: 10px 14px;
     font-size: 12px;
     color: var(--text-secondary);
