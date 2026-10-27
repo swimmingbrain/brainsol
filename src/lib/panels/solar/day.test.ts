@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dateOf, dayOfYear, gain, integrate, simulateDay, simulateYear } from './day';
+import { dateOf, dayOfYear, fixedPanelFor, gain, integrate, simulateDay, simulateYear } from './day';
 import { declination } from './model';
 
 const VIENNA = { lat: 48.21, lon: 16.37 };
@@ -98,6 +98,12 @@ describe('a year in the sun', () => {
     const north = simulateYear(sydney, { tilt: 30, azimuth: 0 });
     const south = simulateYear(sydney, { tilt: 30, azimuth: 180 });
     expect(north.total.fixed).toBeGreaterThan(south.total.fixed);
+  });
+
+  it('sets the usual fixed panel towards the equator', () => {
+    expect(fixedPanelFor(48.21)).toEqual({ tilt: 40, azimuth: 180 });
+    expect(fixedPanelFor(-33.87)).toEqual({ tilt: 29, azimuth: 0 });
+    expect(fixedPanelFor(89).tilt).toBe(60);
   });
 
   it('has no gain without a fixed reference', () => {
