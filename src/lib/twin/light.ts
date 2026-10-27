@@ -140,6 +140,11 @@ export class Lights {
     if (release) this.heldUntil = performance.now() + 1500;
   }
 
+  // stops waiting for the stream, the lamp goes where the tracker says it is
+  release(): void {
+    this.heldUntil = 0;
+  }
+
   // true while something still eases
   step(now: number, dt: number): boolean {
     let busy = false;

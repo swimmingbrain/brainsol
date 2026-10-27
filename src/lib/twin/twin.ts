@@ -6,25 +6,27 @@
 // telemetry comes in through the plain fields of the store, never through
 // runes: a frame listener only wakes the loop, the loop reads telemetry.frame
 
-import { AmbientLight, Color, DirectionalLight, HemisphereLight, PerspectiveCamera, Scene, SRGBColorSpace, WebGLRenderer } from 'three';
+import { AmbientLight, Color, DirectionalLight, HemisphereLight, PerspectiveCamera, Raycaster, Scene, SRGBColorSpace, Vector2, WebGLRenderer } from 'three';
 import { telemetry } from '$lib/stores/telemetry.svelte';
 import type { StateFrame } from '$lib/link/protocol';
-import { dot, type Vec3 } from '$lib/sim/kinematics';
+import { clamp, dot, wrap180, type Vec3 } from '$lib/sim/kinematics';
 import { EYES, ROLE_COLORS, STANDIN, STANDIN_ASSEMBLY, type Assembly } from './assembly';
 import { follow, settle, spring, springStep } from './damp';
 import { Glide } from './glide';
 import { transformDir, transformPoint } from './joints';
 import { Arcs } from './arcs';
+import { Controls } from './controls';
 import { Dome } from './dome';
 import { Ground } from './ground';
-import { Lights } from './light';
+import { Lights, type Sky } from './light';
 import { LineKit } from './lines';
 import { cameraPosition, Orbit, type View } from './orbit';
 import { readPalette, type Palette } from './palette';
 import { mix, parseColor, ramp, steps, type Rgb } from './ramp';
 import { panelTexture } from './panelface';
 import { Rig } from './rig';
-import { sub } from './sky';
+import { dragPoint, round1, skyAngles, sub } from './sky';
+import { throttle } from './throttle';
 import { standinPieces, type Piece } from './standin';
 
 // the sky sphere around the tilt axis, in millimetres
@@ -43,7 +45,14 @@ const COPPER = new Color(ROLE_COLORS.accent);
 export interface TwinOptions {
   // the 3D context went away or came back
   onContext?: (lost: boolean) => void;
+  // the lamp was dragged here, at most about 20 times a second
+  onLamp?: (az: number, el: number) => void;
+  // the lamp under the hand, null when the hand lets go
+  onLampDrag?: (sky: Sky | null) => void;
 }
+
+// a drag sends at most this often, about 20 times a second
+const SEND_EVERY = 50;
 
 // three.js needs webgl 2
 export function webglSupported(): boolean {
@@ -76,6 +85,15 @@ export class Twin {
   private light: Lights | null = null;
   private glyphs: { lamp: HTMLElement | null; sun: HTMLElement | null } = { lamp: null, sun: null };
   private lightSeen = '';
+  private controls: Controls;
+  private raycaster = new Raycaster();
+  private draggable = false;
+  private dragLast: Vec3 | null = null;
+  private dragSky: Sky | null = null;
+  private send = throttle((sky: Sky) => {
+    this.options.onLamp?.(sky.az, sky.el);
+    this.options.onLampDrag?.(this.light?.dragging ? sky : null);
+  }, SEND_EVERY);
   private kit = new LineKit();
   private rig: Rig | null = null;
   private assembly: Assembly = STANDIN_ASSEMBLY;
@@ -125,6 +143,20 @@ export class Twin {
     this.lights = { hemi, key, fill, rim, ambient };
     this.front.add(hemi, key, fill, rim, ambient);
     for (const light of [key, fill, rim]) this.front.add(light.target);
+
+    this.controls = new Controls(canvas, {
+      orbit: this.orbit,
+      wake: () => {
+        this.dirty = true;
+        this.wake();
+      },
+      canDragLamp: () => this.draggable && Boolean(this.light?.showsLamp),
+      lampStart: () => this.lampStart(),
+      lampMove: (x, y) => this.lampMove(x, y),
+      lampEnd: () => this.lampEnd(),
+      lampNudge: (az, el) => this.lampNudge(az, el)
+    });
+    this.cleanups.push(() => this.controls.dispose());
 
     this.useModel(STANDIN_ASSEMBLY, standinPieces());
     this.applyPalette();
@@ -414,6 +446,81 @@ export class Twin {
   bindGlyphs(lamp: HTMLElement | null, sun: HTMLElement | null): void {
     this.glyphs = { lamp, sun };
     this.light?.bind(lamp, sun);
+    this.controls.bindLamp(lamp);
+    this.dirty = true;
+    this.wake();
+  }
+
+  // whether a hand may move the lamp, the stage decides who may
+  setDraggable(on: boolean): void {
+    this.draggable = on;
+    if (!on && this.light?.dragging) this.lampEnd();
+  }
+
+  // the stage fills the screen, a finger on it never scrolls the page
+  setPresenting(on: boolean): void {
+    this.controls.setScroll(!on);
+  }
+
+  // back to the three quarter view
+  resetView(): void {
+    this.orbit.reset();
+    this.dirty = true;
+    this.wake();
+  }
+
+  // the tracker said no to a lamp move, the lamp goes back to what it reports
+  lampRefused(): void {
+    if (this.light && !this.light.dragging) this.light.release();
+  }
+
+  private lampStart(): void {
+    const light = this.light;
+    if (!light) return;
+    light.dragging = true;
+    const sky = light.lampSky;
+    this.dragLast = sky ? light.position(sky) : null;
+  }
+
+  private lampMove(clientX: number, clientY: number): void {
+    const light = this.light;
+    if (!light?.dragging) return;
+    const rect = this.canvas.getBoundingClientRect();
+    if (rect.width < 1 || rect.height < 1) return;
+    const ndc = new Vector2(((clientX - rect.left) / rect.width) * 2 - 1, -(((clientY - rect.top) / rect.height) * 2 - 1));
+    this.camera.updateMatrixWorld();
+    this.raycaster.setFromCamera(ndc, this.camera);
+    const { origin, direction } = this.raycaster.ray;
+    const point = dragPoint([origin.x, origin.y, origin.z], [direction.x, direction.y, direction.z], light.centre, light.radius, this.dragLast);
+    this.dragLast = point;
+    const sky = skyAngles(point, light.centre);
+    this.dragSky = { az: round1(wrap180(sky.az)), el: round1(sky.el) };
+    light.hold(this.dragSky);
+    this.send.call(this.dragSky);
+    this.dirty = true;
+    this.wake();
+  }
+
+  private lampEnd(): void {
+    const light = this.light;
+    if (!light?.dragging) return;
+    light.dragging = false;
+    this.send.flush();
+    if (this.dragSky) light.hold(this.dragSky, true);
+    this.options.onLampDrag?.(null);
+    this.dragSky = null;
+    this.dragLast = null;
+    this.dirty = true;
+    this.wake();
+  }
+
+  private lampNudge(dAz: number, dEl: number): void {
+    const light = this.light;
+    const sky = light?.lampSky;
+    if (!light || !sky) return;
+    const next = { az: round1(wrap180(sky.az + dAz)), el: round1(clamp(sky.el + dEl, 0, 90)) };
+    light.hold(next, true);
+    this.send.call(next);
     this.dirty = true;
     this.wake();
   }
@@ -450,6 +557,7 @@ export class Twin {
     if (this.disposed) return;
     this.disposed = true;
     cancelAnimationFrame(this.raf);
+    this.send.cancel();
     for (const cleanup of this.cleanups.splice(0)) cleanup();
     this.rig?.dispose();
     this.ground?.dispose();
