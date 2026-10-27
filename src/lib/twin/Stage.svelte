@@ -73,6 +73,11 @@
     twin?.setDraggable(draggable);
   });
 
+  // a scan message is rare, the rune is fine here
+  $effect(() => {
+    twin?.setScan(telemetry.scan);
+  });
+
   $effect(() => {
     twin?.setPresenting(present);
   });
@@ -175,18 +180,20 @@
     }
   }
 
+  /* a rim in the page colour keeps the lamp apart from a copper sky map */
   .lamp .core {
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     background: var(--accent);
-    box-shadow: 0 0 0 4px var(--accent-dim);
+    border: 2px solid var(--bg-deep);
+    box-shadow: 0 0 0 1px var(--accent);
   }
 
   .lamp:global([data-off]) .core {
     background: var(--bg-deep);
-    border: 1.5px solid var(--text-muted);
-    box-shadow: none;
+    border-color: var(--bg-deep);
+    box-shadow: 0 0 0 1.5px var(--text-muted);
   }
 
   .sun {
