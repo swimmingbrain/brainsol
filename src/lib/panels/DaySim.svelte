@@ -9,7 +9,7 @@
   import Slider from '$lib/ui/Slider.svelte';
   import Button from '$lib/ui/Button.svelte';
   import Plot, { type PlotSeries, type PlotView } from './chart/Plot.svelte';
-  import YearBars from './daysim/YearBars.svelte';
+  import Bars from './chart/Bars.svelte';
   import { connection } from '$lib/stores/connection.svelte';
   import { preferences } from '$lib/stores/preferences.svelte';
   import { fmt, t, type Key } from '$lib/i18n';
@@ -243,7 +243,12 @@
       </p>
     </div>
     <div class="year-body">
-      <YearBars months={year.months} names={monthNames} full={monthFull} {labels} />
+      <Bars
+        groups={year.months.map((m) => ({ label: monthNames[m.month], full: monthFull[m.month], values: [m.daily.fixed, m.daily.single, m.daily.dual] }))}
+        series={series.map((s) => ({ label: s.label, color: s.color }))}
+        unit="kWh/m²"
+        idle={t('panels.day.perDay')}
+        label={t('panels.day.yearAria')} />
       <div class="totals">
         {#each kinds as kind, i (kind)}
           <div class="total">
