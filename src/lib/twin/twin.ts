@@ -237,7 +237,9 @@ export class Twin {
     const aspect = this.size.w / Math.max(1, this.size.h);
     const half = (FOV / 2) * (Math.PI / 180);
     const fit = Math.min(Math.tan(half), Math.tan(half) * aspect);
-    const radius = DOME_RADIUS * 1.06;
+    // a tall phone screen lets the sky run off the sides a little, the
+    // tracker is what has to be big
+    const radius = DOME_RADIUS * (aspect < 0.9 ? 0.94 : 1.06);
     return { az: -35, el: 18, dist: radius / fit };
   }
 
@@ -327,6 +329,8 @@ export class Twin {
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO));
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
+    // the words sit on top of the stage, the picture moves down a little to make room
+    this.camera.setViewOffset(w, h, 0, -Math.round(h * (w / h < 0.9 ? 0.07 : 0.04)), w, h);
     this.camera.updateProjectionMatrix();
     this.kit.resize(w, h);
     this.orbit.setHome(this.homeView(), !this.started);
