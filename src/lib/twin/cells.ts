@@ -41,7 +41,7 @@ function keyOf(d: Vec3): string {
 const finite = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n);
 
 // sub is how many steps each patch side is bent in, inset the share of the cell it fills
-export function skyMap(scan: ScanMessage | null, sub = 3, inset = 0.86): SkyMap {
+export function skyMap(scan: ScanMessage | null, sub = 3, inset = 0.8): SkyMap {
   const empty: SkyMap = { cells: [], best: null, sub };
   if (!scan || !Array.isArray(scan.pan) || !Array.isArray(scan.tilt) || !Array.isArray(scan.v)) return empty;
   const pan = scan.pan;

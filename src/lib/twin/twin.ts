@@ -8,11 +8,12 @@
 
 import { AmbientLight, Color, DirectionalLight, HemisphereLight, PerspectiveCamera, Raycaster, Scene, SRGBColorSpace, Vector2, WebGLRenderer } from 'three';
 import { telemetry } from '$lib/stores/telemetry.svelte';
-import type { StateFrame } from '$lib/link/protocol';
+import type { ScanMessage, StateFrame } from '$lib/link/protocol';
 import { clamp, dot, wrap180, type Vec3 } from '$lib/sim/kinematics';
 import { EYES, ROLE_COLORS, STANDIN, STANDIN_ASSEMBLY, type Assembly } from './assembly';
 import { follow, settle, spring, springStep } from './damp';
 import { Glide } from './glide';
+import { Heat } from './heat';
 import { transformDir, transformPoint } from './joints';
 import { Arcs } from './arcs';
 import { Controls } from './controls';
@@ -83,6 +84,10 @@ export class Twin {
   private dome: Dome | null = null;
   private arcs: Arcs | null = null;
   private light: Lights | null = null;
+  private heat: Heat | null = null;
+  private scan: ScanMessage | null = null;
+  // the clock of the shaders, seconds since the twin started
+  private born = performance.now();
   private glyphs: { lamp: HTMLElement | null; sun: HTMLElement | null } = { lamp: null, sun: null };
   private lightSeen = '';
   private controls: Controls;
@@ -173,6 +178,7 @@ export class Twin {
     this.dome?.dispose();
     this.arcs?.dispose();
     this.light?.dispose();
+    this.heat?.dispose();
     this.assembly = assembly;
     this.rig = new Rig(assembly, pieces, panelTexture(this.renderer, ...(assembly.panel?.size ?? [125, 85])));
     this.front.add(this.rig.root);
@@ -185,6 +191,10 @@ export class Twin {
     this.ground = new Ground(this.kit, [centre[0], centre[1]], this.groundRadius, footprint);
     this.dome = new Dome(this.kit, centre, DOME_RADIUS);
     this.back.add(this.dome.object);
+    this.heat = new Heat(this.kit, centre, DOME_RADIUS);
+    this.back.add(this.heat.object);
+    this.heat.set(this.scan, this.seconds);
+    this.dome.setQuiet(this.heat.shown);
     this.back.add(this.ground.object);
     const panJoint = assembly.joints.pan;
     const tiltJoint = assembly.joints.tilt;
@@ -243,6 +253,7 @@ export class Twin {
     this.dome?.setPalette(p);
     this.arcs?.setPalette(p);
     this.light?.setPalette(p);
+    this.heat?.setPalette(p);
     const { hemi, key, fill, rim, ambient } = this.lights;
     // a bright room asks for softer contrast, the dark page for a clearer rim
     hemi.color.set(p.light ? 0xffffff : 0xf2efe9);
@@ -371,6 +382,11 @@ export class Twin {
       }
     }
 
+    if (this.heat?.step(this.seconds)) {
+      busy = true;
+      this.dirty = true;
+    }
+
     if (this.orbit.step(dt)) {
       busy = true;
       this.dirty = true;
@@ -447,6 +463,20 @@ export class Twin {
     this.glyphs = { lamp, sun };
     this.light?.bind(lamp, sun);
     this.controls.bindLamp(lamp);
+    this.dirty = true;
+    this.wake();
+  }
+
+  private get seconds(): number {
+    return (performance.now() - this.born) / 1000;
+  }
+
+  // a sky map from a scan, null takes it away
+  setScan(scan: ScanMessage | null): void {
+    if (scan === this.scan) return;
+    this.scan = scan;
+    this.heat?.set(scan, this.seconds);
+    this.dome?.setQuiet(Boolean(this.heat?.shown));
     this.dirty = true;
     this.wake();
   }
@@ -564,6 +594,7 @@ export class Twin {
     this.dome?.dispose();
     this.arcs?.dispose();
     this.light?.dispose();
+    this.heat?.dispose();
     this.renderer.dispose();
     this.renderer.forceContextLoss();
   }
