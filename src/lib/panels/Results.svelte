@@ -142,11 +142,6 @@
             </li>
           {/each}
         </ul>
-        <ul class="kinds small">
-          {#each EXP_KINDS as kind (kind)}
-            <li><span class="kind-name">{kindName(kind)}</span> {t(`panels.results.about.${kind}` as Key)}</li>
-          {/each}
-        </ul>
       </div>
 
       <div class="detail">
@@ -166,6 +161,12 @@
           {/if}
         {/if}
       </div>
+
+      <ul class="kinds small">
+        {#each EXP_KINDS as kind (kind)}
+          <li><span class="kind-name">{kindName(kind)}</span> {t(`panels.results.about.${kind}` as Key)}</li>
+        {/each}
+      </ul>
     </div>
   {/if}
 </Section>
@@ -258,11 +259,24 @@
     color: var(--text-primary);
   }
 
+  /* the explanation of the kinds sits under the list, on a phone after the chart */
   .layout {
     display: grid;
     grid-template-columns: 280px minmax(0, 1fr);
-    gap: 40px;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      'list detail'
+      'kinds detail';
+    column-gap: 40px;
     align-items: start;
+  }
+
+  .list {
+    grid-area: list;
+  }
+
+  .layout > .kinds {
+    grid-area: kinds;
   }
 
   .list-head {
@@ -340,6 +354,7 @@
   }
 
   .detail {
+    grid-area: detail;
     min-width: 0;
   }
 
@@ -370,7 +385,12 @@
   @media (max-width: 900px) {
     .layout {
       grid-template-columns: minmax(0, 1fr);
-      gap: 28px;
+      grid-template-rows: auto;
+      grid-template-areas:
+        'list'
+        'detail'
+        'kinds';
+      row-gap: 28px;
     }
   }
 </style>
