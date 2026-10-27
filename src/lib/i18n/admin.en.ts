@@ -204,5 +204,26 @@ export const adminEn = {
   'admin.calib.resetTitle': 'Start over',
   'admin.calib.resetHint': 'Goes back to the values the tracker came with. Save afterwards to keep them.',
   'admin.calib.reset.action': 'Back to defaults',
-  'admin.calib.reset.done': 'Back to the defaults. Save to keep them.'
+  'admin.calib.reset.done': 'Back to the defaults. Save to keep them.',
+
+  'admin.tab.scan': 'Scan',
+  'admin.scan.title': 'Sky scan',
+  'admin.scan.hint': 'The head visits a grid of directions, waits a moment at each and measures the light. Afterwards it returns to its mode.',
+  'admin.scan.step': 'Grid step',
+  'admin.scan.stepTitle': 'A point every {step} degrees',
+  'admin.scan.start': 'Start scan',
+  'admin.scan.stop': 'Stop scan',
+  'admin.scan.progress': 'Scan progress',
+  'admin.scan.points': '{n} of {total}',
+  'admin.scan.unsupported': 'This tracker cannot scan yet.',
+  'admin.scan.other': 'Another activity holds the head right now. Stop it to scan.',
+  'admin.scan.map': 'Sky map',
+  'admin.scan.mapLabel': 'Light measured in each direction of the scan',
+  'admin.scan.notYet': 'not measured yet',
+  'admin.scan.axes': 'tilt up, pan across',
+  'admin.scan.to': 'to',
+  'admin.scan.best': 'Brightest at pan {pan}°, tilt {tilt}°: {value}',
+  'admin.scan.point': 'Point there',
+  'admin.scan.early': 'This scan ended before every point was measured.',
+  'admin.scan.empty': 'No scan yet. Start one and the map fills in while the head moves.'
 } satisfies Record<`admin.${string}`, string>;

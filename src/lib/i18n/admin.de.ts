@@ -203,5 +203,26 @@ export const adminDe: Record<keyof typeof adminEn, string> = {
   'admin.calib.resetTitle': 'Von vorne',
   'admin.calib.resetHint': 'Geht zurück auf die Werte, mit denen der Tracker kam. Danach speichern, um sie zu behalten.',
   'admin.calib.reset.action': 'Zurück auf Standard',
-  'admin.calib.reset.done': 'Zurück auf Standard. Speichern, um es zu behalten.'
+  'admin.calib.reset.done': 'Zurück auf Standard. Speichern, um es zu behalten.',
+
+  'admin.tab.scan': 'Scan',
+  'admin.scan.title': 'Himmelsscan',
+  'admin.scan.hint': 'Der Kopf fährt ein Raster von Richtungen ab, wartet an jeder kurz und misst das Licht. Danach kehrt er in seinen Modus zurück.',
+  'admin.scan.step': 'Rasterweite',
+  'admin.scan.stepTitle': 'Alle {step} Grad ein Punkt',
+  'admin.scan.start': 'Scan starten',
+  'admin.scan.stop': 'Scan stoppen',
+  'admin.scan.progress': 'Fortschritt des Scans',
+  'admin.scan.points': '{n} von {total}',
+  'admin.scan.unsupported': 'Dieser Tracker kann noch nicht scannen.',
+  'admin.scan.other': 'Gerade belegt eine andere Aktivität den Kopf. Stopp sie, um zu scannen.',
+  'admin.scan.map': 'Himmelskarte',
+  'admin.scan.mapLabel': 'Gemessenes Licht in jeder Richtung des Scans',
+  'admin.scan.notYet': 'noch nicht gemessen',
+  'admin.scan.axes': 'Neigung nach oben, Schwenk quer',
+  'admin.scan.to': 'bis',
+  'admin.scan.best': 'Am hellsten bei Schwenk {pan}°, Neigung {tilt}°: {value}',
+  'admin.scan.point': 'Dorthin zeigen',
+  'admin.scan.early': 'Dieser Scan endete, bevor jeder Punkt gemessen war.',
+  'admin.scan.empty': 'Noch kein Scan. Starte einen, die Karte füllt sich, während der Kopf fährt.'
 };

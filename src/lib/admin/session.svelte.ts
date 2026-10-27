@@ -8,6 +8,7 @@ import { errorText } from '$lib/i18n';
 import { Runner } from './runner.svelte';
 import type { SunSpeed } from '$lib/link/protocol';
 import type { FlowStep } from './calib';
+import { SCAN_STEP_DEFAULT } from './commands';
 
 export type StepState = 'running' | 'done' | 'failed' | 'unclear';
 
@@ -44,6 +45,7 @@ class Session {
   calib = $state<Partial<Record<FlowStep, StepResult>>>({});
   dark = $state.raw<number[] | null>(null);
   bright = $state.raw<number[] | null>(null);
+  scanStep = $state(SCAN_STEP_DEFAULT);
 }
 
 export const session = new Session();
