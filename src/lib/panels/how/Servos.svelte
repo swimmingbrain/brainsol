@@ -30,12 +30,12 @@
   <rect class="servo" x="86" y="88" width="20" height="12" rx="2" />
   <path class="turn" d="M74 96a22 6 0 0 0 44 0" />
   <path class="turn" d="M113 99.6l5-3.6-1.4 5.6" />
-  <text x="40" y="100">{say('q.pan')}</text>
+  <text class="end" x="68" y="100">{say('q.pan')}</text>
 
   <!-- the tilt servo at the pivot and its turn -->
   <path class="turn" d="M74 50a24 24 0 0 1 10-12" />
   <path class="turn" d="M79 37l5 1-1.6 4.8" />
-  <text x="40" y="44">{say('q.tilt')}</text>
+  <text class="end" x="70" y="44">{say('q.tilt')}</text>
   <line class="panel" x1={panel.x1} y1={panel.y1} x2={panel.x2} y2={panel.y2} />
   <line class="normal" x1={PIVOT.x} y1={PIVOT.y} x2={normal.x} y2={normal.y} />
   <circle class="pivot" cx={PIVOT.x} cy={PIVOT.y} r="4" />
@@ -105,5 +105,9 @@
 
   .mid {
     text-anchor: middle;
+  }
+
+  .end {
+    text-anchor: end;
   }
 </style>
