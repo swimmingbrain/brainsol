@@ -13,7 +13,7 @@
   import { connection } from '$lib/stores/connection.svelte';
   import { preferences } from '$lib/stores/preferences.svelte';
   import { fmt, t, type Key } from '$lib/i18n';
-  import { dateOf, gain, simulateDay, simulateYear } from './solar/day';
+  import { dateOf, fixedPanelFor, gain, simulateDay, simulateYear } from './solar/day';
   import { gainPercent } from './format';
 
   interface Preset {
@@ -32,9 +32,8 @@
     { id: 'sydney', lat: -33.87, lon: 151.21 }
   ];
 
-  // a fixed panel faces the equator and is tilted a bit less than the latitude
-  const tiltFor = (lat: number) => Math.round(Math.min(60, Math.abs(lat) * 0.76 + 3.1));
-  const facingFor = (lat: number) => (lat >= 0 ? 180 : 0);
+  const tiltFor = (lat: number) => fixedPanelFor(lat).tilt;
+  const facingFor = (lat: number) => fixedPanelFor(lat).azimuth;
 
   const thisYear = new Date().getFullYear();
   function today(): number {

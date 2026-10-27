@@ -123,6 +123,12 @@ export function simulateYear(site: Site, panel: Panel, year = 2026, stepMinutes 
   return { months, total };
 }
 
+// the usual fixed panel of a place: it faces the equator and is tilted a bit
+// less than the latitude, after the rule of thumb 0.76 times the latitude plus 3
+export function fixedPanelFor(lat: number): Panel {
+  return { tilt: Math.round(Math.min(60, Math.abs(lat) * 0.76 + 3.1)), azimuth: lat >= 0 ? 180 : 0 };
+}
+
 // how much more a tracker collects than the fixed panel, 0.34 is 34 percent more
 export function gain(tracked: number, fixed: number): number | null {
   return fixed > 0 ? tracked / fixed - 1 : null;
