@@ -7,7 +7,8 @@
   import { telemetry } from '$lib/stores/telemetry.svelte';
   import { preferences } from '$lib/stores/preferences.svelte';
   import { connection } from '$lib/stores/connection.svelte';
-  import { fmt, stateSentence, t } from '$lib/i18n';
+  import { fmt, modeName, stateSentence, t, type Key } from '$lib/i18n';
+  import { azEl, normal, wrap180 } from '$lib/sim/kinematics';
   import Flat from './Flat.svelte';
   import type { Twin } from './twin';
 
@@ -26,6 +27,26 @@
   // only an admin, and only when it runs its simulated light
   const draggable = $derived(Boolean(telemetry.sim) && (connection.source === 'sim' || connection.admin) && (connection.caps?.simlight ?? connection.source === 'sim'));
   const lamp = $derived(dragLight ?? telemetry.sim);
+  // the 3d context went away for a moment
+  let lost = $state(false);
+
+  // the light the numbers speak of: the lamp under the hand, the sun, the
+  // lamp of the simulation, or with a real tracker where the panel faces
+  const shown = $derived.by(() => {
+    const sun = telemetry.sun;
+    const sim = telemetry.sim;
+    let what: 'lamp' | 'sun' | 'panel' = 'panel';
+    let az: number | null = null;
+    let el: number | null = null;
+    if (dragLight) [what, az, el] = ['lamp', dragLight.az, dragLight.el];
+    else if (sun && sun.el > -0.5) [what, az, el] = ['sun', sun.az, sun.el];
+    else if (sim) [what, az, el] = ['lamp', sim.az, sim.el];
+    else if (telemetry.pan !== null && telemetry.tilt !== null) {
+      const d = azEl(normal(telemetry.pan, telemetry.tilt));
+      [az, el] = [d.az, d.el];
+    }
+    return { az: az === null ? null : wrap180(az), el, azLabel: `twin.${what}Az` as Key, elLabel: `twin.${what}El` as Key };
+  });
 
   onMount(() => {
     let gone = false;
@@ -47,6 +68,9 @@
           },
           onLampDrag: (sky) => {
             dragLight = sky;
+          },
+          onContext: (gone) => {
+            lost = gone;
           }
         });
         made.bindGlyphs(lampGlyph, sunGlyph);
@@ -89,7 +113,7 @@
   {#if flat}
     <Flat />
   {:else}
-    <canvas bind:this={canvas} class="scene"></canvas>
+    <canvas bind:this={canvas} class="scene" aria-label={t('twin.label')}></canvas>
     <!-- the scene moves these onto the lights, style stays with it -->
     <button
       type="button"
@@ -110,14 +134,31 @@
   {/if}
 
   <div class="overlay">
-    <p class="say">{stateSentence(telemetry.st)}</p>
+    <p class="say" aria-live="polite">{stateSentence(telemetry.st)}</p>
     <div class="numbers">
-      <Stat {size} label={t('q.pan')} value={telemetry.pan} digits={1} unit="°" />
-      <Stat {size} label={t('q.tilt')} value={telemetry.tilt} digits={1} unit="°" />
-      <Stat {size} label={t('q.light')} value={telemetry.lux} unit="lx" />
-      <Stat {size} label={t('q.off')} value={telemetry.off} digits={1} unit="°" />
+      <Stat {size} label={t(shown.azLabel)} value={shown.az} digits={1} unit="°" />
+      <Stat {size} label={t(shown.elLabel)} value={shown.el} digits={1} unit="°" />
+      <Stat {size} label={t('q.mode')} value={null} text={telemetry.mode ? modeName(telemetry.mode) : null} />
     </div>
   </div>
+
+  {#if lost}
+    <p class="note">{t('twin.lost')}</p>
+  {/if}
+
+  {#if !present}
+    <div class="hints">
+      {#if flat}
+        <p class="hint">{t('twin.flat')}</p>
+      {:else if draggable}
+        <p class="hint"><Icon name="lamp" size={14} />{t('twin.hint')}</p>
+      {/if}
+      {#if !flat}
+        <p class="hint view mouse">{t('twin.hintView')}</p>
+        <p class="hint view touch">{t('twin.hintViewTouch')}</p>
+      {/if}
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -224,22 +265,85 @@
     gap: 12px 28px;
   }
 
+  .hints {
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 14px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 6px 24px;
+    flex-wrap: wrap;
+    pointer-events: none;
+  }
+
+  .hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .hint :global(svg) {
+    color: var(--accent);
+  }
+
+  .hint.view {
+    margin-left: auto;
+    font-size: 11px;
+  }
+
+  .hint.touch {
+    display: none;
+  }
+
+  @media (pointer: coarse) {
+    .hint.mouse {
+      display: none;
+    }
+
+    .hint.touch {
+      display: flex;
+    }
+  }
+
+  .note {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    max-width: min(360px, calc(100% - 32px));
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    text-align: center;
+  }
+
+  /* presentation: words and numbers that read from the back of a room */
   .present .overlay {
-    padding: 32px 40px;
-    gap: 24px;
+    padding: 36px 44px;
+    gap: 22px;
   }
 
   .present .say {
-    font-size: 26px;
+    font-size: 30px;
+    font-weight: 500;
+    color: var(--text-strong);
   }
 
   .present .numbers {
-    gap: 20px 56px;
+    gap: 20px 64px;
   }
 
   @media (max-width: 600px) {
     .overlay {
       padding: 12px 16px;
+      gap: 8px;
     }
 
     .say {
@@ -248,6 +352,16 @@
 
     .numbers {
       gap: 8px 20px;
+    }
+
+    .hints {
+      left: 16px;
+      right: 16px;
+      bottom: 10px;
+    }
+
+    .hint.view {
+      display: none;
     }
   }
 </style>
