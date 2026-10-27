@@ -77,10 +77,10 @@
   <div class="compare">
     <div class="table">
       <h3>{t('panels.how.cmp.sensorTitle')}</h3>
-      <table>
+      <table style="--cols: 2">
         <thead>
           <tr>
-            <th></th>
+            <th class="corner"></th>
             <th>{t('panels.how.cmp.sensors')}</th>
             <th>{t('panels.how.cmp.astro')}</th>
           </tr>
@@ -99,10 +99,10 @@
 
     <div class="table">
       <h3>{t('panels.how.cmp.axisTitle')}</h3>
-      <table>
+      <table style="--cols: 3">
         <thead>
           <tr>
-            <th></th>
+            <th class="corner"></th>
             <th>{t('panels.day.fixed')}</th>
             <th>{t('panels.day.single')}</th>
             <th>{t('panels.day.dual')}</th>
@@ -268,8 +268,30 @@
       gap: 28px;
     }
 
+    /* on a phone each row gets its label on a line of its own and the
+       values side by side under it, so no column is squeezed to a few letters */
     table {
       font-size: 12px;
+    }
+
+    tr {
+      display: grid;
+      grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+      column-gap: 10px;
+    }
+
+    .corner {
+      display: none;
+    }
+
+    tbody th {
+      grid-column: 1 / -1;
+      width: auto;
+      padding-bottom: 2px;
+    }
+
+    td {
+      padding-top: 0;
     }
   }
 </style>
