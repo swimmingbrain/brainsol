@@ -121,6 +121,8 @@
   let range: { min?: number; max?: number } = {};
   // what the readout shows: the values at the cursor, or the newest ones
   let shown = $state<(string | null)[]>([]);
+  // false while the plot is scrolled out of sight, it takes no data then
+  let inView = $state(true);
   let at = $state<string | null>(null);
 
   function readout(u: uPlot) {
@@ -275,18 +277,21 @@
       else plot.setSize({ width, height });
     });
     observer.observe(target);
+    const sight = new IntersectionObserver(([entry]) => (inView = entry.isIntersecting));
+    sight.observe(target);
     // the canvas draws text with the font it has, once the mono face is in it draws again
     document.fonts?.load(FONT).then(() => plot?.redraw(false, true));
     return () => {
       observer.disconnect();
+      sight.disconnect();
       plot?.destroy();
       plot = null;
     };
   });
 
-  // new data while the plot is visible and nobody reads a value
+  // new data while the plot is in sight and nobody reads a value
   $effect(() => {
-    if (!active || paused) return;
+    if (!active || paused || !inView) return;
     const v = view;
     if (plot) untrack(() => feed(plot!, v));
   });
