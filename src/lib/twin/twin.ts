@@ -42,6 +42,9 @@ const MAX_PIXEL_RATIO = 2;
 // dark theme ramp, from the colour of the head up to copper
 const EYE_RAMP: Rgb[] = ['#26221f', '#4a3a2b', '#7a5c3d', '#a87c52', '#d19a66'].map((c) => parseColor(c) as Rgb);
 const COPPER = new Color(ROLE_COLORS.accent);
+// changes smaller than these are noise of a resting tracker, not light
+const LEVEL_BAND = 0.05;
+const WARMTH_BAND = 0.1;
 
 export interface TwinOptions {
   // the 3D context went away or came back
@@ -107,8 +110,8 @@ export class Twin {
   private pan = { glide: new Glide(), spring: spring(PARK.pan) };
   private tilt = { glide: new Glide(), spring: spring(PARK.tilt) };
   private seen: StateFrame | null = null;
-  private eyes: { now: Rgb; drawn: Rgb }[] = EYES.map(() => ({ now: [...EYE_RAMP[0]] as Rgb, drawn: [-1, -1, -1] as Rgb }));
-  private warmth = { now: 0, drawn: -1 };
+  private eyes: { level: number; now: Rgb; drawn: Rgb }[] = EYES.map(() => ({ level: 0, now: [...EYE_RAMP[0]] as Rgb, drawn: [-1, -1, -1] as Rgb }));
+  private warmth = { goal: 0, now: 0, drawn: -1 };
   private started = false;
 
   private raf = 0;
@@ -409,8 +412,10 @@ export class Twin {
       const i = EYES.indexOf(eye.name);
       const state = this.eyes[i];
       if (!state) continue;
+      // sensor noise of a resting tracker stays inside the dead band and costs no frame
       const level = num(frame?.ldr?.[i], 0);
-      const goal = ramp(EYE_RAMP, level);
+      if (Math.abs(level - state.level) > LEVEL_BAND || level === 0 || level === 1) state.level = level;
+      const goal = ramp(EYE_RAMP, state.level);
       state.now = mix(state.now, goal, k);
       if (steps(state.now, goal) > 0.5) busy = true;
       else state.now = goal;
@@ -426,8 +431,10 @@ export class Twin {
   // the panel warms a little the closer it faces the light, nothing in low light
   private warm(frame: StateFrame | null, dt: number): boolean {
     const off = frame?.off;
-    const goal = typeof off === 'number' && Number.isFinite(off) ? Math.max(0, 1 - Math.abs(off) / 35) ** 2 : 0;
     const w = this.warmth;
+    const fresh = typeof off === 'number' && Number.isFinite(off) ? Math.max(0, 1 - Math.abs(off) / 35) ** 2 : 0;
+    if (Math.abs(fresh - w.goal) > WARMTH_BAND || fresh === 0) w.goal = fresh;
+    const goal = w.goal;
     w.now += (goal - w.now) * follow(6, dt);
     const busy = Math.abs(goal - w.now) > 0.002;
     if (!busy) w.now = goal;
