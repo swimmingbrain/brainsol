@@ -234,6 +234,7 @@
     padding: 8px 10px 8px 0;
     vertical-align: top;
     color: var(--text-secondary);
+    overflow-wrap: break-word;
   }
 
   tbody tr {

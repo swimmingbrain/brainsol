@@ -221,7 +221,7 @@ export const panelsDe: Record<keyof typeof panelsEn, string> = {
   'panels.how.cmp.a.use': 'Typisch für',
   'panels.how.cmp.a.use.a': 'Dächer und die meisten kleinen Anlagen',
   'panels.how.cmp.a.use.b': 'große Solarparks',
-  'panels.how.cmp.a.use.c': 'Konzentratoranlagen, Forschung und Demos',
+  'panels.how.cmp.a.use.c': 'Konzentratoren, Forschung und Demos',
   'panels.how.cmp.here': 'am Standort des Trackers',
   'panels.how.cmp.foot': 'Die Gewinne stammen aus dem Tagessimulator unten, gemessen an einem festen Panel, das zum Äquator zeigt. In Wirklichkeit fallen sie kleiner aus, weil das Licht der Wolken vom ganzen Himmel kommt und ein Tracker nicht auf alles davon zeigen kann.',
 
