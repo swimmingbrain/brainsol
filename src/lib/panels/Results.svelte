@@ -109,8 +109,13 @@
 
   {#if rows.length === 0}
     <div class="empty">
-      <p class="empty-title">{t('panels.results.emptyTitle')}</p>
-      <p class="empty-text">{t('panels.results.emptyText')}</p>
+      <div class="empty-box">
+        <span class="empty-icon"><Icon name="flask" size={18} /></span>
+        <div>
+          <p class="empty-title">{t('panels.results.emptyTitle')}</p>
+          <p class="empty-text">{t('panels.results.emptyText')}</p>
+        </div>
+      </div>
       <ul class="kinds">
         {#each EXP_KINDS as kind (kind)}
           <li><span class="kind-name">{kindName(kind)}</span> {t(`panels.results.about.${kind}` as Key)}</li>
@@ -221,7 +226,22 @@
 
   .empty {
     max-width: 640px;
-    padding: 28px 0 8px;
+  }
+
+  .empty-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 20px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+  }
+
+  .empty-icon {
+    display: flex;
+    padding-top: 1px;
+    color: var(--text-muted);
   }
 
   .empty-title {
