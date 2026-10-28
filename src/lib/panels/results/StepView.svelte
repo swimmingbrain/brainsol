@@ -57,9 +57,11 @@
     color: var(--text-secondary);
   }
 
+  /* three figures still fit side by side on a phone */
   @media (max-width: 600px) {
     .figures {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
     }
   }
 </style>

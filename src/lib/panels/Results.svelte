@@ -392,5 +392,9 @@
         'kinds';
       row-gap: 28px;
     }
+
+    .layout > .kinds {
+      margin-top: 0;
+    }
   }
 </style>

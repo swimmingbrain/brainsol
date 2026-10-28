@@ -66,4 +66,10 @@
     font-size: 11.5px;
     color: var(--text-muted);
   }
+
+  @media (max-width: 600px) {
+    .value {
+      font-size: 20px;
+    }
+  }
 </style>
