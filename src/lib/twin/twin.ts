@@ -28,7 +28,8 @@ import { panelTexture } from './panelface';
 import { Rig } from './rig';
 import { dragPoint, round1, skyAngles, sub } from './sky';
 import { throttle } from './throttle';
-import { standinPieces, type Piece } from './standin';
+import { loadModel, measure } from './loader';
+import type { Piece } from './standin';
 
 // the sky sphere around the tilt axis, in millimetres
 export const DOME_RADIUS = 190;
@@ -166,10 +167,21 @@ export class Twin {
     });
     this.cleanups.push(() => this.controls.dispose());
 
-    this.useModel(STANDIN_ASSEMBLY, standinPieces());
     this.applyPalette();
     this.watch();
     this.resize();
+    void this.start();
+  }
+
+  // the cad export when it is there, the stand in otherwise. the stage shows
+  // its empty sky for the moment this takes
+  private async start(): Promise<void> {
+    const model = await loadModel();
+    if (this.disposed) {
+      for (const list of Object.values(model.pieces)) for (const piece of list) piece.geometry.dispose();
+      return;
+    }
+    this.useModel(model.assembly, model.pieces);
   }
 
   // a model to show, the stand in or the cad export
@@ -187,7 +199,7 @@ export class Twin {
     this.front.add(this.rig.root);
     const centre = this.centre;
     const s = STANDIN.base;
-    const bounds = assembly.bounds;
+    const bounds = assembly.bounds ?? measure(pieces);
     const footprint = bounds
       ? { x: (bounds.min[0] + bounds.max[0]) / 2, y: (bounds.min[1] + bounds.max[1]) / 2, w: bounds.max[0] - bounds.min[0], d: bounds.max[1] - bounds.min[1], r: s.r }
       : { x: 0, y: 0, w: s.w, d: s.d, r: s.r };
