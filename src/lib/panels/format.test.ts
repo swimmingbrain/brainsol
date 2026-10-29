@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { angle, gainPercent, lux, percent, power, roughAngle } from './format';
+import { angle, gainPercent, lux, percent, power, roughAngle, signed } from './format';
 
 describe('the panel number formats', () => {
   it('write the gain as a signed percent against the fixed panel', () => {
@@ -38,6 +38,15 @@ describe('the panel number formats', () => {
     expect(roughAngle(17.6)).toEqual({ under: false, value: 18 });
     expect(roughAngle(0.4)).toEqual({ under: true, value: 1 });
     expect(roughAngle(null)).toBeNull();
+  });
+
+  it('put a sign on values that are not zero', () => {
+    expect(signed(0.0221, 3, 'en')).toBe('+0.022');
+    expect(signed(-0.0221, 3, 'de')).toBe('-0,022');
+    expect(signed(0.0002, 3, 'en')).toBe('0.000');
+    expect(signed(-0.0002, 3, 'en')).toBe('0.000');
+    expect(signed(12.5, 1, 'de')).toBe('+12,5');
+    expect(signed(null, 3)).toBeNull();
   });
 
   it('write angles with one decimal in the language', () => {
