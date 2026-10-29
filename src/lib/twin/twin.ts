@@ -124,8 +124,6 @@ export class Twin {
   private disposed = false;
   private size = { w: 1, h: 1 };
   private cleanups: (() => void)[] = [];
-  // renders so far, for a quick look at how idle the scene is
-  renders = 0;
 
   constructor(
     private canvas: HTMLCanvasElement,
@@ -174,7 +172,7 @@ export class Twin {
   }
 
   // the cad export when it is there, the stand in otherwise. the stage shows
-  // its empty sky for the moment this takes
+  // only its background for the moment this takes
   private async start(): Promise<void> {
     const model = await loadModel();
     if (this.disposed) {
@@ -603,7 +601,6 @@ export class Twin {
     this.renderer.render(this.back, this.camera);
     this.renderer.clearDepth();
     this.renderer.render(this.front, this.camera);
-    this.renders++;
   }
 
   dispose(): void {
