@@ -28,5 +28,17 @@ export function themeColors(): PanelColors {
   };
 }
 
+// what a chart mark may be painted with: a series colour in its fixed order,
+// the accent for the one thing that matters, the quiet neutral for the rest
+export type ColorRole = 'series1' | 'series2' | 'series3' | 'neutral' | 'accent';
+
+export function roleColor(colors: PanelColors, role: ColorRole): string {
+  if (role === 'series1') return colors.series[0];
+  if (role === 'series2') return colors.series[1];
+  if (role === 'series3') return colors.series[2];
+  if (role === 'accent') return colors.accent;
+  return colors.neutral;
+}
+
 // the two inks for text on a filled mark, the same in both themes
 export const INK = { light: '#ffffff', dark: '#111113' } as const;

@@ -1,7 +1,8 @@
 <script lang="ts" module>
   import type { RangeSpec } from './range';
 
-  export type ColorRole = 'series1' | 'series2' | 'series3' | 'neutral' | 'accent';
+  import type { ColorRole } from '../theme';
+  export type { ColorRole };
 
   export interface PlotSeries {
     label: string;
@@ -39,7 +40,7 @@
   import uPlot from 'uplot';
   import 'uplot/dist/uPlot.min.css';
   import { fmt } from '$lib/i18n';
-  import { themeColors, type PanelColors } from '../theme';
+  import { roleColor, themeColors } from '../theme';
   import { niceRange, stepDecimals } from './range';
   import { lastValue } from './window';
 
@@ -89,14 +90,6 @@
 
   const colors = $derived(themeColors());
   const FONT = '10px "JetBrains Mono", monospace';
-
-  function color(c: PanelColors, role: ColorRole): string {
-    if (role === 'series1') return c.series[0];
-    if (role === 'series2') return c.series[1];
-    if (role === 'series3') return c.series[2];
-    if (role === 'accent') return c.accent;
-    return c.neutral;
-  }
 
   const clock = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
   const clockShort = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
@@ -153,7 +146,7 @@
           size: 8,
           width: 2,
           stroke: () => colors.surface,
-          fill: (u: uPlot, i: number) => color(colors, series[i - 1]?.color ?? 'neutral')
+          fill: (u: uPlot, i: number) => roleColor(colors, series[i - 1]?.color ?? 'neutral')
         },
         sync: sync ? { key: sync } : undefined
       },
@@ -198,12 +191,12 @@
         {},
         ...series.map((s) => ({
           label: s.label,
-          stroke: () => color(colors, s.color),
+          stroke: () => roleColor(colors, s.color),
           width: 2,
           spanGaps: false,
           paths: s.points ? () => null : undefined,
           points: s.points
-            ? { show: true, size: 7, width: 1.5, stroke: () => colors.surface, fill: () => color(colors, s.color) }
+            ? { show: true, size: 7, width: 1.5, stroke: () => colors.surface, fill: () => roleColor(colors, s.color) }
             : { show: false }
         }))
       ],
@@ -320,7 +313,7 @@
   <div class="readout">
     {#each series as s, i (s.label)}
       <span class="item">
-        <span class="swatch" class:dot={s.points} style="background: {color(colors, s.color)}"></span>
+        <span class="swatch" class:dot={s.points} style="background: {roleColor(colors, s.color)}"></span>
         <span class="name">{s.label}</span>
         {#if shown[i] !== null && shown[i] !== undefined}
           <span class="value">{shown[i]}{#if s.unit}<span class="unit">{s.unit}</span>{/if}</span>

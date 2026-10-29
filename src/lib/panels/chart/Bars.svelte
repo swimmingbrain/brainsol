@@ -14,8 +14,7 @@
   // row names its values, the other groups step back
   import { fmt } from '$lib/i18n';
   import { niceStep, stepDecimals } from './range';
-  import { themeColors, type PanelColors } from '../theme';
-  import type { ColorRole } from './Plot.svelte';
+  import { roleColor, themeColors, type ColorRole } from '../theme';
 
   let {
     groups,
@@ -39,14 +38,6 @@
   } = $props();
 
   const colors = $derived(themeColors());
-
-  function color(c: PanelColors, role: ColorRole): string {
-    if (role === 'series1') return c.series[0];
-    if (role === 'series2') return c.series[1];
-    if (role === 'series3') return c.series[2];
-    if (role === 'accent') return c.accent;
-    return c.neutral;
-  }
 
   const AXIS = 34;
   const BOTTOM = 20;
@@ -82,7 +73,7 @@
   <div class="readout">
     {#each series as s, i (s.label)}
       <span class="item">
-        <span class="swatch" style="background: {color(colors, s.color)}"></span>
+        <span class="swatch" style="background: {roleColor(colors, s.color)}"></span>
         <span class="name">{s.label}</span>
         {#if shown && shown.values[i] !== null}
           <span class="value">{fmt(shown.values[i], digits)}{#if unit}<span class="unit">{unit}</span>{/if}</span>
@@ -103,7 +94,7 @@
           <g class="group" class:dim={hover !== null && hover !== g}>
             {#each group.values as value, i (i)}
               {#if value !== null && value > 0}
-                <path d={column(left + i * (bar + GAP), value)} fill={color(colors, series[i]?.color ?? 'neutral')} />
+                <path d={column(left + i * (bar + GAP), value)} fill={roleColor(colors, series[i]?.color ?? 'neutral')} />
               {/if}
             {/each}
             <text class="label" x={AXIS + g * slot + slot / 2} y={height - 5}>{group.label}</text>
