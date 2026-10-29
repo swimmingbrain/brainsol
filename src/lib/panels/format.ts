@@ -54,6 +54,14 @@ export function roughAngle(degrees: number | null | undefined): { under: boolean
   return { under: false, value: Math.round(size) };
 }
 
+// a value with its sign, so +0.022 and -0.022 read as the two sides they are.
+// a value that rounds to zero gets no sign
+export function signed(value: number | null | undefined, digits: number, lang?: Lang): string | null {
+  const text = fmt(value, digits, lang);
+  if (text === null || value === null || value === undefined) return null;
+  return value > 0 && /[1-9]/.test(text) ? `+${text}` : text;
+}
+
 // an angle with one decimal, the way the tracker sends it
 export function angle(degrees: number | null | undefined, lang?: Lang): string | null {
   return fmt(degrees, 1, lang);

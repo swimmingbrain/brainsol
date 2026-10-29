@@ -9,9 +9,9 @@
   import Plot, { type PlotSeries, type PlotView, type RangeSpec } from './chart/Plot.svelte';
   import { history } from '$lib/stores/history.svelte';
   import { connection } from '$lib/stores/connection.svelte';
-  import { fmt, t } from '$lib/i18n';
+  import { t } from '$lib/i18n';
   import { windowData, type Column } from './chart/window';
-  import { gainPercent, lux } from './format';
+  import { gainPercent, lux, signed } from './format';
 
   type TabId = 'light' | 'angles' | 'error' | 'power';
 
@@ -28,12 +28,6 @@
   let hovering = $state(false);
   // tabs that were open once keep their plots
   let opened = $state<TabId[]>(['light']);
-
-  const signed = (value: number, digits: number) => {
-    const text = fmt(value, digits);
-    if (text === null) return null;
-    return value > 0 && Number(text.replace(',', '.')) !== 0 ? `+${text}` : text;
-  };
 
   const hasLux = $derived(connection.caps ? connection.caps.lux : true);
 

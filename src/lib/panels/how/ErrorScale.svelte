@@ -2,7 +2,7 @@
   // step two: the light on L and R as two columns, their difference over
   // their sum as the error, and where that error sits between -1 and +1
   import { telemetry } from '$lib/stores/telemetry.svelte';
-  import { fmt } from '$lib/i18n';
+  import { signed } from '../format';
   import { heatColor, spread } from '../balance';
   import { themeColors } from '../theme';
 
@@ -16,10 +16,7 @@
 
   // the scale opens up the middle like the bubble level does
   const x = $derived(110 + Math.sign(ex) * spread(ex) * 80);
-  const signed = $derived.by(() => {
-    const text = fmt(ex, 3) ?? '';
-    return ex > 0 && !/^0[.,]0+$/.test(text) ? `+${text}` : text;
-  });
+  const value = $derived(signed(ex, 3) ?? '');
 </script>
 
 <svg viewBox="0 0 220 130" aria-hidden="true">
@@ -33,7 +30,7 @@
   <text class="formula" x="148" y="44">R − L</text>
   <line class="bar" x1="146" y1="52" x2="190" y2="52" />
   <text class="formula" x="148" y="66">R + L</text>
-  <text class="value" x="146" y="86">= {signed}</text>
+  <text class="value" x="146" y="86">= {value}</text>
 
   <line class="axis" x1="30" y1="112" x2="190" y2="112" />
   <path class="ticks" d="M30 108V116M110 106V118M190 108V116" />

@@ -12,7 +12,7 @@
   import { fmt, t, type Key } from '$lib/i18n';
   import { errorTangents } from '$lib/sim/controller';
   import { fixedPanelFor, gain, simulateYear } from './solar/day';
-  import { angle, gainPercent, roughAngle } from './format';
+  import { angle, gainPercent, roughAngle, signed } from './format';
 
   const k = $derived(connection.config?.baffle ?? 1.2);
 
@@ -27,7 +27,7 @@
   });
 
   const errorNow = $derived(
-    telemetry.ex === null ? null : t('panels.how.now.error', { ex: fmt(telemetry.ex, 3) ?? '', ey: fmt(telemetry.ey, 3) ?? '' })
+    telemetry.ex === null ? null : t('panels.how.now.error', { ex: signed(telemetry.ex, 3) ?? '', ey: signed(telemetry.ey, 3) ?? '' })
   );
   const poseNow = $derived(
     telemetry.pan === null ? null : t('panels.how.now.pose', { pan: angle(telemetry.pan) ?? '', tilt: angle(telemetry.tilt) ?? '' })

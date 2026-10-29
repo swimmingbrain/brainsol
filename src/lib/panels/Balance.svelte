@@ -10,7 +10,7 @@
   import { fmt, t } from '$lib/i18n';
   import { bubble, follow, heatColor, inkOn, spread } from './balance';
   import { INK, themeColors } from './theme';
-  import { percent } from './format';
+  import { percent, signed } from './format';
 
   const C = 110;
   const OUTER = 106;
@@ -59,12 +59,6 @@
     `M${C - bandOuter} ${C}a${bandOuter} ${bandOuter} 0 1 0 ${2 * bandOuter} 0a${bandOuter} ${bandOuter} 0 1 0 ${-2 * bandOuter} 0Z` +
       `M${C - bandInner} ${C}a${bandInner} ${bandInner} 0 1 0 ${2 * bandInner} 0a${bandInner} ${bandInner} 0 1 0 ${-2 * bandInner} 0Z`
   );
-
-  const signed = (value: number | null) => {
-    const text = fmt(value, 3);
-    if (text === null || value === null) return null;
-    return value > 0 && !/^0[.,]0+$/.test(text) ? `+${text}` : text;
-  };
 
   let root = $state<HTMLElement | null>(null);
   let dot = $state<SVGCircleElement | null>(null);
@@ -147,11 +141,11 @@
     <dl class="errors">
       <div>
         <dt>{t('panels.balance.ex')}</dt>
-        <dd>{#if telemetry.ex !== null}{signed(telemetry.ex)}{:else}<span class="placeholder"></span>{/if}</dd>
+        <dd>{#if telemetry.ex !== null}{signed(telemetry.ex, 3)}{:else}<span class="placeholder"></span>{/if}</dd>
       </div>
       <div>
         <dt>{t('panels.balance.ey')}</dt>
-        <dd>{#if telemetry.ey !== null}{signed(telemetry.ey)}{:else}<span class="placeholder"></span>{/if}</dd>
+        <dd>{#if telemetry.ey !== null}{signed(telemetry.ey, 3)}{:else}<span class="placeholder"></span>{/if}</dd>
       </div>
       <div>
         <dt>{t('panels.balance.band')}</dt>
