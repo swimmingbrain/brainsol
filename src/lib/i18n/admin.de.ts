@@ -18,6 +18,10 @@ export const adminDe: Record<keyof typeof adminEn, string> = {
   'admin.unlock.closed': 'Der Adminbereich ist gesperrt',
 
   'admin.dock.label': 'Adminbereich',
+  'admin.activity.scan': 'Scan läuft',
+  'admin.activity.exp': 'Versuch läuft',
+  'admin.activity.calib': 'Kalibrierung läuft',
+  'admin.activity.stop': 'Stoppen',
   'admin.tab.control': 'Steuerung',
 
   'admin.group.mode': 'Modus',

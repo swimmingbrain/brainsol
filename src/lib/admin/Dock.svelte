@@ -4,6 +4,7 @@
   // through the runner, which goes through connection.send
   import { untrack } from 'svelte';
   import DockTabs, { type DockTab } from './parts/DockTabs.svelte';
+  import ActivityBar from './parts/ActivityBar.svelte';
   import ControlTab from './tabs/ControlTab.svelte';
   import TuningTab from './tabs/TuningTab.svelte';
   import CalibrateTab from './tabs/CalibrateTab.svelte';
@@ -35,6 +36,7 @@
 <div class="dock-root">
   <div class="head">
     <DockTabs {tabs} active={session.tab} label={t('admin.dock.label')} onchange={(id) => (session.tab = id)} />
+    <ActivityBar />
   </div>
   <div class="panel" id="admin-panel-{session.tab}" role="tabpanel" aria-labelledby="admin-tab-{session.tab}">
     {#if session.tab === 'control'}

@@ -19,6 +19,10 @@ export const adminEn = {
   'admin.unlock.closed': 'Admin tools are locked',
 
   'admin.dock.label': 'Admin tools',
+  'admin.activity.scan': 'Scan running',
+  'admin.activity.exp': 'Experiment running',
+  'admin.activity.calib': 'Calibration running',
+  'admin.activity.stop': 'Stop',
   'admin.tab.control': 'Control',
 
   'admin.group.mode': 'Mode',
