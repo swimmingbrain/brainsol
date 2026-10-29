@@ -10,6 +10,7 @@
   import ScanTab from './tabs/ScanTab.svelte';
   import ExperimentsTab from './tabs/ExperimentsTab.svelte';
   import SystemTab from './tabs/SystemTab.svelte';
+  import ConnectionTab from './tabs/ConnectionTab.svelte';
   import { connection } from '$lib/stores/connection.svelte';
   import { t } from '$lib/i18n';
   import { runner, session, type TabId } from './session.svelte';
@@ -20,7 +21,8 @@
     { id: 'calib', label: t('admin.tab.calib'), icon: 'target' },
     { id: 'scan', label: t('admin.tab.scan'), icon: 'scan' },
     { id: 'exp', label: t('admin.tab.exp'), icon: 'flask' },
-    { id: 'system', label: t('admin.tab.system'), icon: 'chip' }
+    { id: 'system', label: t('admin.tab.system'), icon: 'chip' },
+    { id: 'link', label: t('admin.tab.link'), icon: 'link' }
   ]);
 
   // a fresh hello is a new tracker or a restarted one, what it cannot do is found out again
@@ -47,6 +49,8 @@
       <ExperimentsTab />
     {:else if session.tab === 'system'}
       <SystemTab />
+    {:else}
+      <ConnectionTab />
     {/if}
   </div>
 </div>
