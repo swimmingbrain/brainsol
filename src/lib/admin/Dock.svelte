@@ -77,4 +77,44 @@
     column-gap: 0;
     column-rule: 1px solid var(--border);
   }
+
+  /* on a touch screen every control of the shared kit gets room for a thumb */
+  @media (pointer: coarse) {
+    .panel :global(.btn) {
+      height: 44px;
+    }
+
+    .panel :global(.btn.only) {
+      width: 44px;
+    }
+
+    .panel :global(.segment) {
+      height: 40px;
+    }
+
+    .panel :global(input[type='range']) {
+      height: 36px;
+    }
+
+    .panel :global(input[type='range']::-webkit-slider-thumb) {
+      width: 20px;
+      height: 28px;
+      margin-top: -12px;
+    }
+
+    .panel :global(input[type='range']::-moz-range-thumb) {
+      width: 20px;
+      height: 28px;
+    }
+
+    .panel :global([role='spinbutton']),
+    .panel :global(.number-input) {
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+
+    .panel :global([role='switch']) {
+      zoom: 1.6;
+    }
+  }
 </style>
