@@ -10,7 +10,7 @@ import type { SunSpeed } from '$lib/link/protocol';
 import type { FlowStep } from './calib';
 import { SCAN_STEP_DEFAULT } from './commands';
 
-export type StepState = 'running' | 'done' | 'failed' | 'unclear';
+export type StepState = 'running' | 'done' | 'failed';
 
 // what one calibration step did, as the tab shows it
 export interface StepResult {

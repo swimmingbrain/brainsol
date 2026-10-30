@@ -26,14 +26,9 @@
   const band = $derived(connection.config?.params?.zenith_band?.v ?? 6);
   const flat = $derived(nearFlat(telemetry.tilt, band));
 
-  // the start of a polarity run whose ack did not come in time
-  let watching = $state<number | null>(null);
-  let sawCalib = false;
-
+  // the tracker says in its own words why a step failed
   function trackerSays(ack: AckMessage): string | undefined {
-    // the python tracker adds its own sentence in msg, it is not in protocol.ts
-    const msg = (ack as { msg?: unknown }).msg;
-    return typeof msg === 'string' && msg ? msg : undefined;
+    return !ack.ok && typeof ack.msg === 'string' && ack.msg ? ack.msg : undefined;
   }
 
   function bars(report: ReturnType<typeof readSpan>, step: 'dark' | 'bright') {
@@ -83,22 +78,10 @@
 
   async function run(step: FlowStep) {
     session.calib[step] = { state: 'running' };
-    const started = Date.now();
+    // the connection waits up to 20 s for a calibration step, the tracker answers when it is done
     const ack = await runner.run(calibCommand(step), { key: `calib.${step}`, feature: 'calib', quiet: true });
     if (ack.ok) {
       session.calib[step] = success(step, ack.data);
-      return;
-    }
-    // the page gives up on an ack after five seconds, the polarity step can take
-    // longer. the end of the activity in sys tells when it is over
-    if (ack.err === 'timeout' && step === 'polarity') {
-      watching = started;
-      sawCalib = false;
-      // the tracker gives up on a step after a minute, so does the page
-      setTimeout(() => {
-        if (session.calib.polarity?.state !== 'running') return;
-        session.calib.polarity = { state: 'unclear', tone: 'info', note: t('admin.calib.polarity.unclear') };
-      }, 65_000);
       return;
     }
     toast(errorText(ack.err), 'warning', 4000);
@@ -113,23 +96,6 @@
       detail: trackerSays(ack)
     };
   }
-
-  $effect(() => {
-    if (watching === null) return;
-    const act = telemetry.sys?.act ?? null;
-    if (act === 'calib') {
-      sawCalib = true;
-      return;
-    }
-    if (!sawCalib) return;
-    // the step is over, the newest event of the tracker says how it went
-    const since = watching;
-    const event = [...telemetry.events].reverse().find((e) => e.ts * 1000 >= since - 1000);
-    watching = null;
-    if (!event) session.calib.polarity = { state: 'unclear', tone: 'info', note: t('admin.calib.polarity.unclear') };
-    else if (event.lvl === 'info') session.calib.polarity = { state: 'done', note: t('admin.calib.polarity.plain'), detail: event.msg };
-    else session.calib.polarity = { state: 'failed', note: t('admin.calib.polarity.failed'), detail: event.msg };
-  });
 
   async function reset() {
     const ack = await runner.run(calibCommand('reset'), { key: 'calib.reset', feature: 'calib' });

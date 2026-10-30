@@ -197,7 +197,6 @@ export const adminEn = {
   'admin.calib.polarity.done': 'Directions learned: pan {pan}, tilt {tilt}.',
   'admin.calib.polarity.plain': 'Directions learned.',
   'admin.calib.polarity.failed': 'The directions are not clear. Check that the lamp shines on the head and nothing else moves.',
-  'admin.calib.polarity.unclear': 'The step is over, but the tracker did not say how it went. The event log in the system tab has more.',
   'admin.calib.polarity.flat': 'The head lies almost flat, where pan has no clear direction. Tilt it up first.',
   'admin.calib.tiltAway': 'Tilt it up',
   'admin.calib.save.title': 'Save',

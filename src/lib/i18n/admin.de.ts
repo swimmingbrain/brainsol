@@ -196,7 +196,6 @@ export const adminDe: Record<keyof typeof adminEn, string> = {
   'admin.calib.polarity.done': 'Richtungen gelernt: Schwenk {pan}, Neigung {tilt}.',
   'admin.calib.polarity.plain': 'Richtungen gelernt.',
   'admin.calib.polarity.failed': 'Die Richtungen sind nicht klar. Prüf, ob die Lampe auf den Kopf scheint und sich sonst nichts bewegt.',
-  'admin.calib.polarity.unclear': 'Der Schritt ist vorbei, aber der Tracker hat nicht gesagt, wie es lief. Mehr steht im Ereignisprotokoll im Systemtab.',
   'admin.calib.polarity.flat': 'Der Kopf liegt fast flach, dort hat der Schwenk keine klare Richtung. Richte ihn zuerst auf.',
   'admin.calib.tiltAway': 'Aufrichten',
   'admin.calib.save.title': 'Speichern',
