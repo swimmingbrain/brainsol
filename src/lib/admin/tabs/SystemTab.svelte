@@ -15,7 +15,7 @@
   import type { IconName } from '$lib/ui/Icon.svelte';
   import { recCommand, sysCommand } from '../commands';
   import { clockTime, uptimeText } from '../format';
-  import { recordUrl, storedToken } from '../record';
+  import { recordUrl } from '../record';
   import { runner } from '../session.svelte';
 
   const sys = $derived(telemetry.sys);
@@ -34,17 +34,7 @@
   // the csv exists once something was recorded in this visit or the tracker records now
   let recorded = $state(false);
 
-  // read again whenever the tracker or the rights change
-  const token = $derived.by(() => {
-    void connection.admin;
-    void connection.host;
-    if (!live || !connection.api) return null;
-    try {
-      return storedToken(connection.api, sessionStorage);
-    } catch {
-      return null;
-    }
-  });
+  const token = $derived(connection.token);
   const csv = $derived(live && connection.api && token && (recorded || sys?.rec) ? recordUrl(connection.api, token) : null);
 
   async function record(on: boolean) {

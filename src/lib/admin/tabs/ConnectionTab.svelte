@@ -2,7 +2,6 @@
   // where the page gets its data: the tracker address with a test before
   // switching, the way back to the simulation and a qr code that brings the
   // audience to the same tracker
-  import { onMount } from 'svelte';
   import Group from '../parts/Group.svelte';
   import Note from '../parts/Note.svelte';
   import QrCode from '../parts/QrCode.svelte';
@@ -12,7 +11,6 @@
   import { toast } from '$lib/stores/toasts.svelte';
   import { fmt, t, type Key } from '$lib/i18n';
   import { checkAddress, isLocalPage, probeTracker, shareLink, type Probe } from '../share';
-  import { session } from '../session.svelte';
 
   const page = typeof location === 'undefined' ? { protocol: 'https:', host: '', origin: '', hostname: '' } : location;
 
@@ -27,15 +25,7 @@
   const hello = $derived(connection.hello);
 
   // config.json says where the page goes without ?pi=, the share link leaves that out
-  onMount(() => {
-    if (session.defaultAddress !== undefined) return;
-    fetch('/config.json', { cache: 'no-store' })
-      .then((response) => (response.ok ? response.json() : null))
-      .then((value: { pi?: unknown } | null) => (session.defaultAddress = typeof value?.pi === 'string' ? value.pi : ''))
-      .catch(() => (session.defaultAddress = ''));
-  });
-
-  const link = $derived(shareLink(page.origin, connection.address, session.defaultAddress ?? '', page));
+  const link = $derived(shareLink(page.origin, connection.address, connection.defaultAddress ?? '', page));
   const local = $derived(isLocalPage(page.hostname));
 
   async function test() {

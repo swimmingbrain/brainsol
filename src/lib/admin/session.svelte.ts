@@ -46,8 +46,6 @@ class Session {
   dark = $state.raw<number[] | null>(null);
   bright = $state.raw<number[] | null>(null);
   scanStep = $state(SCAN_STEP_DEFAULT);
-  // the pi of config.json, undefined until it was read
-  defaultAddress = $state<string | undefined>(undefined);
 }
 
 export const session = new Session();
