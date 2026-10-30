@@ -75,6 +75,19 @@ describe('the engine', () => {
     expect(cmd({ op: 'target', pan: 0, tilt: 30 })).toMatchObject({ ok: false, err: 'admin' });
   });
 
+  it('lets a viewer drag the lamp, the head follows and the idle wandering stops', () => {
+    const { engine, cmd, advance, last, of } = harness({ wander: true });
+    expect(cmd({ op: 'simlight', az: -40, el: 35 })).toMatchObject({ ok: true, data: { az: -40, el: 35, on: true } });
+    expect(engine.wandering).toBe(false);
+    advance(8);
+    expect(last().sim).toMatchObject({ az: -40, el: 35 });
+    expect(offAxis(last().pan, last().tilt, -40, 35)).toBeLessThan(6);
+    // a viewer still gets no event log and cannot touch anything else
+    expect(of('evt')).toHaveLength(0);
+    expect(cmd({ op: 'simlight', on: false })).toMatchObject({ ok: true });
+    expect(cmd({ op: 'set', key: 'kp', value: 100 })).toMatchObject({ ok: false, err: 'admin' });
+  });
+
   it('takes any pin and gives a token that works again after a reconnect', () => {
     const { engine, out } = setup();
     engine.handle({ t: 'auth', pin: '1234' });
