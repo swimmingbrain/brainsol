@@ -3,7 +3,6 @@
   import Button from '$lib/ui/Button.svelte';
   import type { IconName } from '$lib/ui/Icon.svelte';
   import { t } from '$lib/i18n';
-  import { portal } from '../portal';
 
   // asks once before something that cannot be taken back. the title and the
   // button name the action, cancel comes first so enter does not fire it
@@ -29,11 +28,9 @@
   }
 </script>
 
-<div class="confirm" use:portal>
-  <Dialog {title} description={message} width={400} {onclose}>
-    {#snippet footer()}
-      <Button variant="secondary" size="lg" onclick={onclose}>{t('common.cancel')}</Button>
-      <Button variant="danger" size="lg" {icon} onclick={apply}>{confirm}</Button>
-    {/snippet}
-  </Dialog>
-</div>
+<Dialog {title} description={message} width={400} {onclose}>
+  {#snippet footer()}
+    <Button variant="secondary" size="lg" onclick={onclose}>{t('common.cancel')}</Button>
+    <Button variant="danger" size="lg" {icon} onclick={apply}>{confirm}</Button>
+  {/snippet}
+</Dialog>
