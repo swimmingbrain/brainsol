@@ -65,6 +65,8 @@ export class Connection {
   admin = $state(false);
   // after too many wrong pins: the time (Date.now) the next try is allowed
   lockedUntil = $state(0);
+  // the address config.json gives, empty for the simulation, undefined until it was read
+  defaultAddress = $state<string | undefined>(undefined);
   // the http base of the live tracker for /api/*, null in the simulation
   api: string | null = null;
 
@@ -78,6 +80,8 @@ export class Connection {
   private authWaiters: ((result: AuthResult) => void)[] = [];
   private seq = 0;
   private started = false;
+  // the admin token of the live tracker, also kept in session storage for a reload
+  private liveToken = $state<string | null>(null);
   private options: ConnectionOptions;
 
   constructor(options: ConnectionOptions = {}) {
@@ -92,12 +96,19 @@ export class Connection {
     return this.active;
   }
 
+  // the admin token of the live tracker while its tools are open, for the
+  // addresses that need one like the recording download. null in the simulation
+  get token(): string | null {
+    return this.admin && this.source === 'live' ? this.liveToken : null;
+  }
+
   // reads config.json and the address, then connects or starts the simulation
   async init(): Promise<void> {
     if (this.started) return;
     this.started = true;
     const page = this.page();
     const config = await this.loadConfig();
+    this.defaultAddress = config ?? '';
     const query = new URL(page.href).searchParams.get('pi');
     const pick = pickAddress({ query, saved: preferences.address || null, config });
     if (pick.address) this.connect(pick.address);
@@ -367,7 +378,10 @@ export class Connection {
       this.admin = true;
       this.lockedUntil = 0;
       this.active?.setToken(message.token);
-      if (this.active && this.active === this.live) this.storeToken(this.live.url, message.token, message.exp);
+      if (this.active && this.active === this.live) {
+        this.liveToken = message.token;
+        this.storeToken(this.live.url, message.token, message.exp);
+      }
     } else {
       const wasAdmin = this.admin;
       this.admin = false;
@@ -422,6 +436,7 @@ export class Connection {
   }
 
   private clearToken(): void {
+    this.liveToken = null;
     try {
       sessionStorage.removeItem(TOKEN_KEY);
     } catch {}
