@@ -235,6 +235,34 @@ describe('the connection', () => {
     connection.stop();
   });
 
+  it('hands out the token of a live tracker only while its tools are open', async () => {
+    const { connection } = make('https://sol.swimmingbrain.dev/?pi=pi.example.org', { pi: 'tunnel.example.org' });
+    await connection.init();
+    expect(connection.defaultAddress).toBe('tunnel.example.org');
+    last().open();
+    last().receive(HELLO);
+    expect(connection.token).toBeNull();
+    const result = connection.auth('2468');
+    last().receive({ t: 'auth', ok: true, token: 'tok', exp: Date.now() / 1000 + 3600 });
+    await result;
+    expect(connection.token).toBe('tok');
+    connection.logout();
+    expect(connection.token).toBeNull();
+    connection.stop();
+  });
+
+  it('gives no token in the simulation and an empty default without config.json', async () => {
+    const { connection } = make('https://sol.swimmingbrain.dev/', null);
+    expect(connection.defaultAddress).toBeUndefined();
+    await connection.init();
+    await settle();
+    expect(connection.defaultAddress).toBe('');
+    await connection.auth('');
+    expect(connection.admin).toBe(true);
+    expect(connection.token).toBeNull();
+    connection.stop();
+  });
+
   it('remembers a wrong pin lockout from the tracker', async () => {
     const { connection } = make('https://sol.swimmingbrain.dev/?pi=pi.example.org');
     await connection.init();
