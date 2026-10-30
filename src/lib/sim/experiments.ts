@@ -19,7 +19,8 @@ const r3 = (n: number) => Math.round(n * 1000) / 1000 + 0;
 // offset amb and peak are a straight line fit, the offset is searched. it takes
 // out the few degrees a lock sits off the light, the same as on the pi, so a
 // lock that is a little off does not spoil the cosine law
-export function fitCosine(points: [number, number][]): { amb: number; peak: number; offset: number; r2: number } {
+// r2 is null when every point read the same, there is nothing to explain then
+export function fitCosine(points: [number, number][]): { amb: number; peak: number; offset: number; r2: number | null } {
   const n = points.length;
   const solve = (offset: number) => {
     let mx = 0;
@@ -43,7 +44,7 @@ export function fitCosine(points: [number, number][]): { amb: number; peak: numb
     for (const [d, y] of points) sse += (y - amb - peak * Math.max(0, Math.cos(((d - offset) * Math.PI) / 180))) ** 2;
     return { sse, amb, peak, offset };
   };
-  if (n === 0) return { amb: 0, peak: 0, offset: 0, r2: 0 };
+  if (n === 0) return { amb: 0, peak: 0, offset: 0, r2: null };
   let best = solve(0);
   for (let k = -80; k <= 80; k++) {
     const next = solve(k * 0.25);
@@ -56,7 +57,7 @@ export function fitCosine(points: [number, number][]): { amb: number; peak: numb
   }
   const my = points.reduce((sum, [, y]) => sum + y, 0) / n;
   const sst = points.reduce((sum, [, y]) => sum + (y - my) ** 2, 0);
-  return { amb: best.amb, peak: best.peak, offset: best.offset, r2: sst > 0 ? 1 - best.sse / sst : 0 };
+  return { amb: best.amb, peak: best.peak, offset: best.offset, r2: sst > 0 ? 1 - best.sse / sst : null };
 }
 
 abstract class Experiment extends Activity {
@@ -134,11 +135,16 @@ export class Cosine extends Experiment {
     this.report('fit', 0.95);
     const fit = fitCosine(points);
     yield* this.seek(lock.pan, lock.tilt);
+    const curve = (d: number) => fit.amb + fit.peak * Math.max(0, Math.cos(((d - fit.offset) * Math.PI) / 180));
     const result: CosineResult = {
       peak: r1(fit.peak),
       amb: r1(fit.amb),
-      r2: r3(fit.r2),
-      points: points.map(([d, y]) => [d, r1(y)])
+      r2: fit.r2 === null ? null : r3(fit.r2),
+      points: points.map(([d, y]) => [d, r1(y)]),
+      // the fitted curve at the same angles and the pointing error the fit took out
+      fit: points.map(([d]) => [d, r1(curve(d))]),
+      offset: r2(fit.offset),
+      lock: { pan: r1(lock.pan), tilt: r1(lock.tilt) }
     };
     return result;
   }
@@ -173,13 +179,18 @@ export class Compare extends Experiment {
       if (last) yield* this.seek(last.pan, last.tilt);
       last = yield* this.lock();
       const tracked = yield* this.average(0.5, () => this.lux());
-      rounds.push({ fixed: r1(fixed), tracked: r1(tracked) });
-      gains.push(r3(tracked / Math.max(fixed, 0.1)));
+      const gain = r3(tracked / Math.max(fixed, 0.1));
+      rounds.push({ fixed: r1(fixed), tracked: r1(tracked), gain });
+      gains.push(gain);
     }
+    const mean = gains.reduce((sum, g) => sum + g, 0) / gains.length;
     const result: CompareResult = {
-      gain: r3(gains.reduce((sum, g) => sum + g, 0) / gains.length),
+      gain: r3(mean),
       spread: r3(Math.max(...gains) - Math.min(...gains)),
-      rounds
+      rounds,
+      // the population standard deviation, like statistics.pstdev on the pi
+      sd: r3(Math.sqrt(gains.reduce((sum, g) => sum + (g - mean) ** 2, 0) / gains.length)),
+      ref: { pan: p.ref_pan.v, tilt: p.ref_tilt.v }
     };
     return result;
   }
@@ -225,10 +236,20 @@ export class Step extends Experiment {
       if (samples.length % 25 === 0) this.report('release', 0.2 + (0.8 * elapsed) / Step.MAX_S);
     }
     const final = c.pan;
-    const sign = start - final > 0 ? 1 : -1;
+    const travel = start - final;
+    const sign = travel > 0 ? 1 : -1;
     let past = 0;
     for (const row of samples) past = Math.max(past, sign * (final - row[3]));
-    const result: StepResult = { settle: settle === null ? null : r2(settle), overshoot: r2(past), samples };
+    const result: StepResult = {
+      settle: settle === null ? null : r2(settle),
+      overshoot: r2(past),
+      samples,
+      // the overshoot as a share of the way back, a way too short says nothing
+      overshoot_pct: Math.abs(travel) > 0.5 ? r1((100 * past) / Math.abs(travel)) : null,
+      offset,
+      lock: { pan: r1(lock.pan), tilt: r1(lock.tilt) },
+      final: { pan: r1(final), tilt: r1(c.tilt) }
+    };
     return result;
   }
 

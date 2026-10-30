@@ -43,7 +43,7 @@ describe('the cosine fit', () => {
     const points: [number, number][] = [];
     for (let d = -60; d <= 60; d += 5) points.push([d, 500 + (d % 10 === 0 ? 200 : -200)]);
     expect(fitCosine(points).r2).toBeLessThan(0.5);
-    expect(fitCosine([]).r2).toBe(0);
+    expect(fitCosine([]).r2).toBeNull();
   });
 });
 
@@ -53,7 +53,7 @@ describe('the cosine experiment', () => {
     expect(ack).toMatchObject({ ok: true, data: { kind: 'cosine', id: expect.stringMatching(/^cosine-\d{8}-\d{6}$/) } });
     expect(end).toMatchObject({ kind: 'cosine', phase: 'done', progress: 1 });
     const result = end.result as CosineResult;
-    expect(Object.keys(result).sort()).toEqual(['amb', 'peak', 'points', 'r2']);
+    expect(Object.keys(result).sort()).toEqual(['amb', 'fit', 'lock', 'offset', 'peak', 'points', 'r2']);
     expect(result.r2).toBeGreaterThan(0.98);
     expect(result.peak).toBeGreaterThan(850);
     expect(result.peak).toBeLessThan(950);
@@ -90,10 +90,10 @@ describe('the compare experiment', () => {
     const { end } = run('compare', { az: -60, el: 15 });
     expect(end.phase).toBe('done');
     const result = end.result as CompareResult;
-    expect(Object.keys(result).sort()).toEqual(['gain', 'rounds', 'spread']);
+    expect(Object.keys(result).sort()).toEqual(['gain', 'ref', 'rounds', 'sd', 'spread']);
     expect(result.rounds).toHaveLength(3);
     for (const round of result.rounds) {
-      expect(Object.keys(round).sort()).toEqual(['fixed', 'tracked']);
+      expect(Object.keys(round).sort()).toEqual(['fixed', 'gain', 'tracked']);
       expect(round.tracked).toBeGreaterThan(round.fixed);
     }
     // a flat panel sees sin 15 of the direct light
@@ -115,7 +115,7 @@ describe('the step experiment', () => {
     const { end, exps } = run('step', { az: 25, el: 40 });
     expect(end.phase).toBe('done');
     const result = end.result as StepResult;
-    expect(Object.keys(result).sort()).toEqual(['overshoot', 'samples', 'settle']);
+    expect(Object.keys(result).sort()).toEqual(['final', 'lock', 'offset', 'overshoot', 'overshoot_pct', 'samples', 'settle']);
     expect(result.settle).toBeGreaterThan(0.2);
     expect(result.settle).toBeLessThan(8);
     expect(result.overshoot).toBeGreaterThanOrEqual(0);
