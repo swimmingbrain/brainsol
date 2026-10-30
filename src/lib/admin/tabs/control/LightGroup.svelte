@@ -140,11 +140,4 @@
   .scenes :global(.btn) {
     width: 100%;
   }
-
-  @media (pointer: coarse) {
-    .scenes :global(.btn) {
-      height: 44px;
-      font-size: 13px;
-    }
-  }
 </style>

@@ -183,10 +183,5 @@
     .poses {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
-
-    .poses :global(.btn) {
-      height: 44px;
-      font-size: 13px;
-    }
   }
 </style>

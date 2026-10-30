@@ -261,10 +261,5 @@
       height: 44px;
       font-size: 15px;
     }
-
-    .actions :global(.btn),
-    .link :global(.btn) {
-      height: 44px;
-    }
   }
 </style>

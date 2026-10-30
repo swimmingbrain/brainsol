@@ -130,11 +130,4 @@
     font-size: 12px;
     color: var(--text-secondary);
   }
-
-  @media (pointer: coarse) {
-    .actions :global(.btn),
-    .best :global(.btn) {
-      height: 44px;
-    }
-  }
 </style>

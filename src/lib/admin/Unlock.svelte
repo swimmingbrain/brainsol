@@ -235,7 +235,6 @@
   @media (max-width: 480px), (pointer: coarse) {
     .actions :global(.btn) {
       flex: 1;
-      height: 44px;
     }
   }
 </style>

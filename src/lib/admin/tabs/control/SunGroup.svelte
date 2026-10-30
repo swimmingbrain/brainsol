@@ -182,10 +182,5 @@
       height: 40px;
       font-size: 14px;
     }
-
-    .actions :global(.btn),
-    .date :global(.btn) {
-      height: 40px;
-    }
   }
 </style>

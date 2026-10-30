@@ -71,10 +71,4 @@
     font-size: 11.5px;
     color: var(--text-muted);
   }
-
-  @media (pointer: coarse) {
-    .all :global(.btn) {
-      height: 40px;
-    }
-  }
 </style>

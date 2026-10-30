@@ -71,10 +71,4 @@
   .activity :global(.btn) {
     margin-left: auto;
   }
-
-  @media (pointer: coarse) {
-    .activity :global(.btn) {
-      height: 40px;
-    }
-  }
 </style>

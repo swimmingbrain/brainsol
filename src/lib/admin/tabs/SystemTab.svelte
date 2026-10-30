@@ -229,10 +229,4 @@
     flex-wrap: wrap;
     gap: 6px;
   }
-
-  @media (pointer: coarse) {
-    .power :global(.btn) {
-      height: 44px;
-    }
-  }
 </style>

@@ -183,11 +183,4 @@
     line-height: 1.45;
     color: var(--text-muted);
   }
-
-  @media (pointer: coarse) {
-    .kind :global(.btn),
-    .now :global(.btn) {
-      height: 44px;
-    }
-  }
 </style>

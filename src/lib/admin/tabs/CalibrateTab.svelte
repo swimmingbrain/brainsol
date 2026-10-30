@@ -183,11 +183,4 @@
     flex-wrap: wrap;
     gap: 4px;
   }
-
-  @media (pointer: coarse) {
-    .nudge :global(.btn) {
-      height: 40px;
-      min-width: 40px;
-    }
-  }
 </style>

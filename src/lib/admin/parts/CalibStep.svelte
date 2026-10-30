@@ -144,10 +144,4 @@
     color: var(--text-muted);
     overflow-wrap: anywhere;
   }
-
-  @media (pointer: coarse) {
-    .row :global(.btn) {
-      height: 40px;
-    }
-  }
 </style>
