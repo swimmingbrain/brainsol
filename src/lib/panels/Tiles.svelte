@@ -58,7 +58,9 @@
     <Tile
       label={t('panels.tiles.gain')}
       title={t('panels.tiles.gainTitle', { pan: connection.config?.params.ref_pan.v ?? 0, tilt: connection.config?.params.ref_tilt.v ?? 90 })}
-      value={gainPercent(telemetry.gain)} unit="%" caption={t('panels.tiles.gainNote')} />
+      value={gainPercent(telemetry.gain)}
+      unit="%"
+      caption={t('panels.tiles.gainNote')} />
     <Tile
       label={t('panels.tiles.off')}
       title={t('panels.tiles.offTitle')}
