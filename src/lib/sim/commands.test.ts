@@ -77,7 +77,7 @@ describe('garbage in every field of every op', () => {
     expect(acks).toHaveLength(7);
     expect(acks.every((m) => m.t === 'ack' && m.id === '' && !m.ok && m.err === 'bad')).toBe(true);
     h.engine.handle({ t: 'hello', id: 'q' } as unknown as ClientMessage);
-    expect(h.out.pop()).toEqual({ t: 'ack', id: 'q', ok: false, err: 'unknown' });
+    expect(h.out.pop()).toMatchObject({ t: 'ack', id: 'q', ok: false, err: 'unknown' });
     h.engine.handle({} as unknown as ClientMessage);
     expect(h.out.pop()).toMatchObject({ t: 'ack', ok: false, err: 'unknown' });
   });
@@ -107,9 +107,9 @@ describe('garbage in every field of every op', () => {
   it('answers an auth without a pin or a token with a refusal', () => {
     const h = harness();
     h.engine.handle({ t: 'auth' } as unknown as ClientMessage);
-    expect(h.out.pop()).toEqual({ t: 'auth', ok: false, err: 'pin', wait: 0 });
+    expect(h.out.pop()).toMatchObject({ t: 'auth', ok: false, err: 'pin', wait: 0 });
     h.engine.handle({ t: 'auth', token: 5 } as unknown as ClientMessage);
-    expect(h.out.pop()).toEqual({ t: 'auth', ok: false, err: 'token', wait: 0 });
+    expect(h.out.pop()).toMatchObject({ t: 'auth', ok: false, err: 'token', wait: 0 });
     expect(h.cmd({ op: 'mode', mode: 'hold' })).toMatchObject({ ok: false, err: 'admin' });
   });
 });

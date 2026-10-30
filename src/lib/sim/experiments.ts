@@ -4,7 +4,7 @@
 
 import { Activity, ActivityError, DT, type ActivityHost } from './activities';
 import { askAuto } from './modes';
-import type { CompareResult, CosineResult, ExpKind, ExpPhase, ExpResult, StepResult } from '$lib/link/protocol';
+import type { CompareResult, CosineResult, ExpKind, ExpMessage, ExpPhase, ExpResult, StepResult } from '$lib/link/protocol';
 
 export const EXP_KINDS: ExpKind[] = ['cosine', 'compare', 'step'];
 
@@ -73,10 +73,12 @@ abstract class Experiment extends Activity {
     this.id = host.newId(exp);
   }
 
-  protected report(phase: ExpPhase, progress: number, result: ExpResult | null = null): void {
+  protected report(phase: ExpPhase, progress: number, result: ExpResult | null = null, err?: string): void {
     this.phase = phase;
     this.progress = progress;
-    this.host.publish({ t: 'exp', id: this.id, kind: this.exp, phase, progress: r3(Math.min(Math.max(progress, 0), 1)), result });
+    const message: ExpMessage = { t: 'exp', id: this.id, kind: this.exp, phase, progress: r3(Math.min(Math.max(progress, 0), 1)), result };
+    if (err !== undefined) message.err = err;
+    this.host.publish(message);
   }
 
   protected lux(): number | null {
@@ -99,7 +101,7 @@ abstract class Experiment extends Activity {
       this.report('done', 1, result);
       this.host.event('info', this.summary(result));
     } else {
-      this.report('error', this.progress, null);
+      this.report('error', this.progress, null, this.error ?? 'stopped');
       this.host.event('warn', `${this.exp} experiment ended early, ${this.error}`);
     }
   }

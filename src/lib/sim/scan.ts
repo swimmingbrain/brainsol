@@ -92,7 +92,8 @@ export class Scan extends Activity {
   }
 
   protected finished(): void {
-    this.publish(true);
+    // a scan that was stopped or failed says so in its last frame, like on the pi
+    this.host.publish(this.ok ? this.message(true) : { ...this.message(true), stopped: true, err: this.error ?? 'stopped' });
     if (this.ok && this.best) {
       const unit = this.digits === 1 ? ' lux' : '';
       this.host.event('info', `scan done, brightest at pan ${this.best.pan.toFixed(0)} tilt ${this.best.tilt.toFixed(0)} with ${round1(this.best.v)}${unit}`);

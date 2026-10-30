@@ -449,7 +449,9 @@ export class SimTracker implements SimEngine, ModeHost {
       this.send({ t: 'auth', ok: true, token: this.token, exp });
       return;
     }
-    this.send({ t: 'auth', ok: false, err: 'token' in message ? 'token' : 'pin', wait: 0 });
+    const token = 'token' in message;
+    const msg = token ? 'the token is unknown or expired, log in with the pin' : 'the pin is missing';
+    this.send({ t: 'auth', ok: false, err: token ? 'token' : 'pin', msg, wait: 0 });
   }
 
   // the answers, for commands.ts
@@ -458,9 +460,9 @@ export class SimTracker implements SimEngine, ModeHost {
     this.send(data === undefined ? { t: 'ack', id, ok: true } : { t: 'ack', id, ok: true, data });
   }
 
-  // an ack with ok false. an admin also sees why in the event log, the ack has no room for it
+  // an ack with ok false and the reason in msg, like on the pi. an admin also sees it in the event log
   refuse(id: string, code: AckErr, what: string, why: string): void {
-    this.send({ t: 'ack', id, ok: false, err: code });
+    this.send({ t: 'ack', id, ok: false, err: code, msg: why });
     if (code !== 'admin') this.event('warn', `${what} refused, ${why}`);
   }
 
@@ -471,7 +473,7 @@ export class SimTracker implements SimEngine, ModeHost {
     act.onDone((done) => {
       if (session !== this.session) return;
       if (done.ok) this.ack(id, done.result);
-      else this.send({ t: 'ack', id, ok: false, err: 'bad' });
+      else this.send({ t: 'ack', id, ok: false, err: 'bad', msg: done.error ?? 'the step failed' });
     });
   }
 
