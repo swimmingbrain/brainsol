@@ -79,7 +79,7 @@ describe('the cosine experiment', () => {
     h.cmd({ op: 'simlight', on: false, amb: 1 });
     h.cmd({ op: 'exp', kind: 'cosine' });
     h.advance(6);
-    expect(h.of('exp').pop()).toMatchObject({ phase: 'error', result: null });
+    expect(h.of('exp').pop()).toMatchObject({ phase: 'error', result: null, err: 'not enough light to lock on' });
     expect(h.of('evt').pop()).toMatchObject({ lvl: 'warn', msg: 'cosine experiment ended early, not enough light to lock on' });
     expect(h.last().st).not.toBe('measuring');
   });

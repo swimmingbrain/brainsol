@@ -82,6 +82,7 @@ describe('a scan', () => {
     expect(cmd({ op: 'stop' })).toMatchObject({ ok: true, data: { stopped: true } });
     const end = of('scan').pop()!;
     expect(end.done).toBe(true);
+    expect(end).toMatchObject({ stopped: true, err: 'stopped' });
     const seen = end.v.flat().filter((x) => x !== null).length;
     expect(seen).toBeGreaterThan(2);
     expect(seen).toBeLessThan(42);

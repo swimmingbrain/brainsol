@@ -92,6 +92,17 @@ describe('garbage in every field of every op', () => {
     }
   });
 
+  it('says why in msg, in the same words as the event log', () => {
+    const h = harness();
+    expect(h.cmd({ op: 'mode', mode: 'hold' })).toEqual({ t: 'ack', id: 't1', ok: false, err: 'admin', msg: 'admin only, unlock with the pin first' });
+    h.unlock();
+    expect(h.cmd({ op: 'set', key: 'vmax', value: 500 })).toMatchObject({ ok: false, err: 'bad', msg: 'vmax must be from 5 to 180' });
+    expect(h.of('evt').pop()!.msg).toBe('set refused, vmax must be from 5 to 180');
+    expect(h.cmd({ op: 'dance' })).toMatchObject({ ok: false, err: 'unknown', msg: 'unknown op dance' });
+    h.engine.handle({ t: 'auth', token: 'made up' });
+    expect(h.out.pop()).toMatchObject({ t: 'auth', ok: false, err: 'token', msg: 'the token is unknown or expired, log in with the pin' });
+  });
+
   it('carries any id back as text', () => {
     const h = harness();
     for (const [id, text] of [
