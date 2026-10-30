@@ -69,10 +69,10 @@ describe('the engine', () => {
     expect(cmd({ op: 'ping' })).toMatchObject({ ok: true, data: { ts: 1_700_000_000 } });
   });
 
-  it('keeps everything but ping for an admin', () => {
+  it('keeps everything but ping and the lamp for an admin', () => {
     const { cmd } = setup();
     expect(cmd({ op: 'mode', mode: 'hold' })).toMatchObject({ ok: false, err: 'admin' });
-    expect(cmd({ op: 'simlight', az: 0, el: 30 })).toMatchObject({ ok: false, err: 'admin' });
+    expect(cmd({ op: 'target', pan: 0, tilt: 30 })).toMatchObject({ ok: false, err: 'admin' });
   });
 
   it('takes any pin and gives a token that works again after a reconnect', () => {

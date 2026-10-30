@@ -16,9 +16,10 @@
   and the export createEngine(options) that returns one. SimTransport calls it
   once and keeps the engine for the whole visit.
 
-  rights work like on the pi: anything but ping needs an auth first. there is
-  no pin to check here, the simulation only runs in this browser, so any pin is
-  taken. evt messages only go out to an admin.
+  rights work like on the pi: anything but ping needs an auth first, except
+  simlight. the lamp only lights this tab, so every visitor may drag it. there
+  is no pin to check here, the simulation only runs in this browser, so any pin
+  is taken. evt messages only go out to an admin.
 
   inside it is built like engine.py on the pi:
 

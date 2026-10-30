@@ -1,5 +1,6 @@
 // the cmd messages of section 8, checked field by field the way commands.py on
-// the pi checks them. every command gets exactly one ack with its id: ok with
+// the pi checks them, only simlight is open to everyone here. every command
+// gets exactly one ack with its id: ok with
 // the data the pi sends, or ok false with admin, bad, busy, unknown or
 // unsupported. a handler that returns LATER answers itself when its activity ends
 
@@ -12,8 +13,10 @@ import { parseWhen, SPEED_MAX, SPEED_MIN } from './sun';
 import { MODES } from '$lib/link/protocol';
 import type { SimTracker } from './engine';
 
-export const OPEN_OPS = ['ping'];
-export const ADMIN_OPS = ['mode', 'target', 'rate', 'set', 'site', 'sun', 'scan', 'exp', 'stop', 'calib', 'simlight', 'rec', 'sys'];
+// the lamp of the simulation only lights this tab, so every visitor may move
+// it. against a real tracker simlight stays admin only, the pi checks that
+export const OPEN_OPS = ['ping', 'simlight'];
+export const ADMIN_OPS = ['mode', 'target', 'rate', 'set', 'site', 'sun', 'scan', 'exp', 'stop', 'calib', 'rec', 'sys'];
 
 // the ack comes later, when the activity the command started has ended
 export const LATER = Symbol('later');
