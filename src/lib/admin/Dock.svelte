@@ -82,7 +82,7 @@
   .panel :global(.btn.primary:focus-visible),
   .panel :global(.btn.danger:focus-visible) {
     outline: 2px solid var(--text-strong);
-    outline-offset: 1px;
+    outline-offset: -4px;
   }
 
   /* on a touch screen every control of the shared kit gets room for a thumb */
