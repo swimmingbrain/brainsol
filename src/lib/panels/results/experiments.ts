@@ -18,9 +18,12 @@ export function isStep(kind: ExpKind, result: ExpResult): result is StepResult {
   return kind === 'step' && Array.isArray((result as StepResult).samples);
 }
 
-// lux = amb + peak * max(0, cos delta), the model the tracker fitted
+// lux = amb + peak * max(0, cos(delta - offset)), the model the tracker fitted.
+// the offset is the few degrees the lock sat off the light, without it the
+// curve misses the points at the ends of the sweep
 export function cosineFit(result: CosineResult, delta: number): number {
-  return result.amb + result.peak * Math.max(0, Math.cos((delta * Math.PI) / 180));
+  const offset = Number.isFinite(result.offset) ? (result.offset as number) : 0;
+  return result.amb + result.peak * Math.max(0, Math.cos(((delta - offset) * Math.PI) / 180));
 }
 
 // one table for the chart: every whole degree across the sweep plus the
