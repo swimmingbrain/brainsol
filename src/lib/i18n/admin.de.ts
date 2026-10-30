@@ -276,7 +276,7 @@ export const adminDe: Record<keyof typeof adminEn, string> = {
   'admin.sys.drv': 'Treiber',
   'admin.sys.drv.sim': 'Simulation',
   'admin.sys.drv.bridge': 'UNO Platine',
-  'admin.sys.link': 'Verbindung zur Platine',
+  'admin.sys.link': 'Platine',
   'admin.sys.link.ok': 'ok',
   'admin.sys.link.down': 'weg',
   'admin.sys.fw': 'Firmware',
