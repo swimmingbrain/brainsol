@@ -127,6 +127,11 @@
     color: var(--text-secondary);
   }
 
+  /* four speeds in the narrow dock, 3600× must not be cut */
+  .row :global(.segment) {
+    padding: 0 3px;
+  }
+
   .date {
     display: flex;
     gap: 4px;

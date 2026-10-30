@@ -122,8 +122,9 @@
 
   .legend {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 8px;
+    gap: 4px 8px;
     margin-top: 8px;
     font-size: 10.5px;
     color: var(--text-muted);
@@ -146,5 +147,6 @@
 
   .scale {
     font-family: var(--font-editor);
+    white-space: nowrap;
   }
 </style>
