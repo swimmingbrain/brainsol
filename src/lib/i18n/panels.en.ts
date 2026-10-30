@@ -79,6 +79,8 @@ export const panelsEn = {
   'panels.day.solarTime': 'W/m² over local mean solar time',
   'panels.day.chartAria': 'Power per square metre over the day for the three kinds of panel',
   'panels.day.yearHead': 'Over the year',
+  'panels.day.saveDay': 'Day as CSV',
+  'panels.day.saveYear': 'Year as CSV',
   'panels.day.yearLead': 'Each month stands for one clear mean day. Over a clear year the dual axis tracker collects {dual} % more than the fixed panel, the single axis tracker {single} % more.',
   'panels.day.perDay': 'kWh/m² on a mean day',
   'panels.day.perYear': 'in a clear year',

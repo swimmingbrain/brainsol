@@ -78,6 +78,8 @@ export const panelsDe: Record<keyof typeof panelsEn, string> = {
   'panels.day.solarTime': 'W/m² über der mittleren Ortszeit',
   'panels.day.chartAria': 'Leistung pro Quadratmeter über den Tag für die drei Panelarten',
   'panels.day.yearHead': 'Übers Jahr',
+  'panels.day.saveDay': 'Tag als CSV',
+  'panels.day.saveYear': 'Jahr als CSV',
   'panels.day.yearLead': 'Jeder Monat steht für einen klaren mittleren Tag. Über ein klares Jahr sammelt der zweiachsige Tracker {dual} % mehr als das feste Panel, der einachsige {single} % mehr.',
   'panels.day.perDay': 'kWh/m² an einem mittleren Tag',
   'panels.day.perYear': 'in einem klaren Jahr',

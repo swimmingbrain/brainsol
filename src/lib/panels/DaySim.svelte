@@ -15,6 +15,8 @@
   import { fmt, t, type Key } from '$lib/i18n';
   import { dateOf, fixedPanelFor, gain, simulateDay, simulateYear } from './solar/day';
   import { gainPercent } from './format';
+  import { dayCsv, yearCsv } from './solar/csv';
+  import { saveText } from './download';
 
   interface Preset {
     id: string;
@@ -154,6 +156,11 @@
   });
 
   const kinds = ['fixed', 'single', 'dual'] as const;
+
+  // the numbers behind the charts, for a spreadsheet
+  const placeTag = () => `${lat.toFixed(2)}_${lon.toFixed(2)}`;
+  const saveDay = () => saveText(`brainsol-day-${placeTag()}-${day}.csv`, dayCsv(sim));
+  const saveYear = () => saveText(`brainsol-year-${placeTag()}.csv`, yearCsv(year));
   const kwh = (value: number) => fmt(value, value >= 100 ? 0 : value >= 10 ? 1 : 2);
   const share = (value: number | null) => (value === null ? null : fmt(Math.round(value * 100), 0));
 </script>
@@ -222,6 +229,9 @@
           <span>{t('panels.day.highest')} <b>{fmt(Math.max(0, sim.noon), 0)}°</b></span>
         </div>
       </div>
+      <div class="save">
+        <Button size="sm" variant="ghost" icon="download" onclick={saveDay}>{t('panels.day.saveDay')}</Button>
+      </div>
       <Plot
         {series}
         {view}
@@ -236,7 +246,10 @@
 
   <div class="year">
     <div class="year-head">
-      <h3>{t('panels.day.yearHead')}</h3>
+      <div class="year-title">
+        <h3>{t('panels.day.yearHead')}</h3>
+        <Button size="sm" variant="ghost" icon="download" onclick={saveYear}>{t('panels.day.saveYear')}</Button>
+      </div>
       <p>
         {t('panels.day.yearLead', { dual: share(gain(year.total.dual, year.total.fixed)) ?? '0', single: share(gain(year.total.single, year.total.fixed)) ?? '0' })}
       </p>
@@ -428,6 +441,20 @@
 
   .year {
     margin-top: 44px;
+  }
+
+  .save {
+    display: flex;
+    justify-content: flex-end;
+    margin: -10px 0 -6px;
+  }
+
+  .year-title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    max-width: 100%;
   }
 
   .year-head p {
