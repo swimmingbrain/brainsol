@@ -16,6 +16,7 @@
   import { session } from './results/session.svelte';
   import { csvUrl, isCompare, isCosine, isStep, mergeRecords, parseList, toCsv, EXP_KINDS } from './results/experiments';
   import { gainPercent } from './format';
+  import { saveText } from './download';
   import type { ExpKind, ExperimentRecord, ExperimentSummary } from '$lib/link/protocol';
 
   onMount(() => session.watch());
@@ -86,12 +87,7 @@
 
   // the simulation has no server, the page writes the csv
   function download(r: ExperimentRecord) {
-    const url = URL.createObjectURL(new Blob([toCsv(r)], { type: 'text/csv' }));
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `brainsol-${r.kind}-${r.id}.csv`;
-    link.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    saveText(`brainsol-${r.kind}-${r.id}.csv`, toCsv(r));
   }
 </script>
 
