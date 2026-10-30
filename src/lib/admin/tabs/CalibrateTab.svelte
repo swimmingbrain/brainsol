@@ -9,7 +9,8 @@
   import Button from '$lib/ui/Button.svelte';
   import { connection } from '$lib/stores/connection.svelte';
   import { telemetry } from '$lib/stores/telemetry.svelte';
-  import { t, type Key } from '$lib/i18n';
+  import { toast } from '$lib/stores/toasts.svelte';
+  import { errorText, t, type Key } from '$lib/i18n';
   import type { AckMessage, CalibStep as Step } from '$lib/link/protocol';
   import { calibCommand, FALLBACK_LIMITS, targetCommand } from '../commands';
   import { FLOW, nearFlat, nextStep, polarityTilt, rawNow, readPolarity, readSpan, readZero, sensorsWhere, type FlowStep } from '../calib';
@@ -100,6 +101,7 @@
       }, 65_000);
       return;
     }
+    toast(errorText(ack.err), 'warning', 4000);
     // a tracker that cannot calibrate gets one note above the steps, not one per step
     if (ack.err === 'unsupported' || ack.err === 'unknown') {
       delete session.calib[step];
@@ -130,7 +132,7 @@
   });
 
   async function reset() {
-    const ack = await runner.run(calibCommand('reset'), { key: 'calib.reset', feature: 'calib', quiet: true });
+    const ack = await runner.run(calibCommand('reset'), { key: 'calib.reset', feature: 'calib' });
     if (!ack.ok) return;
     session.calib = {};
     const report = readSpan(ack.data);
