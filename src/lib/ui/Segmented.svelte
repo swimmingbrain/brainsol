@@ -94,4 +94,16 @@
   .segment:disabled {
     cursor: default;
   }
+
+  @media (pointer: coarse) {
+    .md .segment {
+      height: 40px;
+      font-size: 12.5px;
+    }
+
+    .sm .segment {
+      height: 34px;
+      font-size: 12px;
+    }
+  }
 </style>

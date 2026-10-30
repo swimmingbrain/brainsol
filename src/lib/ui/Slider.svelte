@@ -111,4 +111,22 @@
   .slider-row.disabled {
     opacity: 0.4;
   }
+
+  /* a thumb sized handle and a taller strip to grab it on touch screens */
+  @media (pointer: coarse) {
+    .slider {
+      height: 40px;
+    }
+
+    .slider::-webkit-slider-thumb {
+      width: 22px;
+      height: 30px;
+      margin-top: -13px;
+    }
+
+    .slider::-moz-range-thumb {
+      width: 22px;
+      height: 30px;
+    }
+  }
 </style>

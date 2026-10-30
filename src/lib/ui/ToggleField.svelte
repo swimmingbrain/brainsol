@@ -60,4 +60,21 @@
     background: var(--accent);
     transform: translateX(12px);
   }
+
+  @media (pointer: coarse) {
+    .switch {
+      width: 44px;
+      height: 26px;
+      padding: 3px;
+    }
+
+    .knob {
+      width: 18px;
+      height: 18px;
+    }
+
+    .switch.on .knob {
+      transform: translateX(18px);
+    }
+  }
 </style>

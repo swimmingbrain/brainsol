@@ -171,4 +171,35 @@
     opacity: 0.4;
     cursor: default;
   }
+
+  /* a finger needs more room than a mouse pointer */
+  @media (pointer: coarse) {
+    .sm {
+      height: 40px;
+      padding: 0 12px;
+      font-size: 12px;
+    }
+
+    .md {
+      height: 44px;
+      padding: 0 14px;
+      font-size: 13px;
+    }
+
+    .lg {
+      height: 48px;
+    }
+
+    .only.sm {
+      width: 40px;
+    }
+
+    .only.md {
+      width: 44px;
+    }
+
+    .only.lg {
+      width: 48px;
+    }
+  }
 </style>

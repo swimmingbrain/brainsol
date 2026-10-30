@@ -196,4 +196,12 @@
     color: var(--text-primary);
     border-color: var(--accent);
   }
+
+  @media (pointer: coarse) {
+    .number,
+    .number-input {
+      padding: 11px 8px;
+      font-size: 13px;
+    }
+  }
 </style>
