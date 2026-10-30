@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { preferences } from '$lib/stores/preferences.svelte';
+  import { formatField, parseField } from './number';
+
   // oninput fires all through a drag so the preview follows, onchange once the value settles
   let {
     value,
@@ -31,10 +34,9 @@
 
   const display = $derived(format(value));
 
+  // the decimal comma in german, both when shown and while typing
   function format(n: number): string {
-    if (!Number.isFinite(n)) return '0';
-    const fixed = n.toFixed(precision);
-    return precision > 0 ? fixed.replace(/\.?0+$/, '') : fixed;
+    return formatField(n, precision, preferences.lang);
   }
 
   function clamp(n: number): number {
@@ -63,10 +65,8 @@
 
   function commitDraft() {
     editing = false;
-    const text = draft.replace(',', '.').replace(/[^0-9.eE+-]/g, '').trim();
     // an empty or bad entry keeps the old value, never a silent zero or NaN
-    if (!text) return;
-    const parsed = Number(text);
+    const parsed = parseField(draft);
     if (Number.isFinite(parsed)) commit(parsed);
   }
 
@@ -151,6 +151,7 @@
     role="spinbutton"
     aria-label={label}
     aria-valuenow={value}
+    aria-valuetext="{display}{unit}"
     aria-valuemin={min}
     aria-valuemax={max}
     tabindex={disabled ? -1 : 0}
