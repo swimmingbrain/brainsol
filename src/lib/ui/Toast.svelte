@@ -25,9 +25,10 @@
 {/if}
 
 <style>
+  /* above the status bar, clear of the top bar and the dock tabs that stick under it */
   .toast-container {
     position: fixed;
-    top: calc(var(--topbar-h) + 10px);
+    bottom: calc(var(--statusbar-h) + 10px + env(safe-area-inset-bottom));
     right: 12px;
     z-index: 1100;
     display: flex;
