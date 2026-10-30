@@ -100,13 +100,16 @@
       }, 65_000);
       return;
     }
-    const failed: StepResult = {
+    // a tracker that cannot calibrate gets one note above the steps, not one per step
+    if (ack.err === 'unsupported' || ack.err === 'unknown') {
+      delete session.calib[step];
+      return;
+    }
+    session.calib[step] = {
       state: 'failed',
-      note: ack.err === 'unsupported' || ack.err === 'unknown' ? t('admin.calib.unsupported') : t(`admin.calib.${step}.failed` as Key),
+      note: ack.err === 'busy' ? t('admin.calib.busy') : t(`admin.calib.${step}.failed` as Key),
       detail: trackerSays(ack)
     };
-    if (ack.err === 'busy') failed.note = t('admin.calib.busy');
-    session.calib[step] = failed;
   }
 
   $effect(() => {
