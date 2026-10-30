@@ -51,7 +51,7 @@
       useSim();
       return;
     }
-    // an empty address is saved as empty, the next visit takes config.json again
+    if (check.kind !== 'ok') return;
     // a new tracker means new rights, the dock closes until it is unlocked there
     connection.connect(input.trim(), { save: true });
   }
@@ -148,7 +148,7 @@
     <Button size="sm" icon="signal" disabled={check.kind !== 'ok' || testing} onclick={test}>
       {testing ? t('admin.link.testing') : t('admin.link.test')}
     </Button>
-    <Button size="sm" variant="primary" icon="save" disabled={check.kind === 'invalid' || check.kind === 'mixed'} onclick={save}>{t('admin.link.save')}</Button>
+    <Button size="sm" variant="primary" icon="save" disabled={check.kind !== 'ok' && check.kind !== 'sim'} onclick={save}>{t('admin.link.save')}</Button>
     <Button size="sm" variant="ghost" icon="cube" disabled={!live && !connection.address} onclick={useSim}>{t('admin.link.sim')}</Button>
   </div>
 </Group>
