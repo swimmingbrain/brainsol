@@ -173,6 +173,44 @@ describe('the connection', () => {
     connection.stop();
   });
 
+  it('waits 20 s for a calibration step, the pi answers once the step is done', async () => {
+    const { connection } = make('https://sol.swimmingbrain.dev/?pi=pi.example.org');
+    await connection.init();
+    last().open();
+    last().receive(HELLO);
+    // the tracker keeps talking meanwhile, the link stays up
+    const wait = (ms: number) => {
+      for (let t = 0; t < ms; t += 1000) {
+        vi.advanceTimersByTime(Math.min(1000, ms - t));
+        last().receive({ t: 'evt', ts: 0, lvl: 'info', msg: 'still here' });
+      }
+    };
+    let ack: unknown = null;
+    void connection.send({ op: 'calib', step: 'polarity' }).then((a) => (ack = a));
+    const sent = last().sent.pop() as { id: string };
+    wait(6000);
+    await settle();
+    expect(ack).toBeNull();
+    last().receive({ t: 'ack', id: sent.id, ok: true, data: { sx: 1, sy: -1, dx: -0.1, dy: 0.1 } });
+    await settle();
+    expect(ack).toMatchObject({ ok: true, data: { sx: 1, sy: -1 } });
+    let slow: unknown = null;
+    void connection.send({ op: 'calib', step: 'dark' }).then((a) => (slow = a));
+    wait(19_999);
+    await settle();
+    expect(slow).toBeNull();
+    wait(1);
+    await settle();
+    expect(slow).toMatchObject({ ok: false, err: 'timeout' });
+    // anything else still gives up after 5 s
+    let quick: unknown = null;
+    void connection.send({ op: 'stop' }).then((a) => (quick = a));
+    wait(5000);
+    await settle();
+    expect(quick).toMatchObject({ ok: false, err: 'timeout' });
+    connection.stop();
+  });
+
   it('unlocks the simulation without a real pin and locks again', async () => {
     const { connection } = make('https://sol.swimmingbrain.dev/');
     await connection.init();
