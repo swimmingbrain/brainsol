@@ -34,27 +34,34 @@
   <div class="tiles">
     <Tile
       label={t('panels.tiles.azimuth')}
+      title={t('panels.tiles.azimuthTitle')}
       value={angle(facing?.az)}
       unit="°"
       caption={telemetry.pan !== null ? t('panels.tiles.pan', { v: angle(telemetry.pan) ?? '' }) : ''} />
     <Tile
       label={t('panels.tiles.elevation')}
+      title={t('panels.tiles.elevationTitle')}
       value={angle(facing?.el)}
       unit="°"
       caption={telemetry.tilt !== null ? t('panels.tiles.tilt', { v: angle(telemetry.tilt) ?? '' }) : ''} />
     {#if hasLux}
-      <Tile label={t('panels.tiles.light')} value={lux(telemetry.lux)} unit="lx" caption={t('panels.tiles.luxNote')} />
+      <Tile label={t('panels.tiles.light')} title={t('panels.tiles.lightTitle')} value={lux(telemetry.lux)} unit="lx" caption={t('panels.tiles.luxNote')} />
     {:else}
-      <Tile label={t('panels.tiles.level')} value={percent(telemetry.lvl)} unit="%" caption={t('panels.tiles.levelNote')} />
+      <Tile label={t('panels.tiles.level')} title={t('panels.tiles.levelTitle')} value={percent(telemetry.lvl)} unit="%" caption={t('panels.tiles.levelNote')} />
     {/if}
     <Tile
       label={t('panels.tiles.power')}
+      title={connection.caps?.pv ? t('panels.tiles.measuredTitle') : t('panels.tiles.estimatedTitle', { eff: Math.round((connection.config?.panel.eff ?? 0.15) * 100) })}
       value={watts?.value ?? null}
       unit={watts?.unit ?? ''}
       tag={connection.caps?.pv ? t('panels.tiles.measured') : t('panels.tiles.estimated')} />
-    <Tile label={t('panels.tiles.gain')} value={gainPercent(telemetry.gain)} unit="%" caption={t('panels.tiles.gainNote')} />
+    <Tile
+      label={t('panels.tiles.gain')}
+      title={t('panels.tiles.gainTitle', { pan: connection.config?.params.ref_pan.v ?? 0, tilt: connection.config?.params.ref_tilt.v ?? 90 })}
+      value={gainPercent(telemetry.gain)} unit="%" caption={t('panels.tiles.gainNote')} />
     <Tile
       label={t('panels.tiles.off')}
+      title={t('panels.tiles.offTitle')}
       value={off ? String(off.value) : null}
       before={off ? (off.under ? t('panels.tiles.under') : t('panels.tiles.about')) : ''}
       unit="°"
