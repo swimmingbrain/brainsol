@@ -85,6 +85,39 @@ describe('the cosine experiment', () => {
   });
 });
 
+describe('the extras the pi sends too', () => {
+  it('give the cosine the fitted curve at the measured angles, the offset and the lock', () => {
+    const { end } = run('cosine', { az: 0, el: 60 });
+    const result = end.result as CosineResult;
+    expect(result.fit!.map(([d]) => d)).toEqual(result.points.map(([d]) => d));
+    const rad = (d: number) => ((d - result.offset!) * Math.PI) / 180;
+    for (const [d, lux] of result.fit!) expect(Math.abs(lux - (result.amb + result.peak * Math.max(0, Math.cos(rad(d)))))).toBeLessThan(1.5);
+    expect(Math.abs(result.offset!)).toBeLessThan(6);
+    expect(Math.abs(result.lock!.pan)).toBeLessThan(8);
+    expect(Math.abs(result.lock!.tilt - 60)).toBeLessThan(8);
+  });
+
+  it('give compare the gain of each round, their spread as sd and the reference pose', () => {
+    const { end } = run('compare', { az: -60, el: 15 });
+    const result = end.result as CompareResult;
+    for (const round of result.rounds) expect(round.gain).toBeCloseTo(round.tracked / round.fixed, 2);
+    expect(result.sd).toBeGreaterThanOrEqual(0);
+    expect(result.sd).toBeLessThanOrEqual(result.spread);
+    expect(result.ref).toEqual({ pan: 0, tilt: 90 });
+  });
+
+  it('give the step its size, where it started and came to rest and the overshoot in percent', () => {
+    const { end } = run('step', { az: 25, el: 40 });
+    const result = end.result as StepResult;
+    expect(Math.abs(result.offset!)).toBe(20);
+    // it rests inside the dead band around the light, a few degrees from the old lock
+    expect(Math.abs(result.final!.pan - result.lock!.pan)).toBeLessThan(10);
+    expect(result.final!.pan).toBe(Math.round(result.samples.at(-1)![3] * 10) / 10);
+    expect(result.overshoot_pct).toBeGreaterThanOrEqual(0);
+    expect(result.overshoot_pct).toBeLessThan(50);
+  });
+});
+
 describe('the compare experiment', () => {
   it('shows a gain well above 1 for a low lamp against the flat reference panel', () => {
     const { end } = run('compare', { az: -60, el: 15 });
