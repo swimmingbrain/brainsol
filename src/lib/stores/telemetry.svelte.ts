@@ -4,7 +4,7 @@
 // second, and each one only changes when its value did, so a 20 Hz stream
 // redraws a number here and there and never the page
 
-import type { EvtMessage, ExpMessage, Mode, Pose, Quad, ScanMessage, ServerMessage, SimLight, St, StateFrame, SysFrame } from '$lib/link/protocol';
+import type { EvtMessage, ExpMessage, Mode, NoQuad, Pose, Quad, ScanMessage, ServerMessage, SimLight, St, StateFrame, SunPosition, SysFrame } from '$lib/link/protocol';
 
 // how often the runes may change, in milliseconds
 export const PUBLISH_EVERY = 100;
@@ -12,6 +12,13 @@ export const PUBLISH_EVERY = 100;
 export const EVENT_LOG = 100;
 
 type FrameListener = (frame: StateFrame) => void;
+
+// a pi sends four nulls before its first sensor reading, the runes hold null then
+function quadOf(value: Quad | NoQuad | null | undefined): Quad | null {
+  if (!value || value.length !== 4) return null;
+  for (const n of value) if (typeof n !== 'number') return null;
+  return value as Quad;
+}
 
 function sameQuad(a: Quad | null, b: Quad | null): boolean {
   if (a === b) return true;
@@ -52,7 +59,7 @@ class Telemetry {
   raw = $state.raw<Quad | null>(null);
   pv = $state.raw<{ v: number; ma: number } | null>(null);
   tgt = $state.raw<Pose | null>(null);
-  sun = $state.raw<{ az: number; el: number } | null>(null);
+  sun = $state.raw<SunPosition | null>(null);
   sim = $state.raw<SimLight | null>(null);
 
   // the slower messages are rare enough to go straight into runes
@@ -173,8 +180,10 @@ class Telemetry {
     this.pmw = f.pmw;
     this.gain = f.gain;
     this.off = f.off;
-    if (!sameQuad(this.ldr, f.ldr)) this.ldr = f.ldr;
-    if (!sameQuad(this.raw, f.raw)) this.raw = f.raw;
+    const ldr = quadOf(f.ldr);
+    const raw = quadOf(f.raw);
+    if (!sameQuad(this.ldr, ldr)) this.ldr = ldr;
+    if (!sameQuad(this.raw, raw)) this.raw = raw;
     if (!sameFlat(this.pv, f.pv)) this.pv = f.pv;
     if (!sameFlat(this.tgt, f.tgt)) this.tgt = f.tgt;
     if (!sameFlat(this.sun, f.sun)) this.sun = f.sun;

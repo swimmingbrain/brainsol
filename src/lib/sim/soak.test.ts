@@ -30,9 +30,9 @@ describe('a long run', () => {
         m.pan >= -90 && m.pan <= 90 &&
         m.tilt >= 0 && m.tilt <= 180 &&
         Math.abs(m.vp) <= 180.1 && Math.abs(m.vt) <= 180.1 &&
-        m.raw.every((x) => Number.isInteger(x) && x >= 0 && x <= 8184) &&
-        m.ldr.every((x) => x >= 0 && x <= 1) &&
-        m.lvl >= 0 && m.lvl <= 1 &&
+        m.raw.every((x) => x !== null && Number.isInteger(x) && x >= 0 && x <= 8184) &&
+        m.ldr.every((x) => x !== null && x >= 0 && x <= 1) &&
+        m.lvl !== null && m.lvl >= 0 && m.lvl <= 1 &&
         (m.gain === null || m.gain >= 0) &&
         (m.off === null || m.off >= 0) &&
         m.sim !== null && m.sim.el >= 0 && m.sim.el <= 90;

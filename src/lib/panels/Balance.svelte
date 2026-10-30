@@ -78,7 +78,8 @@
       raf = 0;
       const frame = telemetry.frame;
       if (frame && dot) {
-        const target = bubble(frame.ex, frame.ey);
+        // a tracker without a first reading sends null errors, the dot rests in the middle
+        const target = bubble(frame.ex ?? 0, frame.ey ?? 0);
         const dt = last ? (now - last) / 1000 : 1;
         const tau = still.matches ? 0 : TAU;
         x = seen ? follow(x, target.x, dt, tau) : target.x;

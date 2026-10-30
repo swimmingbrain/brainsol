@@ -33,7 +33,7 @@ describe('the lights on the sky', () => {
     expect(() => {
       lights.intake(frame({ sim: null, sun: null }), 0);
       lights.intake(frame({ sim: { az: NaN, el: 40, on: true, lux: 0, amb: 0 } }), 50);
-      lights.intake(frame({ sun: { az: 10, el: NaN }, sim: null }), 100);
+      lights.intake(frame({ sun: { az: 10, el: NaN, caz: 190, t: 0 }, sim: null }), 100);
       lights.intake({ ...frame(), sim: undefined, sun: undefined } as unknown as StateFrame, 150);
       settled(lights);
     }).not.toThrow();

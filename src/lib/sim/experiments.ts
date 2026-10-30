@@ -4,7 +4,7 @@
 
 import { Activity, ActivityError, DT, type ActivityHost } from './activities';
 import { askAuto } from './modes';
-import type { CompareResult, CosineResult, ExpKind, ExpResult, StepResult } from '$lib/link/protocol';
+import type { CompareResult, CosineResult, ExpKind, ExpPhase, ExpResult, StepResult } from '$lib/link/protocol';
 
 export const EXP_KINDS: ExpKind[] = ['cosine', 'compare', 'step'];
 
@@ -62,7 +62,7 @@ export function fitCosine(points: [number, number][]): { amb: number; peak: numb
 abstract class Experiment extends Activity {
   readonly kind = 'exp';
   readonly st = 'measuring';
-  phase = 'start';
+  phase: ExpPhase = 'start';
   progress = 0;
 
   constructor(
@@ -73,7 +73,7 @@ abstract class Experiment extends Activity {
     this.id = host.newId(exp);
   }
 
-  protected report(phase: string, progress: number, result: ExpResult | null = null): void {
+  protected report(phase: ExpPhase, progress: number, result: ExpResult | null = null): void {
     this.phase = phase;
     this.progress = progress;
     this.host.publish({ t: 'exp', id: this.id, kind: this.exp, phase, progress: r3(Math.min(Math.max(progress, 0), 1)), result });

@@ -43,10 +43,12 @@ describe('the engine', () => {
     for (const value of [frame.pan, frame.tilt, frame.vp, frame.vt, frame.off ?? 0]) {
       expect(Math.round(value * 10) / 10).toBe(value);
     }
+    // the simulation always has a reading, only a pi sends nulls before its first one
     for (const value of [...frame.ldr, frame.ex, frame.ey, frame.lvl]) {
-      expect(Math.round(value * 1000) / 1000).toBe(value);
+      expect(value).not.toBeNull();
+      expect(Math.round(value! * 1000) / 1000).toBe(value);
     }
-    expect(frame.raw.every((value) => Number.isInteger(value) && value >= 0 && value <= 8184)).toBe(true);
+    expect(frame.raw.every((value) => value !== null && Number.isInteger(value) && value >= 0 && value <= 8184)).toBe(true);
     expect(frame.sim).toEqual({ az: 25, el: 40, on: true, lux: 900, amb: 60 });
     expect(frame.pv).toBeNull();
     expect(frame.sun).toBeNull();

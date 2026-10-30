@@ -54,7 +54,7 @@ import { mulberry32, newReading, PHONE_LIGHT, senseInto, servoStep, type Light, 
 import { defaultPanMap, defaultTiltMap, sameMap, toAngle, toUs } from './servo';
 import { SunClock } from './sun';
 import { Wander } from './wander';
-import { PROTO, type AckErr, type ClientMessage, type Config, type EventLevel, type HelloMessage, type Mode, type Pose, type Quad, type ScanMessage, type ServerMessage, type SimLight, type St, type StateFrame, type SysFrame } from '$lib/link/protocol';
+import { PROTO, type AckErr, type ClientMessage, type Config, type EventLevel, type HelloMessage, type Mode, type Pose, type Quad, type ScanMessage, type ServerMessage, type SimLight, type St, type StateFrame, type SunPosition, type SysFrame } from '$lib/link/protocol';
 import type { SimEngine } from '$lib/link/transport';
 import { version } from '$lib/version';
 
@@ -103,7 +103,7 @@ export class SimTracker implements SimEngine, ModeHost {
   servo = { pan: 0, tilt: 90 };
   current: SimMode = makeMode('auto');
   readonly sunClock = new SunClock();
-  sun: { az: number; el: number } | null = null;
+  sun: SunPosition | null = null;
   // seconds of the loop since the engine was made
   t = 0;
   // what the mode logic says, the loop state in auto, and what the frame says
@@ -372,7 +372,7 @@ export class SimTracker implements SimEngine, ModeHost {
       gain: gain === null ? null : r3(gain),
       off: low ? null : r1(offAngle(c.ex, c.ey, k)),
       tgt: this.tgtOn ? { pan: r1(this.tgtPan), tilt: r1(this.tgtTilt) } : null,
-      sun: this.sun ? { az: r1(this.sun.az), el: r1(this.sun.el) } : null,
+      sun: this.sun ? { az: r1(this.sun.az), el: r1(this.sun.el), caz: r1(this.sun.caz), t: r3(this.sun.t) } : null,
       sim: this.simLight()
     };
   }
@@ -405,7 +405,9 @@ export class SimTracker implements SimEngine, ModeHost {
       link: 'ok',
       fw: null,
       rec: false,
-      act: this.activity?.kind ?? null
+      act: this.activity?.kind ?? null,
+      // no serial line in the browser, nothing can get lost
+      drop: 0
     };
     this.lastSys = sys;
     this.send(sys);

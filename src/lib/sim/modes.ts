@@ -6,7 +6,7 @@
 import { poseNear } from './kinematics';
 import type { Light } from './physics';
 import { relativeAz, sunLight, sunPosition, type SunClock } from './sun';
-import type { Config, Mode } from '$lib/link/protocol';
+import type { Config, Mode, SunPosition } from '$lib/link/protocol';
 
 export type RequestKind = 'auto' | 'seek' | 'vel';
 
@@ -57,8 +57,8 @@ export interface ModeHost {
   readonly ctrl: { pan: number; tilt: number };
   readonly sunClock: SunClock;
   light: Light;
-  // where the sun stands seen from the device while sun mode runs
-  sun: { az: number; el: number } | null;
+  // where the sun stands seen from the device while sun mode runs, and the sun clock time of that
+  sun: SunPosition | null;
   // unix seconds
   wall(): number;
 }
@@ -178,7 +178,9 @@ export class Sun extends SimMode {
     if (host.sun) {
       host.sun.az = this.az;
       host.sun.el = el;
-    } else host.sun = { az: this.az, el };
+      host.sun.caz = caz;
+      host.sun.t = now;
+    } else host.sun = { az: this.az, el, caz, t: now };
     const { lux, amb } = sunLight(el, this.glow);
     const light = host.light;
     light.az = this.az;
