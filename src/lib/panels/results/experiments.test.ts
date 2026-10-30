@@ -42,6 +42,19 @@ describe('the experiment results', () => {
     expect(cosineFit(cosine, 120)).toBe(60);
   });
 
+  it('shifts the fitted cosine by the offset the fit took out', () => {
+    const off = { ...cosine, offset: 4 };
+    expect(cosineFit(off, 4)).toBe(900);
+    expect(cosineFit(off, 64)).toBeCloseTo(480, 6);
+    expect(cosineFit(off, -56)).toBeCloseTo(480, 6);
+    expect(cosineFit(off, -60)).toBeLessThan(cosineFit(cosine, -60));
+    // a result without an offset, or with a broken one, is drawn as if it were zero
+    expect(cosineFit({ ...cosine, offset: NaN }, 60)).toBeCloseTo(480, 6);
+    // the csv has the same curve
+    const row = toCsv({ id: 'c', kind: 'cosine', ts: 0, result: off }).split('\n')[2];
+    expect(row).toBe(`0,902,${Math.round(cosineFit(off, 0) * 1e4) / 1e4}`);
+  });
+
   it('lays the measured points on a whole degree grid with the fit', () => {
     const table = cosineTable(cosine);
     expect(table.delta[0]).toBe(-60);
