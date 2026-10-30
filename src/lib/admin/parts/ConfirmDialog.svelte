@@ -37,10 +37,3 @@
     {/snippet}
   </Dialog>
 </div>
-
-<style>
-  .confirm :global(.btn.danger:focus-visible) {
-    outline: 2px solid var(--text-strong);
-    outline-offset: -4px;
-  }
-</style>

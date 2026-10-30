@@ -224,13 +224,6 @@
     margin-top: 16px;
   }
 
-  /* the focus line of the kit is the accent, on the accent button it would
-     vanish. it sits inside, the dialog body would clip a line outside */
-  .actions :global(.btn.primary:focus-visible) {
-    outline: 2px solid var(--text-strong);
-    outline-offset: -4px;
-  }
-
   /* a phone gets full width buttons in the thumb zone */
   @media (max-width: 480px), (pointer: coarse) {
     .actions :global(.btn) {

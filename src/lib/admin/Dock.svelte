@@ -77,11 +77,4 @@
     column-gap: 0;
     column-rule: 1px solid var(--border);
   }
-
-  /* the focus line of the kit is the accent, on an accent button it would vanish */
-  .panel :global(.btn.primary:focus-visible),
-  .panel :global(.btn.danger:focus-visible) {
-    outline: 2px solid var(--text-strong);
-    outline-offset: -4px;
-  }
 </style>
