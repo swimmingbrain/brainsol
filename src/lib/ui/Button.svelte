@@ -172,6 +172,18 @@
     cursor: default;
   }
 
+  /* the focus line of the page is the accent, on these two it would vanish. it
+     sits inside, so a dialog or a scrolling panel never clips it */
+  .primary:focus-visible {
+    outline: 2px solid var(--on-accent);
+    outline-offset: -4px;
+  }
+
+  .danger:focus-visible {
+    outline: 2px solid var(--text-strong);
+    outline-offset: -4px;
+  }
+
   /* a finger needs more room than a mouse pointer */
   @media (pointer: coarse) {
     .sm {
