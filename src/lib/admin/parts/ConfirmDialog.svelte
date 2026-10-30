@@ -29,7 +29,7 @@
   }
 </script>
 
-<div use:portal>
+<div class="confirm" use:portal>
   <Dialog {title} description={message} width={400} {onclose}>
     {#snippet footer()}
       <Button variant="secondary" size="lg" onclick={onclose}>{t('common.cancel')}</Button>
@@ -37,3 +37,10 @@
     {/snippet}
   </Dialog>
 </div>
+
+<style>
+  .confirm :global(.btn.danger:focus-visible) {
+    outline: 2px solid var(--text-strong);
+    outline-offset: 1px;
+  }
+</style>

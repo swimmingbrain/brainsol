@@ -78,6 +78,13 @@
     column-rule: 1px solid var(--border);
   }
 
+  /* the focus line of the kit is the accent, on an accent button it would vanish */
+  .panel :global(.btn.primary:focus-visible),
+  .panel :global(.btn.danger:focus-visible) {
+    outline: 2px solid var(--text-strong);
+    outline-offset: 1px;
+  }
+
   /* on a touch screen every control of the shared kit gets room for a thumb */
   @media (pointer: coarse) {
     .panel :global(.btn) {
