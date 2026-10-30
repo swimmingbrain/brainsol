@@ -19,6 +19,9 @@ import { toast } from './toasts.svelte';
 export const FALLBACK_AFTER = 4000;
 // how long a command or an auth may take before it counts as lost
 export const ANSWER_TIMEOUT = 5000;
+// a pi answers a calibration step only once it is done, the direction test
+// alone turns the head for about 6 s, so these may take longer
+export const CALIB_TIMEOUT = 20000;
 // the admin token of the live tracker survives a reload of the tab, not a new tab
 const TOKEN_KEY = 'brainsol-admin';
 
@@ -174,10 +177,13 @@ export class Connection {
     const transport = this.active;
     if (!transport || transport.status !== 'open') return Promise.resolve(offline);
     return new Promise((resolve) => {
-      const timer = setTimeout(() => {
-        this.pending.delete(id);
-        resolve({ t: 'ack', id, ok: false, err: 'timeout' });
-      }, ANSWER_TIMEOUT);
+      const timer = setTimeout(
+        () => {
+          this.pending.delete(id);
+          resolve({ t: 'ack', id, ok: false, err: 'timeout' });
+        },
+        command.op === 'calib' ? CALIB_TIMEOUT : ANSWER_TIMEOUT
+      );
       this.pending.set(id, { resolve, timer });
       if (!transport.send({ ...command, t: 'cmd', id } as CmdMessage)) {
         clearTimeout(timer);
