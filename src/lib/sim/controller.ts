@@ -87,7 +87,7 @@ export const PARAMS: Record<ParamKey, Param> = {
   dead_in: { v: 0.025, min: 0.005, max: 0.2, step: 0.005 },
   dead_out: { v: 0.05, min: 0.01, max: 0.3, step: 0.005 },
   tau: { v: 0.12, min: 0.02, max: 1, step: 0.01 },
-  min_light: { v: 0.04, min: 0, max: 0.5, step: 0.01 },
+  min_light: { v: 0.08, min: 0, max: 0.5, step: 0.01 },
   zenith_band: { v: 6, min: 0, max: 20, step: 0.5 },
   ref_pan: { v: 0, min: -88, max: 88, step: 1 },
   ref_tilt: { v: 90, min: 4, max: 176, step: 1 },

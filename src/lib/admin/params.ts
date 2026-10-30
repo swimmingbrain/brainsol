@@ -12,7 +12,7 @@ export const DEFAULTS: Record<ParamKey, number> = {
   dead_in: 0.025,
   dead_out: 0.05,
   tau: 0.12,
-  min_light: 0.04,
+  min_light: 0.08,
   zenith_band: 6,
   ref_pan: 0,
   ref_tilt: 90,
