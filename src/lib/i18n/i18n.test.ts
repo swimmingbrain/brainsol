@@ -75,7 +75,7 @@ describe('the dictionaries', () => {
 describe('t', () => {
   it('fills placeholders and leaves unknown ones alone', () => {
     expect(translate('en', 'status.live', { host: 'pi.local:8080' })).toBe('live, pi.local:8080');
-    expect(translate('de', 'lock.wait', { s: 30 })).toBe('Zu viele falsche Versuche, warte 30 s');
+    expect(translate('de', 'admin.unlock.locked', { wait: '30 s' })).toBe('Zu viele falsche Versuche. Der nächste Versuch geht in 30 s.');
     expect(translate('en', 'status.live')).toBe('live, {host}');
   });
 

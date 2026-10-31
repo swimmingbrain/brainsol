@@ -1,7 +1,6 @@
 import type { coreEn } from './core.en';
 
 export const coreDe: Record<keyof typeof coreEn, string> = {
-  'app.name': 'brainSOL',
   'app.tagline': 'Ein zweiachsiger Solartracker, der dem Licht folgt',
 
   'top.live': 'Live',
@@ -16,7 +15,6 @@ export const coreDe: Record<keyof typeof coreEn, string> = {
   'top.present': 'Präsentationsmodus',
   'top.lock': 'Adminbereich',
   'top.unlocked': 'Der Adminbereich ist offen',
-  'top.github': 'Quellcode auf GitHub',
 
   'lang.en': 'English',
   'lang.de': 'Deutsch',
@@ -113,17 +111,6 @@ export const coreDe: Record<keyof typeof coreEn, string> = {
   'err.token': 'Die Adminsitzung ist abgelaufen, bitte neu entsperren',
   'err.pin': 'Falsche PIN',
 
-  'lock.title': 'Adminbereich',
-  'lock.simNote': 'Die Simulation läuft in diesem Browser, deshalb gibt es keine PIN.',
-  'lock.liveNote': 'Der Tracker prüft die PIN.',
-  'lock.open': 'Adminbereich öffnen',
-  'lock.pin': 'PIN',
-  'lock.unlock': 'Entsperren',
-  'lock.wait': 'Zu viele falsche Versuche, warte {s} s',
-  'lock.lock': 'Wieder sperren',
-  'lock.unlocked': 'Der Adminbereich ist offen',
-  'lock.locked': 'Der Adminbereich ist gesperrt',
-
   'present.exit': 'Präsentationsmodus beenden',
 
   'section.how': 'So funktioniert es',
@@ -132,9 +119,6 @@ export const coreDe: Record<keyof typeof coreEn, string> = {
   'section.tiles': 'Jetzt',
   'section.balance': 'Lichtverteilung',
   'section.charts': 'Letzte Minuten',
-  'section.dock': 'Steuerung',
-
-  'stub.soon': 'Dieser Teil kommt bald.',
 
   'footer.privacy': 'Datenschutz',
   'footer.terms': 'Nutzungsbedingungen',
@@ -143,10 +127,6 @@ export const coreDe: Record<keyof typeof coreEn, string> = {
 
   'common.close': 'Schließen',
   'common.cancel': 'Abbrechen',
-  'common.save': 'Speichern',
-  'common.on': 'An',
-  'common.off': 'Aus',
-  'common.none': 'keine',
 
   'error.missing': 'Unter dieser Adresse gibt es keine Seite.',
   'error.back': 'Zurück zu brainSOL'

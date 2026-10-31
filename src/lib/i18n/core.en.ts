@@ -2,7 +2,6 @@
 // the first word, placeholders in braces are filled by t()
 
 export const coreEn = {
-  'app.name': 'brainSOL',
   'app.tagline': 'A dual axis solar tracker that follows the light',
 
   'top.live': 'Live',
@@ -17,7 +16,6 @@ export const coreEn = {
   'top.present': 'Presentation mode',
   'top.lock': 'Admin tools',
   'top.unlocked': 'Admin tools are open',
-  'top.github': 'Source code on GitHub',
 
   'lang.en': 'English',
   'lang.de': 'Deutsch',
@@ -114,17 +112,6 @@ export const coreEn = {
   'err.token': 'The admin session ran out, unlock again',
   'err.pin': 'Wrong PIN',
 
-  'lock.title': 'Admin tools',
-  'lock.simNote': 'The simulation runs in this browser, so there is no PIN.',
-  'lock.liveNote': 'The tracker checks the PIN.',
-  'lock.open': 'Open the admin tools',
-  'lock.pin': 'PIN',
-  'lock.unlock': 'Unlock',
-  'lock.wait': 'Too many wrong tries, wait {s} s',
-  'lock.lock': 'Lock again',
-  'lock.unlocked': 'Admin tools are open',
-  'lock.locked': 'Admin tools are locked',
-
   'present.exit': 'Leave presentation mode',
 
   'section.how': 'How it works',
@@ -133,9 +120,6 @@ export const coreEn = {
   'section.tiles': 'Now',
   'section.balance': 'Light balance',
   'section.charts': 'Last minutes',
-  'section.dock': 'Control',
-
-  'stub.soon': 'This part is on its way.',
 
   'footer.privacy': 'Privacy',
   'footer.terms': 'Terms',
@@ -144,10 +128,6 @@ export const coreEn = {
 
   'common.close': 'Close',
   'common.cancel': 'Cancel',
-  'common.save': 'Save',
-  'common.on': 'On',
-  'common.off': 'Off',
-  'common.none': 'none',
 
   'error.missing': 'There is no page at this address.',
   'error.back': 'Back to brainSOL'
