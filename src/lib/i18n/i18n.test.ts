@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { de, en, fmt, translate, type Key } from './index';
+import { de, en, expName, fmt, phaseText, translate, type Key } from './index';
 import { coreEn } from './core.en';
 import { twinEn } from './twin.en';
 import { panelsEn } from './panels.en';
 import { adminEn } from './admin.en';
 import { simEn } from './sim.en';
-import { STATES, MODES } from '$lib/link/protocol';
+import { EXP_PHASES, STATES, MODES } from '$lib/link/protocol';
 
 const placeholders = (text: string) => [...text.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();
 
@@ -43,6 +43,17 @@ describe('the dictionaries', () => {
       expect(en).toHaveProperty(`say.${st}`);
     }
     for (const mode of MODES) expect(en).toHaveProperty(`mode.${mode}`);
+  });
+
+  it('have a name and a sentence for every experiment and a word for every phase', () => {
+    for (const kind of ['cosine', 'compare', 'step'] as const) {
+      expect(en).toHaveProperty(`exp.${kind}`);
+      expect(en).toHaveProperty(`exp.about.${kind}`);
+      expect(expName(kind)).not.toBe(`exp.${kind}`);
+    }
+    for (const phase of EXP_PHASES) expect(en).toHaveProperty(`phase.${phase}`);
+    // a phase a newer tracker might send shows as it came
+    expect(phaseText('warmup')).toBe('warmup');
   });
 
   it('use no dashes as punctuation', () => {
