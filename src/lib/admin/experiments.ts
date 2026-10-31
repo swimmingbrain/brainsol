@@ -11,14 +11,6 @@ export function needsLux(kind: ExpKind): boolean {
   return kind === 'cosine' || kind === 'compare';
 }
 
-// the phases the trackers report, each has words in both languages
-export const PHASES = ['start', 'lock', 'sweep', 'fit', 'ref', 'track', 'offset', 'release', 'done', 'error'] as const;
-export type Phase = (typeof PHASES)[number];
-
-export function knownPhase(phase: string): phase is Phase {
-  return (PHASES as readonly string[]).includes(phase);
-}
-
 export function isOver(exp: ExpMessage | null): boolean {
   return exp !== null && (exp.result !== null || exp.phase === 'done' || exp.phase === 'error');
 }

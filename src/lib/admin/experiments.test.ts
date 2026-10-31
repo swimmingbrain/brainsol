@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { expRunning, headline, isOver, KINDS, knownPhase, needsLux } from './experiments';
+import { expRunning, headline, isOver, KINDS, needsLux } from './experiments';
 import type { ExpMessage } from '$lib/link/protocol';
 
 const exp = (extra: Partial<ExpMessage>): ExpMessage => ({ t: 'exp', id: 'e1', kind: 'cosine', phase: 'sweep', progress: 0.4, result: null, ...extra });
@@ -12,10 +12,6 @@ describe('the experiments', () => {
     expect(needsLux('step')).toBe(false);
   });
 
-  it('knows the phases the trackers report and nothing else', () => {
-    for (const phase of ['lock', 'sweep', 'fit', 'ref', 'track', 'offset', 'release', 'done', 'error']) expect(knownPhase(phase)).toBe(true);
-    expect(knownPhase('dance')).toBe(false);
-  });
 });
 
 describe('expRunning', () => {

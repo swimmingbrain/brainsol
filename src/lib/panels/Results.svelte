@@ -12,7 +12,7 @@
   import { telemetry } from '$lib/stores/telemetry.svelte';
   import { connection } from '$lib/stores/connection.svelte';
   import { preferences } from '$lib/stores/preferences.svelte';
-  import { fmt, t, type Key } from '$lib/i18n';
+  import { expName, fmt, phaseText, t, type Key } from '$lib/i18n';
   import { session } from './results/session.svelte';
   import { csvUrl, isCompare, isCosine, isStep, mergeRecords, parseList, toCsv, EXP_KINDS } from './results/experiments';
   import { gainPercent } from './format';
@@ -62,9 +62,7 @@
 
   const running = $derived(telemetry.exp && telemetry.exp.result === null ? telemetry.exp : null);
 
-  const PHASES = ['lock', 'sweep', 'fixed', 'tracked', 'offset', 'release', 'settle', 'done'];
-  const phaseText = (phase: string) => (PHASES.includes(phase) ? t(`panels.results.phase.${phase}` as Key) : phase);
-  const kindName = (kind: ExpKind) => t(`panels.results.kind.${kind}` as Key);
+  const kindName = expName;
 
   const locale = $derived(preferences.lang === 'de' ? 'de-DE' : 'en-GB');
   function when(ts: number): string {
@@ -114,7 +112,7 @@
       </div>
       <ul class="kinds">
         {#each EXP_KINDS as kind (kind)}
-          <li><span class="kind-name">{kindName(kind)}</span> {t(`panels.results.about.${kind}` as Key)}</li>
+          <li><span class="kind-name">{kindName(kind)}</span> {t(`exp.about.${kind}` as Key)}</li>
         {/each}
       </ul>
     </div>
@@ -165,7 +163,7 @@
 
       <ul class="kinds small">
         {#each EXP_KINDS as kind (kind)}
-          <li><span class="kind-name">{kindName(kind)}</span> {t(`panels.results.about.${kind}` as Key)}</li>
+          <li><span class="kind-name">{kindName(kind)}</span> {t(`exp.about.${kind}` as Key)}</li>
         {/each}
       </ul>
     </div>

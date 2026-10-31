@@ -8,10 +8,10 @@
   import Button from '$lib/ui/Button.svelte';
   import { connection } from '$lib/stores/connection.svelte';
   import { telemetry } from '$lib/stores/telemetry.svelte';
-  import { fmt, t, type Key } from '$lib/i18n';
+  import { expName, fmt, phaseText, t, type Key } from '$lib/i18n';
   import type { ExpKind } from '$lib/link/protocol';
   import { expCommand, STOP } from '../commands';
-  import { expRunning, headline, isOver, KINDS, knownPhase, needsLux } from '../experiments';
+  import { expRunning, headline, isOver, KINDS, needsLux } from '../experiments';
   import { runner } from '../session.svelte';
 
   const exp = $derived(telemetry.exp);
@@ -22,7 +22,7 @@
   const hasLux = $derived(connection.caps?.lux ?? false);
   const result = $derived(exp && isOver(exp) ? headline(exp) : null);
 
-  const phase = $derived(exp ? (knownPhase(exp.phase) ? t(`admin.exp.phase.${exp.phase}` as Key) : exp.phase) : '');
+  const phase = $derived(exp ? phaseText(exp.phase) : '');
 
   function start(kind: ExpKind) {
     void runner.run(expCommand(kind), { key: `exp.${kind}`, feature: 'exp' });
@@ -48,7 +48,7 @@
   <Group title={running ? t('admin.exp.running') : t('admin.exp.last')}>
     <div class="now">
       <div class="what">
-        <span class="name">{t(`admin.exp.${exp.kind}` as Key)}</span>
+        <span class="name">{expName(exp.kind)}</span>
         <span class="phase" class:error={exp.phase === 'error'}>{phase}</span>
       </div>
       {#if running}
@@ -76,8 +76,8 @@
       {@const reason = why(kind)}
       <li class="kind">
         <div class="text">
-          <span class="name">{t(`admin.exp.${kind}` as Key)}</span>
-          <p>{t(`admin.exp.${kind}.about` as Key)}</p>
+          <span class="name">{expName(kind)}</span>
+          <p>{t(`exp.about.${kind}` as Key)}</p>
           {#if reason}<Note tone="warn">{reason}</Note>{/if}
         </div>
         <Button

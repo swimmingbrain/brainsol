@@ -14,7 +14,7 @@ import { simEn } from './sim.en';
 import { twinDe } from './twin.de';
 import { twinEn } from './twin.en';
 import { preferences, type Lang } from '$lib/stores/preferences.svelte';
-import type { Mode, St } from '$lib/link/protocol';
+import { EXP_PHASES, type ExpKind, type Mode, type St } from '$lib/link/protocol';
 
 export const en = { ...coreEn, ...twinEn, ...panelsEn, ...adminEn, ...simEn };
 export type Key = keyof typeof en;
@@ -63,6 +63,16 @@ export function stateSentence(st: St | null): string {
 
 export function modeName(mode: Mode): string {
   return t(`mode.${mode}` as Key);
+}
+
+// the results and the dock call the experiments and their phases the same
+export function expName(kind: ExpKind): string {
+  return t(`exp.${kind}` as Key);
+}
+
+// a phase this page does not know yet shows as the tracker sent it
+export function phaseText(phase: string): string {
+  return (EXP_PHASES as string[]).includes(phase) ? t(`phase.${phase}` as Key) : phase;
 }
 
 // an err string from an ack or an auth, as a sentence

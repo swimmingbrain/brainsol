@@ -3,7 +3,7 @@
   // under the tabs says so from every tab and stops it with one press
   import Button from '$lib/ui/Button.svelte';
   import { telemetry } from '$lib/stores/telemetry.svelte';
-  import { fmt, t, type Key } from '$lib/i18n';
+  import { expName, fmt, t, type Key } from '$lib/i18n';
   import { STOP } from '../commands';
   import { progress } from '../scanmap';
   import { runner } from '../session.svelte';
@@ -15,7 +15,7 @@
       const done = progress(telemetry.scan);
       return done.total > 0 ? t('admin.scan.points', { n: done.visited, total: done.total }) : '';
     }
-    if (act === 'exp' && telemetry.exp) return `${t(`admin.exp.${telemetry.exp.kind}` as Key)}, ${fmt(telemetry.exp.progress * 100, 0)}%`;
+    if (act === 'exp' && telemetry.exp) return `${expName(telemetry.exp.kind)}, ${fmt(telemetry.exp.progress * 100, 0)} %`;
     return '';
   });
 </script>
