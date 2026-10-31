@@ -158,6 +158,26 @@ describe('the engine', () => {
     expect(frame.off).toBeNull();
   });
 
+  it('reads too dark when the lamp goes out in a normally lit room', () => {
+    const { engine, cmd, advance, last } = setup();
+    expect(engine.cfg.params.min_light.v).toBe(0.08);
+    advance(4);
+    expect(last().st).toBe('locked');
+    // the ambient light alone stays below min_light, gain and offset go quiet
+    cmd({ op: 'simlight', on: false });
+    advance(2);
+    const dark = last();
+    expect(dark.sim).toMatchObject({ on: false, amb: 60 });
+    expect(dark.lvl).toBeLessThan(0.08);
+    expect(dark.st).toBe('lowlight');
+    expect(dark.gain).toBeNull();
+    expect(dark.off).toBeNull();
+    expect(dark.tgt).toBeNull();
+    cmd({ op: 'simlight', on: true });
+    advance(4);
+    expect(last().st).toBe('locked');
+  });
+
   it('changes a tunable, refuses one out of range and tells every page with cfg', () => {
     const { engine, of, cmd, unlock } = setup();
     unlock();
