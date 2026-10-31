@@ -9,6 +9,7 @@
   import { connection } from '$lib/stores/connection.svelte';
   import { fmt, modeName, stateSentence, t, type Key } from '$lib/i18n';
   import { azEl, normal, wrap180 } from '$lib/sim/kinematics';
+  import { gainPercent, power } from '$lib/panels/format';
   import Flat from './Flat.svelte';
   import type { Twin } from './twin';
 
@@ -30,8 +31,9 @@
   // the 3d context went away for a moment
   let lost = $state(false);
 
-  // the light the numbers speak of: the lamp under the hand, the sun, the
-  // lamp of the simulation, or with a real tracker where the panel faces
+  // the light the numbers speak of: the lamp under the hand, the sun or the
+  // lamp of the simulation. where the panel faces is in the tiles, so the stage
+  // only says it in presentation mode, when the tiles are hidden
   const shown = $derived.by(() => {
     const sun = telemetry.sun;
     const sim = telemetry.sim;
@@ -41,12 +43,14 @@
     if (dragLight) [what, az, el] = ['lamp', dragLight.az, dragLight.el];
     else if (sun && sun.el > -0.5) [what, az, el] = ['sun', sun.az, sun.el];
     else if (sim) [what, az, el] = ['lamp', sim.az, sim.el];
+    else if (!present) return null;
     else if (telemetry.pan !== null && telemetry.tilt !== null) {
       const d = azEl(normal(telemetry.pan, telemetry.tilt));
       [az, el] = [d.az, d.el];
     }
     return { az: az === null ? null : wrap180(az), el, azLabel: `twin.${what}Az` as Key, elLabel: `twin.${what}El` as Key };
   });
+  const watts = $derived(power(telemetry.pmw));
 
   onMount(() => {
     let gone = false;
@@ -135,11 +139,20 @@
 
   <div class="overlay">
     <p class="say" aria-live="polite">{stateSentence(telemetry.st)}</p>
-    <div class="numbers">
-      <Stat {size} label={t(shown.azLabel)} value={shown.az} digits={1} unit="°" />
-      <Stat {size} label={t(shown.elLabel)} value={shown.el} digits={1} unit="°" />
-      <Stat {size} label={t('q.mode')} value={null} text={telemetry.mode ? modeName(telemetry.mode) : null} />
-    </div>
+    {#if shown || present}
+      <div class="numbers">
+        {#if shown}
+          <Stat {size} label={t(shown.azLabel)} value={shown.az} digits={1} unit="°" />
+          <Stat {size} label={t(shown.elLabel)} value={shown.el} digits={1} unit="°" />
+        {/if}
+        {#if present}
+          <!-- the tiles are hidden while presenting, the key numbers come here, large -->
+          <Stat {size} label={t('q.gain')} value={null} figure={gainPercent(telemetry.gain)} unit="%" />
+          <Stat {size} label={t('q.power')} value={null} figure={watts?.value ?? null} unit={watts?.unit ?? ''} />
+          <Stat {size} label={t('q.mode')} value={null} text={telemetry.mode ? modeName(telemetry.mode) : null} />
+        {/if}
+      </div>
+    {/if}
   </div>
 
   {#if lost}

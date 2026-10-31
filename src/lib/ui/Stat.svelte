@@ -12,7 +12,8 @@
     size = 'md',
     title,
     tone = 'plain',
-    text
+    text,
+    figure
   }: {
     label: string;
     value: number | null | undefined;
@@ -25,9 +26,11 @@
     tone?: 'plain' | 'success' | 'warning' | 'error';
     // a word instead of a number, a mode or a state
     text?: string | null;
+    // a number written elsewhere, like a signed percent, shown as a figure with its unit
+    figure?: string | null;
   } = $props();
 
-  const shown = $derived(text ?? fmt(value, digits));
+  const shown = $derived(text ?? figure ?? fmt(value, digits));
 </script>
 
 <div class="stat {size} {tone}" {title}>
@@ -115,8 +118,10 @@
     font-size: 12px;
   }
 
+  /* read from the back of a room on a projector */
   .xl .label {
-    font-size: 14px;
+    font-size: 18px;
+    color: var(--text-secondary);
   }
 
   .xl .value {
@@ -126,7 +131,7 @@
   }
 
   .xl .unit {
-    font-size: 18px;
+    font-size: 22px;
   }
 
   .success .value {
