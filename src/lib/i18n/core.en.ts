@@ -85,13 +85,11 @@ export const coreEn = {
   'q.power': 'Power',
   'q.gain': 'Gain',
   'q.off': 'Off the light',
-  'q.level': 'Level',
   'q.mode': 'Mode',
   'q.state': 'State',
   'q.lat': 'Latitude',
   'q.lon': 'Longitude',
   'q.heading': 'Front faces',
-  'q.experiment': 'Experiment',
   'q.progress': 'Progress',
 
   'link.found': 'Tracker found, the page is live now',

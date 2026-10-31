@@ -74,7 +74,7 @@
       },
       {
         id: 'off',
-        series: [{ label: t('panels.tiles.off'), color: 'series3', unit: '°', digits: 1 }],
+        series: [{ label: t('q.off'), color: 'series3', unit: '°', digits: 1 }],
         columns: [{ col: 'off' }],
         y: { min: 0, include: [0], minSpan: 5 }
       }

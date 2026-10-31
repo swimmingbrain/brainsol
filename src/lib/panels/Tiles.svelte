@@ -62,7 +62,7 @@
       unit="%"
       caption={t('panels.tiles.gainNote')} />
     <Tile
-      label={t('panels.tiles.off')}
+      label={t('q.off')}
       title={t('panels.tiles.offTitle')}
       value={off ? String(off.value) : null}
       before={off ? (off.under ? t('panels.tiles.under') : t('panels.tiles.about')) : ''}
