@@ -161,7 +161,7 @@ export const panelsDe: Record<keyof typeof panelsEn, string> = {
   'panels.how.sensors.text': 'Vier Lichtsensoren sitzen am Kopf rund um das Modul: links, rechts, oben und unten. Dazwischen steht ein kleines Kreuz aus Wänden. Kommt das Licht von der Seite, wirft eine Wand ihren Schatten auf den Sensor auf der abgewandten Seite.',
   'panels.how.error.title': 'Vom Unterschied zum Fehler',
   'panels.how.error.text': 'Fünfzigmal pro Sekunde vergleicht der Computer die Sensoren. Rechts gegen links ergibt den Fehler ex, oben gegen unten den Fehler ey. Beide sind 0, wenn das Modul zum Licht zeigt, und wachsen gegen plus oder minus 1, je weiter es danebenliegt.',
-  'panels.how.servos.title': 'Zwei Servos drehen das Panel',
+  'panels.how.servos.title': 'Zwei Servos drehen das Modul',
   'panels.how.servos.text': 'Der Schwenkservo dreht den Kopf nach links und rechts, der Neigeservo kippt das Modul nach oben und unten. Schwenk und Neigung sind die Winkel dieser beiden Servos. Wohin das Modul oder das Licht am Himmel zeigt, sagen Azimut, im Uhrzeigersinn von vorne, und Höhenwinkel über dem Horizont. Je größer der Fehler, desto schneller dreht der Servo. In einer kleinen Totzone hält er an, so kommt das Modul zur Ruhe, statt hin und her zu pendeln.',
   'panels.how.cosine.title': 'Warum es sich lohnt',
   'panels.how.cosine.text': 'Ein Modul bekommt Licht im Verhältnis zum Kosinus des Winkels zwischen seiner Normale und dem Licht. Zum Licht gedreht bekommt es alles, 25° daneben noch 91 %, 60° daneben nur die Hälfte. Ein festes Modul steht den größten Teil des Tages schräg, ein Tracker hält den Winkel nahe null.',
