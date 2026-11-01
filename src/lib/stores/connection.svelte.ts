@@ -279,7 +279,9 @@ export class Connection {
   private startSim(): void {
     if (this.sim && this.active === this.sim && this.sim.status !== 'closed') return;
     if (!this.sim) {
-      const sim = new SimTransport(this.options.createEngine ?? (() => createEngine()));
+      // the lamp wanders on its own for idle visitors, not for those who asked for less motion
+      const calm = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const sim = new SimTransport(this.options.createEngine ?? (() => createEngine({ wander: !calm })));
       sim.on('message', (message) => {
         if (this.active === sim) this.handle(message);
       });
