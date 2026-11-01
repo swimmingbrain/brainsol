@@ -78,6 +78,11 @@ describe('the experiment results', () => {
     expect(gains[2]).toBeNull();
   });
 
+  it('takes the gain of a round from the tracker when it sends one', () => {
+    const sent = { ...compare, rounds: [{ fixed: 650, tracked: 890, gain: 1.4 }, { fixed: 0, tracked: 880, gain: NaN }] };
+    expect(roundGains(sent)).toEqual([1.4, null]);
+  });
+
   it('merges the stored list and this session, newest first, one row per id', () => {
     const merged = mergeRecords(
       [{ id: 'b', kind: 'step', ts: 20 }],
