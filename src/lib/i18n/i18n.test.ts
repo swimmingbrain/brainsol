@@ -1,3 +1,6 @@
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { de, en, expName, fmt, phaseText, translate, type Key } from './index';
 import { coreEn } from './core.en';
@@ -59,8 +62,18 @@ describe('the dictionaries', () => {
   it('use no dashes as punctuation', () => {
     for (const dict of [en, de]) {
       for (const [key, text] of Object.entries(dict)) {
-        expect(text, key).not.toMatch(/[‒–—―]/);
-        expect(text, key).not.toMatch(/\s-\s|\s-$|^-\s/);
+        expect(text, key).not.toMatch(DASHES);
+        expect(text, key).not.toMatch(/\s-\s|\s-$|^-\s|--/);
+        // a minus sign stays in formulas, between two words it would be a dash
+        expect(text, key).not.toMatch(/\p{L}{2,}\s\u2212\s\p{L}{2,}/u);
+      }
+    }
+  });
+
+  it('use no hyphen inside a word, compounds are written apart', () => {
+    for (const dict of [en, de]) {
+      for (const [key, text] of Object.entries(dict)) {
+        expect(text.replace(/https?:\S+|\b[\w.-]+\.(local|org|dev)\b|wss?:\/\/\S*/g, ''), key).not.toMatch(/\p{L}-\p{L}/u);
       }
     }
   });
@@ -68,6 +81,31 @@ describe('the dictionaries', () => {
   it('write german with umlauts, not with ae, oe or ue stand ins', () => {
     for (const [key, text] of Object.entries(de)) {
       expect(text, key).not.toMatch(/\b(fuer|ueber|zurueck|schliessen|laeuft|faehrt|praesentation)/i);
+    }
+  });
+});
+
+// every dash and hyphen mark of unicode besides the plain hyphen and the minus sign
+const DASHES = /[\u2010-\u2015\u2e3a\u2e3b\ufe58\ufe63\uff0d]/;
+
+describe('the words outside the dictionaries', () => {
+  const root = fileURLToPath(new URL('../../../', import.meta.url));
+  const pages = (dir: string): string[] =>
+    readdirSync(join(root, dir), { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? pages(join(dir, e.name)) : e.name.endsWith('.svelte') ? [join(dir, e.name)] : []));
+
+  it('use no dashes in the pages, the readme and the docs either', () => {
+    const files = [...pages('src/routes'), 'README.md', 'docs/CONTRIBUTING.md', 'docs/SECURITY.md', 'THIRD_PARTY_LICENSES'];
+    for (const file of files) {
+      let text = readFileSync(join(root, file), 'utf8');
+      // only what a reader sees: no scripts, styles, tags, expressions, code or addresses
+      text = text.replace(/<(script|style)[\s\S]*?<\/\1>/g, '').replace(/<[^>]*>|\{[^}]*\}/g, ' ');
+      text = text.replace(/```[\s\S]*?```|`[^`]*`|https?:\S+/g, ' ');
+      expect(text, file).not.toMatch(DASHES);
+      for (const line of text.split('\n')) {
+        // a markdown list item and the rule under a table head are syntax
+        if (/^\s*\|[\s|:-]+\|\s*$/.test(line)) continue;
+        expect(line.replace(/^\s*- /, ''), file).not.toMatch(/\s-\s|--/);
+      }
     }
   });
 });
