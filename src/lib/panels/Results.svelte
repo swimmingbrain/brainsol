@@ -273,7 +273,9 @@
     color: var(--text-muted);
   }
 
+  /* the name on its own line, the sentence below it starts afresh */
   .kind-name {
+    display: block;
     font-weight: 600;
     color: var(--text-primary);
   }
