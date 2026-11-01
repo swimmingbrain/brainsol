@@ -87,8 +87,8 @@
         </Button>
       </div>
     {/if}
-    {#if scan.done && done.visited < done.total}
-      <Note>{t('admin.scan.early')}</Note>
+    {#if scan.done && (scan.stopped || done.visited < done.total)}
+      <Note>{scan.err ? t('admin.scan.earlyWhy', { why: scan.err }) : t('admin.scan.early')}</Note>
     {/if}
   {:else}
     <Note>{t('admin.scan.empty')}</Note>

@@ -65,7 +65,7 @@
     {#if exp.result}
       <button class="link" onclick={showResults}>{t('admin.exp.see')}</button>
     {:else if exp.phase === 'error'}
-      <Note>{t('admin.exp.early')}</Note>
+      <Note>{exp.err ? t('admin.exp.earlyWhy', { why: exp.err }) : t('admin.exp.early')}</Note>
     {/if}
   </Group>
 {/if}

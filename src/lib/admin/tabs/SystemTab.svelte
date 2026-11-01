@@ -68,6 +68,10 @@
     <Stat size="sm" label={t('admin.sys.viewers')} value={sys?.viewers} />
     <Stat size="sm" label={t('admin.sys.admins')} value={sys?.admins} />
     <Stat size="sm" label={t('admin.sys.act')} value={null} text={sys ? t(`admin.sys.act.${sys.act ?? 'none'}` as Key) : null} />
+    {#if live}
+      <!-- serial frames the pi lost on the way from the board, a growing number points at the cable -->
+      <Stat size="sm" label={t('admin.sys.drop')} value={sys ? (sys.drop ?? 0) : null} title={t('admin.sys.dropHint')} />
+    {/if}
   </div>
 </Group>
 
