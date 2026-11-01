@@ -74,6 +74,7 @@
     let y = 0;
     let cx = '';
     let cy = '';
+    let aim = { x: 0, y: 0 };
     let seen = false;
     let visible = true;
     const still = matchMedia('(prefers-reduced-motion: reduce)');
@@ -84,7 +85,11 @@
       let moving = false;
       if (frame && dot) {
         // a tracker without a first reading sends null errors, the dot rests in the middle
-        const target = bubble(frame.ex ?? 0, frame.ey ?? 0);
+        const next = bubble(frame.ex ?? 0, frame.ey ?? 0);
+        // sensor noise of a resting tracker moves the target by a fraction of a
+        // pixel, the dot only follows a move it can show
+        if (!seen || Math.hypot(next.x - aim.x, next.y - aim.y) * TRAVEL > 0.6) aim = next;
+        const target = aim;
         const dt = last ? (now - last) / 1000 : 1;
         const tau = still.matches ? 0 : TAU;
         x = seen ? follow(x, target.x, dt, tau) : target.x;
