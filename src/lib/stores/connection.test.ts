@@ -91,6 +91,16 @@ describe('the connection', () => {
     vi.useRealTimers();
   });
 
+  it('names an address without a host as it was typed and runs the simulation', async () => {
+    const { connection } = make('http://localhost:5173/?pi=http://');
+    await connection.init();
+    await settle();
+    expect(connection.problem).toBe('invalid');
+    expect(connection.host).toBe('http://');
+    expect(connection.source).toBe('sim');
+    connection.stop();
+  });
+
   it('runs the simulation when no address is given anywhere', async () => {
     const { connection } = make('https://sol.swimmingbrain.dev/');
     await connection.init();
