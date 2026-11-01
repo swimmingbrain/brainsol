@@ -48,7 +48,8 @@
   }
 
   const levels = $derived(telemetry.ldr);
-  const fills = $derived(areas.map((area) => heatColor(levels ? levels[area.index] : 0, colors.heat)));
+  // whole percent steps of colour, the noise in the third decimal stays out of the style
+  const fills = $derived(areas.map((area) => heatColor(levels ? Math.round(levels[area.index] * 100) / 100 : 0, colors.heat)));
 
   // the dead band of the tracker, from its settings or the defaults of section 6
   const deadIn = $derived(connection.config?.params.dead_in.v ?? 0.025);
