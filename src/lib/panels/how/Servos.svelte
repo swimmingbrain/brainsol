@@ -35,7 +35,8 @@
   <!-- the tilt servo at the pivot and its turn -->
   <path class="turn" d="M74 50a24 24 0 0 1 10-12" />
   <path class="turn" d="M79 37l5 1-1.6 4.8" />
-  <text class="end" x="70" y="44">{say('q.tilt')}</text>
+  <!-- left of every place the upper end of the panel can reach -->
+  <text class="end" x="58" y="44">{say('q.tilt')}</text>
   <line class="panel" x1={panel.x1} y1={panel.y1} x2={panel.x2} y2={panel.y2} />
   <line class="normal" x1={PIVOT.x} y1={PIVOT.y} x2={normal.x} y2={normal.y} />
   <circle class="pivot" cx={PIVOT.x} cy={PIVOT.y} r="4" />
