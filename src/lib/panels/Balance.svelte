@@ -96,7 +96,7 @@
         if (nx !== cx) dot.setAttribute('cx', (cx = nx));
         if (ny !== cy) dot.setAttribute('cy', (cy = ny));
       }
-      last = moving ? now : 0;
+      last = now;
       if (moving) schedule();
     };
     const schedule = () => {
