@@ -52,6 +52,8 @@
     return { az: az === null ? null : wrap180(az), el, azLabel: `twin.${what}Az` as Key, elLabel: `twin.${what}El` as Key };
   });
   const watts = $derived(power(telemetry.pmw));
+  // a live tracker that dropped away, the frozen picture must not pass for live
+  const dropped = $derived(connection.source === 'live' && connection.status === 'reconnecting');
 
   onMount(() => {
     let gone = false;
@@ -139,7 +141,7 @@
   {/if}
 
   <div class="overlay">
-    <p class="say" aria-live="polite">{stateSentence(telemetry.st)}</p>
+    <p class="say" aria-live="polite">{dropped ? t('say.lost') : stateSentence(telemetry.st)}</p>
     {#if shown || present}
       <div class="numbers">
         {#if shown}

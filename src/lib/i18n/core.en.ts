@@ -55,6 +55,7 @@ export const coreEn = {
   'say.calibrating': 'The sensors are being calibrated.',
   'say.fault': 'Something is wrong with the tracker.',
   'say.waiting': 'Waiting for the tracker.',
+  'say.lost': 'The tracker does not answer, trying again. The picture shows its last pose.',
 
   'mode.auto': 'Auto',
   'mode.manual': 'Manual',

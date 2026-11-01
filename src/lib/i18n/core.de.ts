@@ -54,6 +54,7 @@ export const coreDe: Record<keyof typeof coreEn, string> = {
   'say.calibrating': 'Die Sensoren werden kalibriert.',
   'say.fault': 'Mit dem Tracker stimmt etwas nicht.',
   'say.waiting': 'Warte auf den Tracker.',
+  'say.lost': 'Der Tracker antwortet nicht, neuer Versuch läuft. Das Bild zeigt seine letzte Stellung.',
 
   'mode.auto': 'Automatik',
   'mode.manual': 'Manuell',
