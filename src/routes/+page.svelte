@@ -12,12 +12,13 @@
   import DaySim from '$lib/panels/DaySim.svelte';
   import Results from '$lib/panels/Results.svelte';
   import Unlock from '$lib/admin/Unlock.svelte';
-  import Dock from '$lib/admin/Dock.svelte';
   import { connection } from '$lib/stores/connection.svelte';
   import { ui } from '$lib/stores/ui.svelte';
   import { t } from '$lib/i18n';
 
   const docked = $derived(connection.admin && !ui.presenting);
+  // the admin tools only load once someone unlocks them, a visitor never pays for them
+  const dock = $derived(docked ? import('$lib/admin/Dock.svelte') : null);
 
   onMount(() => {
     void connection.init();
@@ -59,9 +60,11 @@
           <Charts />
         </aside>
 
-        {#if docked}
+        {#if dock}
           <aside class="dock">
-            <Dock />
+            {#await dock then { default: Dock }}
+              <Dock />
+            {/await}
           </aside>
         {/if}
 
