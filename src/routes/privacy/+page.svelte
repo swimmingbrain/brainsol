@@ -39,9 +39,11 @@
     <p>
       Apart from that, the page connects only to the tracker address shown in the status bar at the bottom of
       the page. It keeps a WebSocket open to the tracker for the live data and asks the tracker for the last
-      minutes of its history to fill the charts. The address comes from <code>config.json</code>, from
-      <code>?pi=</code> in the page address, or from an address you saved yourself. When the status bar says
-      simulation, the tracker is simulated in your browser and the page does not connect anywhere else.
+      minutes of its history to fill the charts and for the experiment results it keeps. The address comes
+      from <code>config.json</code>, from <code>?pi=</code> in the page address, or from an address you saved
+      yourself. When the status bar says simulation, the tracker is simulated in your browser and the page
+      does not connect anywhere else. An admin who tests a new tracker address in the admin tools makes the
+      page ask that address once whether a tracker answers there.
     </p>
     <p>
       The tracker is a small computer run by whoever shows the demo. Like any server, it sees your IP address
