@@ -63,13 +63,16 @@
   let root = $state<HTMLElement | null>(null);
   let dot = $state<SVGCircleElement | null>(null);
 
-  // the dot is drawn on every animation frame from the newest frame, outside
-  // svelte, and eased so a 20 Hz stream with noise still glides
+  // the dot is drawn on animation frames from the newest frame, outside
+  // svelte, and eased so a 20 Hz stream with noise still glides. once it rests
+  // on its target the loop sleeps until the next frame comes in
   onMount(() => {
     let raf = 0;
     let last = 0;
     let x = 0;
     let y = 0;
+    let cx = '';
+    let cy = '';
     let seen = false;
     let visible = true;
     const still = matchMedia('(prefers-reduced-motion: reduce)');
@@ -77,6 +80,7 @@
     const draw = (now: number) => {
       raf = 0;
       const frame = telemetry.frame;
+      let moving = false;
       if (frame && dot) {
         // a tracker without a first reading sends null errors, the dot rests in the middle
         const target = bubble(frame.ex ?? 0, frame.ey ?? 0);
@@ -85,11 +89,15 @@
         x = seen ? follow(x, target.x, dt, tau) : target.x;
         y = seen ? follow(y, target.y, dt, tau) : target.y;
         seen = true;
-        dot.setAttribute('cx', (C + x * TRAVEL).toFixed(2));
-        dot.setAttribute('cy', (C - y * TRAVEL).toFixed(2));
+        moving = Math.abs(x - target.x) * TRAVEL > 0.01 || Math.abs(y - target.y) * TRAVEL > 0.01;
+        // an unchanged attribute is not written, so a resting dot costs no layout
+        const nx = (C + x * TRAVEL).toFixed(1);
+        const ny = (C - y * TRAVEL).toFixed(1);
+        if (nx !== cx) dot.setAttribute('cx', (cx = nx));
+        if (ny !== cy) dot.setAttribute('cy', (cy = ny));
       }
-      last = now;
-      schedule();
+      last = moving ? now : 0;
+      if (moving) schedule();
     };
     const schedule = () => {
       if (!raf && visible && document.visibilityState === 'visible') raf = requestAnimationFrame(draw);
@@ -108,9 +116,12 @@
     if (root) observer.observe(root);
     const onvisibility = () => (document.visibilityState === 'visible' ? schedule() : stop());
     document.addEventListener('visibilitychange', onvisibility);
+    // every new frame wakes the loop, it goes back to sleep once the dot rests
+    const unsubscribe = telemetry.onFrame(() => schedule());
     schedule();
     return () => {
       stop();
+      unsubscribe();
       observer.disconnect();
       document.removeEventListener('visibilitychange', onvisibility);
     };
