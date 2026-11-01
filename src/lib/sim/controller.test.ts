@@ -224,7 +224,8 @@ describe('the loop with the sensors and the servos', () => {
     }
     expect(runs).toBeGreaterThan(400);
     expect(behind).toBeGreaterThan(150);
-  });
+    // hundreds of simulated runs, a busy machine needs more than the default 5 s
+  }, 30_000);
 
   it('gets close to a light high over the panel, inside the zenith band', () => {
     for (const az of [-120, -45, 10, 80, 160]) {

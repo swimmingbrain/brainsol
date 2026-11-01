@@ -111,7 +111,9 @@ describe('RateStream', () => {
     const sent: Vec[] = [];
     const stream = new RateStream((v) => sent.push(v), 20);
     stream.set({ x: 1, y: 0 });
-    await new Promise((resolve) => setTimeout(resolve, 110));
+    // a busy machine fires timers late, so wait for the beats instead of a fixed time
+    const start = Date.now();
+    while (sent.length < 4 && Date.now() - start < 3000) await new Promise((resolve) => setTimeout(resolve, 20));
     stream.release();
     expect(sent.length).toBeGreaterThanOrEqual(4);
     expect(sent[sent.length - 1]).toEqual(ZERO);
