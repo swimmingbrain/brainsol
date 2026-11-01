@@ -74,12 +74,17 @@
   }
 
   // the one number a row shows
-  function headline(id: string): string {
-    const r = known.get(id) ?? fetched[id];
-    if (!r) return '';
-    if (isCosine(r.kind, r.result)) return `R² ${fmt(r.result.r2, 3)}`;
-    if (isCompare(r.kind, r.result)) return `${gainPercent(r.result.gain)} %`;
-    if (isStep(r.kind, r.result)) return r.result.settle !== null ? `${fmt(r.result.settle, 2)} s` : t('panels.results.noLock');
+  // a stored row that was not fetched yet uses the summary the list carries
+  function headline(row: ExperimentSummary): string {
+    const r = known.get(row.id) ?? fetched[row.id];
+    const s = row.summary ?? {};
+    const kind = row.kind;
+    const r2 = r && isCosine(r.kind, r.result) ? r.result.r2 : kind === 'cosine' ? s.r2 : undefined;
+    const gain = r && isCompare(r.kind, r.result) ? r.result.gain : kind === 'compare' ? s.gain : undefined;
+    const settle = r && isStep(r.kind, r.result) ? r.result.settle : kind === 'step' ? s.settle : undefined;
+    if (kind === 'cosine' && r2 !== undefined) return r2 === null ? '' : `R² ${fmt(r2, 3)}`;
+    if (kind === 'compare' && gain !== undefined) return gain === null ? '' : `${gainPercent(gain)} %`;
+    if (kind === 'step' && settle !== undefined) return settle === null ? t('panels.results.noLock') : `${fmt(settle, 2)} s`;
     return '';
   }
 
@@ -127,7 +132,7 @@
               <button class="pick" role="option" aria-selected={on} onclick={() => (selected = row.id)}>
                 <span class="row-kind">{kindName(row.kind)}</span>
                 <span class="row-when">{when(row.ts)}</span>
-                <span class="row-value">{headline(row.id)}</span>
+                <span class="row-value">{headline(row)}</span>
               </button>
               {#if live && connection.api}
                 <a class="csv" href={csvUrl(connection.api, row.id)} download title={t('panels.results.csv')} aria-label={t('panels.results.csv')}>

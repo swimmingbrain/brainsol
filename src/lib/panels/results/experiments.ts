@@ -61,7 +61,8 @@ export function stepTable(result: StepResult): { t: number[]; pan: number[]; til
 }
 
 export function roundGains(result: CompareResult): (number | null)[] {
-  return result.rounds.map((r) => (r.fixed > 0 ? r.tracked / r.fixed : null));
+  // the pi sends the gain of each round, an older result only the two readings
+  return result.rounds.map((r) => (Number.isFinite(r.gain) ? (r.gain as number) : r.fixed > 0 ? r.tracked / r.fixed : null));
 }
 
 // the newest first, one entry per id
