@@ -129,7 +129,8 @@ export class Connection {
     this.address = address.trim();
     const result = resolveAddress(address, this.page());
     if (!result.ok) {
-      const host = hostOf(address);
+      // an address with no host part, like http://, is named as it was typed
+      const host = hostOf(address) || address.trim();
       this.problem = result.problem === 'empty' ? null : result.problem;
       this.host = host;
       this.api = null;
