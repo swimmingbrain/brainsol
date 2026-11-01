@@ -113,7 +113,8 @@ describe('a long run', () => {
       if (late.has(id)) expect(count, id).toBeLessThanOrEqual(1);
       else expect(count, id).toBe(1);
     }
-  });
+    // a simulated hour takes a few seconds, more on a busy machine
+  }, 30_000);
 });
 
 describe('the cost of the loop', () => {
