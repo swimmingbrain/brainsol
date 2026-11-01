@@ -21,6 +21,8 @@ export const coreEn = {
   'lang.de': 'Deutsch',
 
   'status.live': 'live, {host}',
+
+  'status.starting': 'starting',
   'status.connecting': 'connecting to {host}',
   'status.reconnecting': 'connection lost, trying {host} again',
   'status.sim': 'simulation in this browser',

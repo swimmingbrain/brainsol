@@ -37,9 +37,12 @@
       <span class="logo-text">brainSOL</span>
     </a>
     <span class="separator"></span>
-    <Chip tone={sourceTone} dot pulse={waiting} title={sourceTitle}>
-      {live ? t('top.live') : t('top.sim')}
-    </Chip>
+    <!-- until the page knows where its data comes from it claims neither -->
+    {#if connection.status !== 'idle'}
+      <Chip tone={sourceTone} dot pulse={waiting} title={sourceTitle}>
+        {live ? t('top.live') : t('top.sim')}
+      </Chip>
+    {/if}
     {#if viewers !== null}
       <span class="viewers" title={t('top.viewers')}>
         <Icon name="eye" size={13} />

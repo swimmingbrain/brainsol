@@ -20,6 +20,8 @@
   );
 
   const text = $derived.by(() => {
+    // config.json is still on its way, nothing is decided yet
+    if (!live && connection.status === 'idle') return t('status.starting');
     if (live) {
       if (connection.status === 'reconnecting') return t('status.reconnecting', { host });
       if (connection.status === 'connecting' || connection.status === 'idle') return t('status.connecting', { host });

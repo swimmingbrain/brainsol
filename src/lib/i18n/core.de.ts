@@ -20,6 +20,8 @@ export const coreDe: Record<keyof typeof coreEn, string> = {
   'lang.de': 'Deutsch',
 
   'status.live': 'live, {host}',
+
+  'status.starting': 'startet',
   'status.connecting': 'verbinde mit {host}',
   'status.reconnecting': 'Verbindung verloren, versuche {host} erneut',
   'status.sim': 'Simulation in diesem Browser',
