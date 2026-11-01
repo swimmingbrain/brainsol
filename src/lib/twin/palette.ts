@@ -28,7 +28,7 @@ export function readPalette(): Palette {
     elevated: color(cssVar('--bg-elevated'), light ? '#f0f0f2' : '#212124'),
     border: color(cssVar('--border'), light ? '#e0e0e4' : '#2e2e33'),
     grid: color(chart.grid, '#2e2e33'),
-    muted: color(cssVar('--text-muted'), '#85858e'),
+    muted: color(cssVar('--text-muted'), '#8b8b94'),
     secondary: color(cssVar('--text-secondary'), '#a1a1aa'),
     accent: color(cssVar('--accent'), '#d19a66'),
     heat: chart.heat.map((c, i) => color(c, ['#26221f', '#4a3a2b', '#7a5c3d', '#a87c52', '#d19a66'][i]))

@@ -33,7 +33,7 @@ export function chartColors(): ChartColors {
       cssVar('--heat-4', '#a87c52'),
       cssVar('--heat-5', '#d19a66')
     ],
-    text: cssVar('--text-muted', '#85858e'),
+    text: cssVar('--text-muted', '#8b8b94'),
     background: cssVar('--bg-surface', '#19191c')
   };
 }
