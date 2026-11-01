@@ -10,8 +10,9 @@
 
   const FOOT = 82;
   const TALL = 62;
-  const l = $derived(telemetry.ldr?.[0] ?? 0);
-  const r = $derived(telemetry.ldr?.[1] ?? 0);
+  // the columns in whole percent, finer steps would only draw sensor noise
+  const l = $derived(Math.round((telemetry.ldr?.[0] ?? 0) * 100) / 100);
+  const r = $derived(Math.round((telemetry.ldr?.[1] ?? 0) * 100) / 100);
   const ex = $derived(telemetry.ex ?? 0);
 
   // the scale opens up the middle like the bubble level does

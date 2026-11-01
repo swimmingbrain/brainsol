@@ -22,7 +22,8 @@
   const angle = $derived.by(() => {
     if (telemetry.ex === null || telemetry.st === 'lowlight') return 0;
     const { tx } = errorTangents(telemetry.ex, 0, k);
-    return Math.max(-60, Math.min(60, (Math.atan(tx) * 180) / Math.PI));
+    // half degrees are plenty for a sketch, sensor noise then leaves it alone
+    return Math.round(Math.max(-60, Math.min(60, (Math.atan(tx) * 180) / Math.PI)) * 2) / 2;
   });
   const rad = $derived((angle * Math.PI) / 180);
   // a unit step along the light, from the sun down to the panel
@@ -50,8 +51,8 @@
   });
   const sun = $derived({ x: WALL - d.x * 96, y: BASE - d.y * 96 });
 
-  const left = $derived(heatColor(telemetry.ldr?.[0] ?? 0, colors.heat));
-  const right = $derived(heatColor(telemetry.ldr?.[1] ?? 0, colors.heat));
+  const left = $derived(heatColor(Math.round((telemetry.ldr?.[0] ?? 0) * 100) / 100, colors.heat));
+  const right = $derived(heatColor(Math.round((telemetry.ldr?.[1] ?? 0) * 100) / 100, colors.heat));
 </script>
 
 <svg viewBox="0 0 220 130" aria-hidden="true">

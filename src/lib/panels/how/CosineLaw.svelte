@@ -25,7 +25,8 @@
     .map((d) => `${d ? 'L' : 'M'}${px(d).toFixed(1)} ${py(Math.cos((d * Math.PI) / 180)).toFixed(1)}`)
     .join('');
 
-  const off = $derived(telemetry.off === null ? null : Math.min(90, Math.abs(telemetry.off)));
+  // whole degrees like the tile, sensor noise then leaves the dot alone
+  const off = $derived(telemetry.off === null ? null : Math.min(90, Math.round(Math.abs(telemetry.off))));
   const dot = $derived(off === null ? null : { x: px(off), y: py(Math.cos((off * Math.PI) / 180)) });
 </script>
 
