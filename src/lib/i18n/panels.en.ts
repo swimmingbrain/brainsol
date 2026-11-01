@@ -132,7 +132,7 @@ export const panelsEn = {
   'panels.results.at60Note': 'of the direct light, measured, the cosine says 50 %',
   'panels.results.angleAxis': 'lx over the angle from the light',
   'panels.results.cosineAria': 'Light over the angle from the light, measured points and the fitted cosine',
-  'panels.results.cosineCaption': 'The tracker locked on the light, then tilted the panel away in steps of 5 degrees and measured the light at each step. The dots follow the cosine of the angle, the line is the fit lux = ambient + peak · cos δ.',
+  'panels.results.cosineCaption': 'The tracker locked on the light, then tilted the panel away in steps of 5 degrees and measured the light at each step. The dots follow the cosine of the angle, the line is the fit lux = ambient + peak · cos(δ − offset). The offset takes out the few degrees the lock sat off the light.',
   'panels.results.round': 'Round {n}, {g} %',
   'panels.results.fixedPose': 'Fixed pose',
   'panels.results.tracked': 'Tracked',

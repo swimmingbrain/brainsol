@@ -131,7 +131,7 @@ export const panelsDe: Record<keyof typeof panelsEn, string> = {
   'panels.results.at60Note': 'vom direkten Licht, gemessen, der Kosinus sagt 50 %',
   'panels.results.angleAxis': 'lx über dem Winkel zum Licht',
   'panels.results.cosineAria': 'Licht über dem Winkel zum Licht, gemessene Punkte und der angepasste Kosinus',
-  'panels.results.cosineCaption': 'Der Tracker hat sich auf das Licht ausgerichtet, dann das Modul in Schritten von 5 Grad weggekippt und bei jedem Schritt das Licht gemessen. Die Punkte folgen dem Kosinus des Winkels, die Linie ist die angepasste Kurve lux = Umgebung + Spitzenwert · cos δ.',
+  'panels.results.cosineCaption': 'Der Tracker hat sich auf das Licht ausgerichtet, dann das Modul in Schritten von 5 Grad weggekippt und bei jedem Schritt das Licht gemessen. Die Punkte folgen dem Kosinus des Winkels, die Linie ist die angepasste Kurve lux = Umgebung + Spitzenwert · cos(δ − Versatz). Der Versatz nimmt die paar Grad heraus, um die die Ausrichtung neben dem Licht lag.',
   'panels.results.round': 'Runde {n}, {g} %',
   'panels.results.fixedPose': 'Feste Stellung',
   'panels.results.tracked': 'Nachgeführt',
