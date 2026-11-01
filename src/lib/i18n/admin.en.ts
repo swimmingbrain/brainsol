@@ -136,7 +136,7 @@ export const adminEn = {
   'admin.param.dead_out.hint': 'A resting axis starts again once its error grows above this. The gap stops hunting.',
   'admin.param.tau': 'Smoothing',
   'admin.param.tau.hint': 'Time constant of the sensor filter. Longer is calmer but slower.',
-  'admin.param.min_light': 'Least light',
+  'admin.param.min_light': 'Minimum light',
   'admin.param.min_light.hint': 'Below this mean level the tracker waits instead of hunting in the dark.',
   'admin.param.zenith_band': 'Zenith band',
   'admin.param.zenith_band.hint': 'Near flat the pan has no clear direction, inside this band around tilt 90 it stays still.',
