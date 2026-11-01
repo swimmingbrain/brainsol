@@ -206,9 +206,11 @@
     opacity: 0.75;
   }
 
+  /* 100 % has to fit across the ring on the left and the right */
   .level {
     font-family: var(--font-editor);
-    font-size: 11px;
+    font-size: 10px;
+    letter-spacing: -0.02em;
     font-weight: 500;
     text-anchor: middle;
     dominant-baseline: middle;
