@@ -41,7 +41,8 @@
     let az: number | null = null;
     let el: number | null = null;
     if (dragLight) [what, az, el] = ['lamp', dragLight.az, dragLight.el];
-    else if (sun && sun.el > -0.5) [what, az, el] = ['sun', sun.az, sun.el];
+    // in sun mode the numbers stay with the sun, also below the horizon while the head parks
+    else if (sun) [what, az, el] = ['sun', sun.az, sun.el];
     else if (sim) [what, az, el] = ['lamp', sim.az, sim.el];
     else if (!present) return null;
     else if (telemetry.pan !== null && telemetry.tilt !== null) {
