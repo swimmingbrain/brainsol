@@ -61,7 +61,7 @@ The Pi can serve the page itself. Copy the contents of `build/` into a folder ca
 
 ## The 3D model
 
-`static/models/assembly.json` describes the tracker the twin draws: its parts, the two joints and where the sensors sit. Until the CAD files are ready it lists no model files and the twin builds a stand in from simple shapes with the same joints. The CAD export of brainsolpi brings its own `assembly.json` and one GLB file per part. Copied into `static/models/` they replace the stand in, and the twin falls back to the stand in on any problem with them.
+The twin draws the real tracker from the CAD export of brainsolpi in `static/models/`: `assembly.json` with the parts, the two joints and where the sensors sit, and one GLB file per part, about 0.9 MB together. They load after the page is up. The export puts all printed parts of a group into one mesh with one colour, so the twin finds the small solids again and gives the copper caps and the dark feet their own colour back. Without the files, or on any problem with them, the twin builds a stand in from simple shapes with the same joints. After a new export, copy the five files from `hardware/export/web/` of brainsolpi into `static/models/`.
 
 ## How it works
 
