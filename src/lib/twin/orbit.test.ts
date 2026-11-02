@@ -67,9 +67,9 @@ describe('the camera orbit', () => {
 
   it('keeps the chosen zoom when the home view changes', () => {
     const orbit = new Orbit(HOME);
-    orbit.zoom(1.5);
+    orbit.zoom(1.25);
     orbit.setHome({ ...HOME, dist: 2000 });
-    expect(orbit.goal.dist).toBeCloseTo(3000, 9);
+    expect(orbit.goal.dist).toBeCloseTo(2500, 9);
     orbit.setHome({ ...HOME, dist: 500 }, true);
     expect(orbit.view.dist).toBe(500);
   });

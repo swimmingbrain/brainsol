@@ -20,7 +20,7 @@ export interface OrbitLimits {
   maxZoom: number;
 }
 
-export const LIMITS: OrbitLimits = { minEl: 3, maxEl: 84, minZoom: 0.5, maxZoom: 1.8 };
+export const LIMITS: OrbitLimits = { minEl: 3, maxEl: 84, minZoom: 0.5, maxZoom: 1.35 };
 
 // stiffness of the camera springs, quick enough to feel direct
 const OMEGA = 16;
