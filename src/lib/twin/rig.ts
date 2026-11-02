@@ -71,6 +71,7 @@ export class Rig {
   private matrices: Record<string, Mat4> = {};
   private pose = { pan: NaN, tilt: NaN };
   private panelGroup: string | null;
+  private rim = { value: new Color(0x000000) };
 
   constructor(
     readonly assembly: Assembly,
@@ -102,6 +103,15 @@ export class Rig {
     }
     // the panel warms a little the better it faces the light, see setWarmth
     this.materials.panel.emissive.set(0x000000);
+    // a faint light on the edges that turn away from the camera, so the
+    // charcoal parts keep their outline on the dark page, see setRim
+    const rim = this.rim;
+    this.materials.dark.onBeforeCompile = (shader) => {
+      shader.uniforms.rimColor = rim;
+      shader.fragmentShader = shader.fragmentShader
+        .replace('#include <common>', '#include <common>\nuniform vec3 rimColor;')
+        .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n\ttotalEmissiveRadiance += rimColor * pow(1.0 - saturate(dot(normal, normalize(vViewPosition))), 3.0);');
+    };
 
     for (const part of assembly.parts) {
       const group = this.group(part.joint);
@@ -190,6 +200,11 @@ export class Rig {
   // 0 for no light on the panel, 1 for the panel square to the light
   setWarmth(amount: number, accent: Color): void {
     this.materials.panel.emissive.copy(accent).multiplyScalar(0.035 * amount);
+  }
+
+  // the edge light of the charcoal parts, black turns it off
+  setRim(color: Color): void {
+    this.rim.value.copy(color);
   }
 
   dispose(): void {

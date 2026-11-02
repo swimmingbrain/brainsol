@@ -40,6 +40,8 @@ const PARK = { pan: 0, tilt: 90 };
 const FOV = 28;
 const MAX_PIXEL_RATIO = 2;
 const COPPER = new Color(ROLE_COLORS.accent);
+// strength of the edge light on the charcoal parts in the dark theme
+const RIM = 0.12;
 // changes smaller than this are noise of a resting tracker, not light
 const WARMTH_BAND = 0.1;
 
@@ -279,6 +281,8 @@ export class Twin {
     fill.intensity = p.light ? 0.7 : 0.55;
     rim.intensity = p.light ? 0.6 : 1.1;
     ambient.intensity = p.light ? 0.3 : 0.15;
+    // the charcoal head would melt into the dark page at its edges, a bright room needs no help
+    this.rig?.setRim(p.light ? new Color(0x000000) : new Color().setRGB(...p.secondary, SRGBColorSpace).multiplyScalar(RIM));
     this.dirty = true;
     this.wake();
   }
