@@ -2,7 +2,8 @@
 // move with it, the groups get their matrices straight from joints.ts, so the
 // stand in and the cad export move by the very same numbers. matte materials in
 // the colour roles of the contract, the panel face with its cell lines, and a
-// small disc in front of each light sensor that shows what the sensor sees
+// small disc in the well of each light sensor that shows what the sensor sees,
+// the lux window included
 
 import { BufferAttribute, CircleGeometry, Color, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, Quaternion, Vector3, type BufferGeometry, type Texture } from 'three';
 import type { Vec3 } from '$lib/sim/kinematics';
@@ -12,6 +13,25 @@ import type { Piece } from './standin';
 
 // the sensor discs, about the size of the photoresistor face
 const EYE_RADIUS = 2.6;
+// the window of the lux sensor is smaller and has no shade wall
+const LUX_RADIUS = 1.7;
+// the cad wells are narrow up to the back face of the panel, 2.5 mm behind its
+// front, and open up from there
+const WELL_OPEN = 2.5;
+
+// where a sensor disc goes. a sensor deep in its well would only show from
+// straight ahead, so its disc sits where the well opens and the glow reads
+// from the side too, the shade wall still hides it from the far side
+export function eyeSpot(at: Vec3, panel: Assembly['panel']): Vec3 {
+  const n = new Vector3(...(panel?.normal ?? [0, 1, 0])).normalize();
+  const p = new Vector3(...at);
+  if (panel) {
+    const depth = new Vector3(...panel.center).sub(p).dot(n);
+    if (depth > WELL_OPEN) p.addScaledVector(n, depth - WELL_OPEN);
+  }
+  // a hair in front, so the disc never fights a face for a pixel
+  return p.addScaledVector(n, 0.12).toArray();
+}
 
 export interface Eye {
   name: SensorName;
@@ -41,6 +61,8 @@ export class Rig {
   readonly root = new Group();
   readonly meshes: Mesh[] = [];
   readonly eyes: Eye[] = [];
+  // the fifth window, the lux sensor, null when the model has none
+  lux: Eye | null = null;
   readonly materials: Record<Role, MeshStandardMaterial>;
   // the panel material without the cell lines, for small dark windows
   private plain: MeshStandardMaterial;
@@ -117,10 +139,19 @@ export class Rig {
       const mesh = new Mesh(geometry, material);
       mesh.name = `eye ${name}`;
       mesh.quaternion.copy(turn);
-      // a hair in front of the sensor face, so the two never fight for a pixel
-      mesh.position.set(at[0], at[1], at[2]).addScaledVector(normal, 0.12);
+      mesh.position.set(...eyeSpot(at, this.assembly.panel));
       group.add(mesh);
       this.eyes.push({ name, material });
+    }
+    const at = this.assembly.sensors.lux;
+    if (at) {
+      const material = new MeshBasicMaterial({ color: 0x000000 });
+      const mesh = new Mesh(new CircleGeometry(LUX_RADIUS, 24), material);
+      mesh.name = 'eye lux';
+      mesh.quaternion.copy(turn);
+      mesh.position.set(...eyeSpot(at, this.assembly.panel));
+      group.add(mesh);
+      this.lux = { name: 'lux', material };
     }
   }
 
@@ -171,6 +202,7 @@ export class Rig {
     for (const material of Object.values(this.materials)) material.dispose();
     this.plain.dispose();
     for (const eye of this.eyes) eye.material.dispose();
+    this.lux?.material.dispose();
     this.root.removeFromParent();
     this.root.clear();
   }

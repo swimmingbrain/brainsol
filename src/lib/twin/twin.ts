@@ -23,7 +23,7 @@ import { Lights, type Sky } from './light';
 import { LineKit } from './lines';
 import { cameraPosition, Orbit, type View } from './orbit';
 import { readPalette, type Palette } from './palette';
-import { mix, parseColor, ramp, steps, type Rgb } from './ramp';
+import { EYE_RAMP, glow, LUX_RAMP, luxLevel, stepGlow, type Glow } from './eyes';
 import { panelTexture } from './panelface';
 import { Rig } from './rig';
 import { dragPoint, round1, skyAngles, sub } from './sky';
@@ -39,12 +39,8 @@ const JOINT_OMEGA = 22;
 const PARK = { pan: 0, tilt: 90 };
 const FOV = 28;
 const MAX_PIXEL_RATIO = 2;
-// the eyes sit on the charcoal head in both themes, so they glow along the
-// dark theme ramp, from the colour of the head up to copper
-const EYE_RAMP: Rgb[] = ['#26221f', '#4a3a2b', '#7a5c3d', '#a87c52', '#d19a66'].map((c) => parseColor(c) as Rgb);
 const COPPER = new Color(ROLE_COLORS.accent);
-// changes smaller than these are noise of a resting tracker, not light
-const LEVEL_BAND = 0.05;
+// changes smaller than this are noise of a resting tracker, not light
 const WARMTH_BAND = 0.1;
 
 export interface TwinOptions {
@@ -111,7 +107,8 @@ export class Twin {
   private pan = { glide: new Glide(), spring: spring(PARK.pan) };
   private tilt = { glide: new Glide(), spring: spring(PARK.tilt) };
   private seen: StateFrame | null = null;
-  private eyes: { level: number; now: Rgb; drawn: Rgb }[] = EYES.map(() => ({ level: 0, now: [...EYE_RAMP[0]] as Rgb, drawn: [-1, -1, -1] as Rgb }));
+  private eyes: Glow[] = EYES.map(() => glow(EYE_RAMP));
+  private luxGlow: Glow = glow(LUX_RAMP);
   private warmth = { goal: 0, now: 0, drawn: -1 };
   private started = false;
 
@@ -411,27 +408,21 @@ export class Twin {
     return busy;
   }
 
-  // each eye shows the level its sensor reports, eased so a 20 Hz stream does
-  // not flicker. a change too small to see costs no frame
+  // each eye shows the level its sensor reports, the lux window the light on
+  // the panel, eased so a 20 Hz stream does not flicker. sensor noise of a
+  // resting tracker stays inside a dead band and costs no frame
   private glow(frame: StateFrame | null, dt: number): boolean {
     const rig = this.rig;
     if (!rig) return false;
     let busy = false;
-    const k = follow(10, dt);
-    for (const eye of rig.eyes) {
-      const i = EYES.indexOf(eye.name);
-      const state = this.eyes[i];
+    const windows = rig.eyes.map((eye) => ({ eye, state: this.eyes[EYES.indexOf(eye.name)], level: num(frame?.ldr?.[EYES.indexOf(eye.name)], 0), stops: EYE_RAMP }));
+    if (rig.lux) windows.push({ eye: rig.lux, state: this.luxGlow, level: luxLevel(frame?.lux), stops: LUX_RAMP });
+    for (const { eye, state, level, stops } of windows) {
       if (!state) continue;
-      // sensor noise of a resting tracker stays inside the dead band and costs no frame
-      const level = num(frame?.ldr?.[i], 0);
-      if (Math.abs(level - state.level) > LEVEL_BAND || level === 0 || level === 1) state.level = level;
-      const goal = ramp(EYE_RAMP, state.level);
-      state.now = mix(state.now, goal, k);
-      if (steps(state.now, goal) > 0.5) busy = true;
-      else state.now = goal;
-      if (steps(state.now, state.drawn) >= 1) {
-        state.drawn = [...state.now];
-        eye.material.color.setRGB(...state.now, SRGBColorSpace);
+      const step = stepGlow(state, level, stops, dt);
+      if (step.busy) busy = true;
+      if (step.draw) {
+        eye.material.color.setRGB(...step.draw, SRGBColorSpace);
         this.dirty = true;
       }
     }

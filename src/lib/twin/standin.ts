@@ -3,7 +3,7 @@
 // not know which of the two it draws. soft bevels everywhere, a printed part
 // never has a razor edge
 
-import { BufferGeometry, CircleGeometry, CylinderGeometry, ExtrudeGeometry, LatheGeometry, Matrix4, Path, Shape, Vector2 } from 'three';
+import { BufferGeometry, CylinderGeometry, ExtrudeGeometry, LatheGeometry, Matrix4, Path, Shape, Vector2 } from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { STANDIN, STANDIN_ASSEMBLY, type Role } from './assembly';
 
@@ -208,17 +208,11 @@ function head(): Piece[] {
     collar.translate(p[0], back + h.t, p[2]);
     collars.push(collar);
   }
-  // the small window of the lux sensor
-  const lux = STANDIN_ASSEMBLY.sensors.lux!;
-  const window = new CircleGeometry(1.8, 4);
-  window.rotateX(-Math.PI / 2);
-  window.rotateY(Math.PI / 4);
-  window.translate(lux[0], back + h.t + 0.08, lux[2]);
+  // the window of the lux sensor is drawn by the rig, the same for every model
 
   return [
     { geometry: merged([shell, bezel, ...ears, ...hubs, ...collars]), role: 'dark' },
-    { geometry: merged(caps), role: 'accent' },
-    { geometry: merged([window]), role: 'panel' }
+    { geometry: merged(caps), role: 'accent' }
   ];
 }
 
