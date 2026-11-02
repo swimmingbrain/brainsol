@@ -39,6 +39,7 @@
       unit="°"
       caption={telemetry.pan !== null ? t('panels.tiles.pan', { v: angle(telemetry.pan) ?? '' }) : ''} />
     <Tile
+      end
       label={t('panels.tiles.elevation')}
       title={t('panels.tiles.elevationTitle')}
       value={angle(facing?.el)}
@@ -50,6 +51,7 @@
       <Tile label={t('panels.tiles.level')} title={t('panels.tiles.levelTitle')} value={percent(telemetry.lvl)} unit="%" caption={t('panels.tiles.levelNote')} />
     {/if}
     <Tile
+      end
       label={t('panels.tiles.power')}
       title={connection.caps?.pv ? t('panels.tiles.measuredTitle') : t('panels.tiles.estimatedTitle', { eff: Math.round((connection.config?.panel.eff ?? 0.15) * 100) })}
       value={watts?.value ?? null}
@@ -62,6 +64,7 @@
       unit="%"
       caption={t('panels.tiles.gainNote')} />
     <Tile
+      end
       label={t('q.off')}
       title={t('panels.tiles.offTitle')}
       value={off ? String(off.value) : null}
