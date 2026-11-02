@@ -15,18 +15,19 @@ Open `http://localhost:5173`. Without a tracker the page runs the simulation in 
 
 ## Where things live
 
-- `src/lib/link` is the wire: the protocol types, the address rules, the socket to a tracker and the simulation behind the same transport interface.
-- `src/lib/sim` is the simulated tracker: kinematics, the light and sensor model, the tracking loop and the engine that speaks the protocol. Plain TypeScript, no Svelte in it.
+- `src/lib/link` is the wire: the protocol types, the address rules, the socket to a tracker and the simulation behind the same transport interface. `protocol.ts` follows `docs/protocol.md` of brainsolpi, change both together.
+- `src/lib/sim` is the simulated tracker: kinematics, the light and sensor model, the tracking loop, the modes, the scan, the experiments, the calibration and the engine that speaks the protocol. It answers like the Pi, with one difference: every visitor may move its lamp. Plain TypeScript, no Svelte in it.
 - `src/lib/stores` holds the state: the connection, the telemetry, the chart history, preferences, toasts and page state.
-- `src/lib/i18n` is `t()` with the English and German words. Each part of the page has its own pair of files.
-- `src/lib/ui` is the shared kit, one Svelte component per file.
-- `src/lib/twin` is the 3D scene, `src/lib/panels` the viewer panels and sections, `src/lib/admin` the admin tools.
+- `src/lib/i18n` is `t()` with the English and German words. Each part of the page has its own pair of files, words more than one part uses, like the modes, the states and the experiments, live in `core`.
+- `src/lib/ui` is the shared kit, one Svelte component per file. Touch sizes, focus rings and the decimal comma are handled there, not in the parts that use it.
+- `src/lib/twin` is the 3D scene, `src/lib/panels` the viewer panels and sections, `src/lib/admin` the admin tools. The admin tools load only after an unlock.
+- `static/models` holds `assembly.json` for the 3D twin, the CAD files of brainsolpi go there too.
 
 ## Style
 
 There is no linter and no formatter, so keep the style of the file you are in: two spaces, single quotes, semicolons, and lowercase comments that explain why rather than what. Telemetry frames never go into Svelte state as a whole, the stores hand out the newest frame as a plain field and single values as runes.
 
-Every text on the page goes through `t()`, with the English and the German version side by side. Write short plain sentences in sentence case, and no dashes as punctuation.
+Every text on the page goes through `t()`, with the English and the German version side by side. Write short plain sentences in sentence case, and no dashes as punctuation. One thing has one name everywhere: pan and tilt are the two servo angles, azimuth and elevation say where something is in the sky, and in German the panel is the Modul and an experiment a Versuch. The tests check the dictionaries, the pages and these docs for dashes.
 
 Commit messages are short and lowercase with a type prefix, like `fix: the pan axis stops at the soft limit` or `feat: the status bar shows the loop rate`. The types in use are `feat`, `fix`, `perf`, `docs`, `test`, `refactor` and `chore`.
 
