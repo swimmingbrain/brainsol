@@ -57,7 +57,7 @@ Open `http://localhost:5173`. The simulation runs right away, add `?pi=` and an 
 
 ## The page on the Pi
 
-The Pi can serve the page itself. Copy the contents of `build/` into a folder called `web` next to the brainsolpi service, or point `brainsolpi run --web` at it. The service then answers `/config.json` with `{"pi": "self"}`, so the page connects to the Pi it came from, and every other path falls back to the page.
+The Pi can serve the page itself. Copy the contents of `build/` into a folder called `web` next to the brainsolpi service, or point `brainsolpi run --web` at it. The service then answers `/config.json` with `{"pi": "self"}`, so the page connects to the Pi it came from, and every other path falls back to the page. Every deploy also puts the built site as `site.zip` at the site root, and `deploy/web.sh` in the brainsolpi repo fetches it from there, so the Pi serves the same page as `sol.swimmingbrain.dev`.
 
 ## The 3D model
 
