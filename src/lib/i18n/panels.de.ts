@@ -158,7 +158,7 @@ export const panelsDe: Record<keyof typeof panelsEn, string> = {
   'panels.how.lead': 'Vier Lichtsensoren, ein kleiner Computer und zwei Servos. So findet das Modul das Licht, und darum lohnt sich der Aufwand.',
   'panels.how.fromAbove': 'von oben',
   'panels.how.sensors.title': 'Vier Sensoren hinter Wänden',
-  'panels.how.sensors.text': 'Vier Lichtsensoren sitzen am Kopf rund um das Modul: links, rechts, oben und unten. Dazwischen steht ein kleines Kreuz aus Wänden. Kommt das Licht von der Seite, wirft eine Wand ihren Schatten auf den Sensor auf der abgewandten Seite.',
+  'panels.how.sensors.text': 'Vier Lichtsensoren sitzen am Kopf rund um das Modul: links, rechts, oben und unten. Jeder sitzt in einer kleinen Mulde mit einer Wand zur Seite des Moduls hin. Kommt das Licht von der Seite, wirft diese Wand ihren Schatten auf den Sensor auf der abgewandten Seite.',
   'panels.how.error.title': 'Vom Unterschied zum Fehler',
   'panels.how.error.text': 'Fünfzigmal pro Sekunde vergleicht der Computer die Sensoren. Rechts gegen links ergibt den Fehler ex, oben gegen unten den Fehler ey. Beide sind 0, wenn das Modul zum Licht zeigt, und wachsen gegen plus oder minus 1, je weiter es danebenliegt.',
   'panels.how.servos.title': 'Zwei Servos drehen das Modul',

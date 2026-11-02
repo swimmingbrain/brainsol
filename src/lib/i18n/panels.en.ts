@@ -159,7 +159,7 @@ export const panelsEn = {
   'panels.how.lead': 'Four light sensors, a small computer and two servos. This is how the panel finds the light, and why that is worth the effort.',
   'panels.how.fromAbove': 'from above',
   'panels.how.sensors.title': 'Four sensors behind walls',
-  'panels.how.sensors.text': 'Four light sensors sit on the head around the panel: left, right, up and down. A small cross of walls stands between them. Light from the side throws the shadow of a wall on the sensor on the far side.',
+  'panels.how.sensors.text': 'Four light sensors sit on the head around the panel: left, right, up and down. Each one sits in a small well with a wall on the side of the panel. Light from the side throws the shadow of that wall on the sensor on the far side.',
   'panels.how.error.title': 'From difference to error',
   'panels.how.error.text': 'Fifty times a second the computer compares the sensors. Right against left gives the error ex, up against down gives ey. Both are 0 when the panel faces the light and grow towards plus or minus 1 the further off it points.',
   'panels.how.servos.title': 'Two servos turn the panel',
