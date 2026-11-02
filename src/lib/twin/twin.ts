@@ -195,8 +195,12 @@ export class Twin {
     const centre = this.centre;
     const s = STANDIN.base;
     const bounds = assembly.bounds ?? measure(pieces);
-    const footprint = bounds
-      ? { x: (bounds.min[0] + bounds.max[0]) / 2, y: (bounds.min[1] + bounds.max[1]) / 2, w: bounds.max[0] - bounds.min[0], d: bounds.max[1] - bounds.min[1], r: s.r }
+    // the shadow lies under what stands on the table, the head of the real
+    // tracker is wider than its base
+    const fixed = Object.fromEntries(assembly.parts.filter((part) => part.joint === null).map((part) => [part.id, pieces[part.id] ?? []]));
+    const foot = measure(fixed) ?? bounds;
+    const footprint = foot
+      ? { x: (foot.min[0] + foot.max[0]) / 2, y: (foot.min[1] + foot.max[1]) / 2, w: foot.max[0] - foot.min[0], d: foot.max[1] - foot.min[1], r: s.r }
       : { x: 0, y: 0, w: s.w, d: s.d, r: s.r };
     this.ground = new Ground(this.kit, [centre[0], centre[1]], this.groundRadius, footprint);
     this.dome = new Dome(this.kit, centre, DOME_RADIUS);
