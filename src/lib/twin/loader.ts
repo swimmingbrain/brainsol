@@ -7,6 +7,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { toCreasedNormals } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { filesOf, readAssembly, ROLES, STANDIN_ASSEMBLY, type Assembly, type Role } from './assembly';
 import { chooseFix } from './fit';
+import { recast } from './solids';
 import { standinPieces, type Piece } from './standin';
 
 export const MODELS = '/models/';
@@ -41,20 +42,24 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 }
 
 // a material named after a colour role keeps that role, a copper cap inside the head file for example
-function roleOf(material: Material | Material[], fallback: Role): Role {
+function roleOf(material: Material | Material[]): Role | null {
   const name = (Array.isArray(material) ? material[0]?.name : material?.name)?.toLowerCase().trim() ?? '';
-  return (ROLES as string[]).includes(name) ? (name as Role) : fallback;
+  return (ROLES as string[]).includes(name) ? (name as Role) : null;
 }
 
-// the meshes of one glb in the device frame, node transforms baked in
-function piecesOf(scene: Object3D, role: Role): Piece[] {
+// the meshes of one glb in the device frame, node transforms baked in. pieces
+// with a role from their material go into named
+function piecesOf(scene: Object3D, role: Role, named: Set<Piece>): Piece[] {
   const out: Piece[] = [];
   scene.updateMatrixWorld(true);
   scene.traverse((object) => {
     if (!(object instanceof Mesh) || !object.geometry?.getAttribute('position')) return;
     const geometry = (object.geometry as BufferGeometry).clone();
     geometry.applyMatrix4(object.matrixWorld);
-    out.push({ geometry, role: roleOf(object.material, role) });
+    const own = roleOf(object.material);
+    const piece = { geometry, role: own ?? role };
+    if (own) named.add(piece);
+    out.push(piece);
   });
   return out;
 }
@@ -94,6 +99,7 @@ export async function loadModel(base = MODELS, fetcher: typeof fetch = fetch): P
   if (files.length === 0) return { assembly, pieces: builtin, source: 'standin' };
 
   const pieces: Record<string, Piece[]> = {};
+  const named = new Set<Piece>();
   try {
     const loader = new GLTFLoader();
     await Promise.all(
@@ -103,7 +109,7 @@ export async function loadModel(base = MODELS, fetcher: typeof fetch = fetch): P
           return;
         }
         const gltf = await withTimeout(loader.loadAsync(`${base}${part.file}`), TIMEOUT);
-        pieces[part.id] = piecesOf(gltf.scene, part.color);
+        pieces[part.id] = piecesOf(gltf.scene, part.color, named);
         release(gltf.scene);
       })
     );
@@ -128,8 +134,12 @@ export async function loadModel(base = MODELS, fetcher: typeof fetch = fetch): P
       if (fix.yUp || fix.scale !== 1) piece.geometry.applyMatrix4(matrix);
       // cad meshes may come without normals, edges sharper than 30 degrees stay sharp
       if (!piece.geometry.getAttribute('normal')) piece.geometry = toCreasedNormals(piece.geometry, Math.PI / 6);
-      piece.geometry.computeBoundingSphere();
     }
+    // the caps and feet come back in their own colour, see solids.ts
+    for (const part of assembly.parts) {
+      if (part.file && pieces[part.id]) pieces[part.id] = recast(pieces[part.id], part, assembly, named);
+    }
+    for (const piece of assembly.parts.filter((part) => part.file).flatMap((part) => pieces[part.id] ?? [])) piece.geometry.computeBoundingSphere();
     return { assembly, pieces, source: 'files' };
   } catch (error) {
     console.warn('brainsol: the model files did not load, the stand in is shown', error);
