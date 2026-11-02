@@ -74,13 +74,27 @@
     color: var(--text-primary);
   }
 
+  /* a phone has controls all the way down to the status bar, so the note
+     takes the place of the status bar for its few seconds and covers nothing
+     that can be pressed */
   @media (max-width: 480px) {
     .toast-container {
-      left: 12px;
+      left: 0;
+      right: 0;
+      bottom: env(safe-area-inset-bottom);
+      gap: 0;
     }
 
     .toast {
+      min-width: 0;
       max-width: none;
+      min-height: var(--statusbar-h);
+      padding: 3px 6px 3px 10px;
+      font-size: 11.5px;
+      line-height: 1.4;
+      border-width: 1px 0 0 2px;
+      box-shadow: none;
+      animation: none;
     }
   }
 </style>
