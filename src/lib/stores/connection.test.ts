@@ -285,6 +285,21 @@ describe('the connection', () => {
     connection.stop();
   });
 
+  it('reads the tries left and a missing pin from what the pi says', async () => {
+    const { connection } = make('https://sol.swimmingbrain.dev/?pi=pi.example.org');
+    await connection.init();
+    last().open();
+    last().receive(HELLO);
+    // the very words of brainsolpi/auth.py
+    let result = connection.auth('0000');
+    last().receive({ t: 'auth', ok: false, err: 'pin', msg: 'wrong pin, 3 tries left', wait: 0 });
+    expect(await result).toEqual({ ok: false, err: 'pin', wait: 0, left: 3 });
+    result = connection.auth('0000');
+    last().receive({ t: 'auth', ok: false, err: 'pin', msg: 'no pin is set on the tracker, run brainsolpi setpin on the pi', wait: 0 });
+    expect(await result).toEqual({ ok: false, err: 'pin', wait: 0, noPin: true });
+    connection.stop();
+  });
+
   it('starts over when the page comes back after a stop', async () => {
     const { connection } = make('https://sol.swimmingbrain.dev/');
     await connection.init();
