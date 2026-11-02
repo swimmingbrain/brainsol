@@ -28,19 +28,25 @@ function shadowTexture(footprint: Footprint): CanvasTexture | null {
   canvas.width = canvas.height = size;
   const g = canvas.getContext('2d');
   if (!g) return null;
+  // the texture covers the shadow plane, which is as wide as the footprint plus the spread
   const k = size / (footprint.w + 2 * SPREAD);
-  const w = footprint.w * k * 0.94;
-  const d = footprint.d * k * 0.94;
-  const r = footprint.r * k;
+  const kd = size / (footprint.d + 2 * SPREAD);
   // only the blur of a shape drawn off the canvas lands on it, the filter
-  // property of canvas is not everywhere yet
-  g.shadowColor = 'rgba(0, 0, 0, 1)';
-  g.shadowBlur = SPREAD * k * 0.9;
-  g.shadowOffsetX = size * 2;
-  g.fillStyle = '#000';
-  g.beginPath();
-  g.roundRect((size - w) / 2 - size * 2, (size - d) / 2, w, d, r);
-  g.fill();
+  // property of canvas is not everywhere yet. a wide soft shade, then a tight
+  // one along the edge, so a base on short feet still sits on the table
+  const layer = (grow: number, blur: number, alpha: number) => {
+    const w = footprint.w * k * grow;
+    const d = footprint.d * kd * grow;
+    g.shadowColor = `rgba(0, 0, 0, ${alpha})`;
+    g.shadowBlur = blur * k;
+    g.shadowOffsetX = size * 2;
+    g.fillStyle = '#000';
+    g.beginPath();
+    g.roundRect((size - w) / 2 - size * 2, (size - d) / 2, w, d, footprint.r * k * grow);
+    g.fill();
+  };
+  layer(0.94, SPREAD * 0.9, 0.8);
+  layer(0.99, 5, 1);
   return new CanvasTexture(canvas);
 }
 
@@ -98,7 +104,7 @@ export class Ground {
 
   setPalette(p: Palette): void {
     this.discMaterial.color.setRGB(...p.surface, SRGBColorSpace);
-    this.shadowMaterial.opacity = p.light ? 0.2 : 0.62;
+    this.shadowMaterial.opacity = p.light ? 0.36 : 0.62;
     this.markMaterial.color.setRGB(...p.accent, SRGBColorSpace);
     setLineColor(this.rim, mix(p.border, p.muted, 0.28));
     setLineColor(this.ticks, mix(p.border, p.muted, 0.45));
