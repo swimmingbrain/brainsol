@@ -43,7 +43,7 @@ const COPPER = new Color(ROLE_COLORS.accent);
 // strength of the edge light on the charcoal parts in the dark theme
 const RIM = 0.12;
 // changes smaller than this are noise of a resting tracker, not light
-const WARMTH_BAND = 0.1;
+const WARMTH_BAND = 0.2;
 
 export interface TwinOptions {
   // the 3D context went away or came back
