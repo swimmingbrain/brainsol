@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, statSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { filesOf, panelJoint, parseAssembly, readAssembly, STANDIN_ASSEMBLY } from './assembly';
 
@@ -72,9 +72,12 @@ describe('assembly.json', () => {
     expect(parsed.parts[0].color).toBe('dark');
   });
 
-  it('ships a stand in assembly.json that matches the built in one', () => {
-    const text = readFileSync(new URL('../../../static/models/assembly.json', import.meta.url), 'utf-8');
-    expect(parseAssembly(JSON.parse(text))).toEqual(STANDIN_ASSEMBLY);
+  it('ships the cad export with a glb for every part', () => {
+    const models = new URL('../../../static/models/', import.meta.url);
+    const a = parseAssembly(JSON.parse(readFileSync(new URL('assembly.json', models), 'utf-8')));
+    expect(a).not.toBeNull();
+    expect(filesOf(a!)).toEqual(['base.glb', 'neck.glb', 'head.glb', 'panel.glb']);
+    for (const file of filesOf(a!)) expect(statSync(new URL(file, models)).size, file).toBeLessThan(400_000);
     expect(filesOf(STANDIN_ASSEMBLY)).toEqual([]);
   });
 
