@@ -31,6 +31,8 @@ jobs:
       - run: pnpm check
       - run: pnpm test
       - run: pnpm build
+      # the same site as a zip at the site root, a pi downloads it and serves the page itself
+      - run: cd build && zip -qrX ../site.zip . && mv ../site.zip site.zip
       - uses: actions/upload-pages-artifact@v3
         with:
           path: build
