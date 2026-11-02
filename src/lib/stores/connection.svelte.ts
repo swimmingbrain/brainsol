@@ -8,6 +8,7 @@ import { SimTransport } from '$lib/link/sim';
 import { SocketTransport, type SocketLike } from '$lib/link/socket';
 import type { LinkStatus, SimEngine, Source, Transport } from '$lib/link/transport';
 import type { AckMessage, AuthMessage, Caps, CmdMessage, Command, Config, HelloMessage, HistoryResponse, ServerMessage } from '$lib/link/protocol';
+import { pinRefusal } from '$lib/link/protocol';
 import { createEngine } from '$lib/sim/engine';
 import { t } from '$lib/i18n';
 import { history, HISTORY_SECONDS } from './history.svelte';
@@ -33,6 +34,10 @@ export interface AuthResult {
   err?: string;
   // seconds until the pin may be tried again
   wait?: number;
+  // wrong pins the tracker still takes before it locks, null when it does not say
+  left?: number | null;
+  // the tracker has no pin set at all
+  noPin?: boolean;
 }
 
 export interface ConnectionOptions {
@@ -396,7 +401,11 @@ export class Connection {
         if (wasAdmin) toast(t('err.token'), 'warning', 5000);
       }
     }
-    const result: AuthResult = message.ok ? { ok: true } : { ok: false, err: message.err, wait: message.wait };
+    let result: AuthResult = { ok: true };
+    if (!message.ok) {
+      const { left, noPin } = pinRefusal(message.msg);
+      result = { ok: false, err: message.err, wait: message.wait, ...(left !== null ? { left } : {}), ...(noPin ? { noPin } : {}) };
+    }
     for (const waiter of waiters) waiter(result);
   }
 

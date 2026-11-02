@@ -216,6 +216,14 @@ export type AuthMessage =
   | { t: 'auth'; ok: true; token: string; exp: number }
   | { t: 'auth'; ok: false; err: string; wait: number; msg?: string };
 
+// what a refused pin means beyond err and wait. the pi says it only in msg,
+// "wrong pin, 3 tries left" or "no pin is set on the tracker, run ..."
+export function pinRefusal(msg: unknown): { left: number | null; noPin: boolean } {
+  const text = typeof msg === 'string' ? msg : '';
+  const tries = /(\d+)\s+tr(?:y|ies)\s+left/i.exec(text);
+  return { left: tries ? Number(tries[1]) : null, noPin: /\bno pin is set\b/i.test(text) };
+}
+
 // pushed to everyone when a setting changes
 export interface CfgMessage {
   t: 'cfg';

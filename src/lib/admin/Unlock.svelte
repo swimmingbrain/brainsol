@@ -15,6 +15,8 @@
   let pin = $state('');
   let busy = $state(false);
   let wrong = $state(false);
+  // wrong pins the tracker still takes before it locks, when it says so
+  let tries = $state<number | null>(null);
   let failure = $state('');
   // seconds the pin stays locked, and whether a lock just ran out
   let left = $state(0);
@@ -45,6 +47,7 @@
     ui.unlockOpen = false;
     pin = '';
     wrong = false;
+    tries = null;
     failure = '';
     freed = false;
   }
@@ -64,10 +67,15 @@
       return;
     }
     pin = '';
-    // a wait comes with the try that set off the lock, the countdown says it all
+    tries = null;
+    // a wait comes with the try that set off the lock, the countdown says it all.
+    // a tracker without a pin refuses every pin, that is no typing mistake
     if (!result.wait) {
-      if (result.err === 'pin') wrong = true;
-      else failure = errorText(result.err);
+      if (result.noPin) failure = t('admin.unlock.noPin');
+      else if (result.err === 'pin') {
+        wrong = true;
+        tries = result.left ?? null;
+      } else failure = errorText(result.err);
     }
     queueMicrotask(() => input?.focus());
   }
@@ -131,7 +139,7 @@
               <span>{t('admin.unlock.locked', { wait: waitText(left) })}</span>
             {:else if wrong}
               <Icon name="warning" size={13} />
-              <span>{t('admin.unlock.wrong')}</span>
+              <span>{tries === null ? t('admin.unlock.wrong') : tries === 1 ? t('admin.unlock.wrongOne') : t('admin.unlock.wrongLeft', { n: tries })}</span>
             {:else if failure}
               <Icon name="warning" size={13} />
               <span>{failure}</span>
