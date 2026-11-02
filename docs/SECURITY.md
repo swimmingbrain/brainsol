@@ -6,7 +6,7 @@ The page talks to one other place, and only when there is one: the tracker at th
 
 ## Admin tools
 
-Viewers can only watch. The admin tools need the PIN, and the PIN is checked on the Pi, never in the page: it is stored there as a salted PBKDF2 hash, five wrong tries lock it for 30 seconds and the wait doubles each time. A correct PIN gets a token that lasts 12 hours. In the simulation there is no PIN, because nothing outside the tab can be changed.
+Viewers can only watch. The admin tools need the PIN, and the PIN is checked on the Pi, never in the page: it is stored there as a salted PBKDF2 hash, five wrong tries lock it for 30 seconds and the wait doubles each time. A correct PIN gets a token that lasts 12 hours. In the simulation there is no PIN, because nothing outside the tab can be changed, and every visitor may drag its lamp. On a real tracker that stays an admin command, the Pi checks it.
 
 An https page cannot open a plain `ws://` socket, so a tracker on the local network is reached either through a tunnel with a proper certificate or by opening the page the Pi serves itself over http. The page explains this when it sees such an address and does not try to work around it.
 
