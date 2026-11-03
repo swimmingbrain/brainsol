@@ -17,7 +17,7 @@
   <a href="https://sol.swimmingbrain.dev"><strong>Try it now &rarr; sol.swimmingbrain.dev</strong></a>
 </p>
 
-brainSOL is the web side of a small solar tracker built for a seminar talk at FHV: a panel on two servos that turns towards the brightest light it can see, four light sensors behind shade walls on the moving head, and a Raspberry Pi as the brain. This page is the live dashboard of that tracker. It shows a 3D twin that moves with the real head, the light on the four sensors, the key numbers and charts of the last minutes.
+brainSOL is the web side of a small solar tracker built for a seminar talk at FHV (Sustainable Energy Systems MSc): a panel on two servos that turns towards the brightest light it can see, four light sensors behind shade walls on the moving head, and a Raspberry Pi as the brain. This page is the live dashboard of that tracker. It shows a 3D twin that moves with the real head, the light on the four sensors, the key numbers and charts of the last minutes.
 
 Without a tracker the page runs the same physics and the same tracking loop as a simulation in the browser, so it always has something to show. The lamp then wanders slowly across the sky, and every visitor may grab it and drag it around to watch the panel follow.
 
