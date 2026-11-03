@@ -6,7 +6,8 @@
 
 <p align="center">
   A dual axis solar tracker and its digital twin, live in your browser.<br/>
-  Watch it follow the light, or run the simulation right on the page.
+  Watch it follow the light, or run the simulation right on the page.<br/>
+  Made for a seminar at FHV as part of my MSc in Sustainable Energy Systems.
 </p>
 
 <p align="center">
