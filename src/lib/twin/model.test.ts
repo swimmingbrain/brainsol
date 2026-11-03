@@ -61,7 +61,7 @@ describe('the cad model in the twin', () => {
     expect(transformDir(flat, panel.normal)[2]).toBeCloseTo(1, 9);
   });
 
-  it('has the sensors on the sides section 3 names', () => {
+  it('has each sensor on the side its name says', () => {
     const { L, R, U, D, lux } = assembly.sensors;
     const c = assembly.panel!.center;
     expect(L![0]).toBeLessThan(c[0] - 62.5);

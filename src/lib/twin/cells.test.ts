@@ -3,7 +3,7 @@ import type { ScanMessage } from '$lib/link/protocol';
 import { angleBetween, normal } from '$lib/sim/kinematics';
 import { skyMap } from './cells';
 
-// the default grid of section 7: pan -90 to 90, tilt 15 to 165, step 15
+// the default grid of the sky scan: pan -90 to 90, tilt 15 to 165, step 15
 const PAN = Array.from({ length: 13 }, (_, j) => -90 + 15 * j);
 const TILT = Array.from({ length: 11 }, (_, i) => 15 + 15 * i);
 

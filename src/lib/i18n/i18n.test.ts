@@ -30,12 +30,12 @@ describe('the dictionaries', () => {
     }
   });
 
-  it('keep each stream inside its own prefix and no two streams share a key', () => {
-    const streams = { twin: twinEn, panels: panelsEn, admin: adminEn, sim: simEn };
-    for (const [name, dict] of Object.entries(streams)) {
+  it('keep each area inside its own prefix and no two areas share a key', () => {
+    const areas = { twin: twinEn, panels: panelsEn, admin: adminEn, sim: simEn };
+    for (const [name, dict] of Object.entries(areas)) {
       for (const key of Object.keys(dict)) expect(key.startsWith(`${name}.`), key).toBe(true);
     }
-    const dicts: object[] = [coreEn, ...Object.values(streams)];
+    const dicts: object[] = [coreEn, ...Object.values(areas)];
     const total = dicts.reduce((sum: number, dict) => sum + Object.keys(dict).length, 0);
     expect(Object.keys(en)).toHaveLength(total);
   });

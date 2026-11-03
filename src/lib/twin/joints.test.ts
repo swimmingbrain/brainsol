@@ -32,7 +32,7 @@ describe('the joint matrices', () => {
     close(transformPoint(m, JOINTS.tilt.origin), JOINTS.tilt.origin);
   });
 
-  it('point the panel along n(pan, tilt) of section 3 for every pose', () => {
+  it('point the panel along its normal n(pan, tilt) for every pose', () => {
     for (const pan of [-90, -40, 0, 25, 90]) {
       for (const tilt of [0, 30, 90, 140, 180]) {
         const m = poseMatrices(JOINTS, { pan, tilt });

@@ -2,7 +2,7 @@ import { readFileSync, statSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { filesOf, panelJoint, parseAssembly, readAssembly, STANDIN_ASSEMBLY } from './assembly';
 
-// the example of blueprint section 9 with numbers filled in
+// an example assembly.json with every field filled in
 const CONTRACT = {
   units: 'mm',
   frame: 'x right, y forward, z up',
@@ -24,7 +24,7 @@ const CONTRACT = {
 const clone = () => structuredClone(CONTRACT) as Record<string, unknown> & typeof CONTRACT;
 
 describe('assembly.json', () => {
-  it('reads the contract of section 9', () => {
+  it('reads a complete assembly.json', () => {
     const a = parseAssembly(CONTRACT);
     expect(a).not.toBeNull();
     expect(a!.parts.map((p) => p.id)).toEqual(['base', 'neck', 'head', 'panel']);

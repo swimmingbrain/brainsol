@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { checkAddress, isLocalPage, probeTracker, sameTracker, servedPage, shareLink } from './share';
 
 const https = { protocol: 'https:', host: 'sol.swimmingbrain.dev' };
-const http = { protocol: 'http:', host: 'localhost:5183' };
+const http = { protocol: 'http:', host: 'localhost:5173' };
 
 describe('checkAddress', () => {
   it('knows an empty field and the simulation', () => {
@@ -22,11 +22,11 @@ describe('checkAddress', () => {
 
   it('explains a plain ws address on the https site with the page the pi serves', () => {
     expect(checkAddress('ws://brainsol.local', https)).toEqual({ kind: 'mixed', host: 'brainsol.local:8080', page: 'http://brainsol.local:8080/' });
-    expect(checkAddress('http://10.0.0.7:8093', https)).toEqual({ kind: 'mixed', host: '10.0.0.7:8093', page: 'http://10.0.0.7:8093/' });
+    expect(checkAddress('http://10.0.0.7:9000', https)).toEqual({ kind: 'mixed', host: '10.0.0.7:9000', page: 'http://10.0.0.7:9000/' });
   });
 
   it('lets localhost through on https, the browser allows that', () => {
-    expect(checkAddress('ws://localhost:8093', https).kind).toBe('ok');
+    expect(checkAddress('ws://localhost:8080', https).kind).toBe('ok');
   });
 
   it('calls garbage invalid', () => {
@@ -61,7 +61,7 @@ describe('shareLink', () => {
 
   it('carries the address when it is not the default one, readable', () => {
     expect(shareLink('https://sol.swimmingbrain.dev', 'wss://tunnel.example.org', '', https)).toBe('https://sol.swimmingbrain.dev/?pi=wss://tunnel.example.org');
-    expect(shareLink('http://localhost:5183', 'ws://localhost:8093', null, http)).toBe('http://localhost:5183/?pi=ws://localhost:8093');
+    expect(shareLink('http://localhost:5173', 'ws://localhost:8080', null, http)).toBe('http://localhost:5173/?pi=ws://localhost:8080');
     expect(shareLink('https://x.dev', 'pi.local/a b', '', https)).toBe('https://x.dev/?pi=pi.local/a%20b');
   });
 
