@@ -10,6 +10,10 @@
 </p>
 
 <p align="center">
+  <img src="docs/screenshot.png" alt="brainSOL in the browser, the 3D twin of the real tracker turning its panel towards the lamp, with the key numbers, the light balance and the charts beside it" width="800" />
+</p>
+
+<p align="center">
   <a href="https://sol.swimmingbrain.dev"><strong>Try it now &rarr; sol.swimmingbrain.dev</strong></a>
 </p>
 
