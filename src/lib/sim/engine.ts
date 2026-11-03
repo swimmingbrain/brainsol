@@ -628,9 +628,6 @@ export class SimTracker implements SimEngine, ModeHost {
   }
 }
 
-// the name the foundation gave it, kept for code that still imports it
-export { SimTracker as PlaceholderEngine };
-
 export function createEngine(options: EngineOptions = {}): SimTracker {
   return new SimTracker(options);
 }
