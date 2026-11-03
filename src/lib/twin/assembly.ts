@@ -1,4 +1,4 @@
-// the 3D model contract of blueprint section 9 as types, a parser that only
+// the 3D model contract of assembly.json as types, a parser that only
 // lets a sound assembly.json through, and the stand in that follows the same
 // contract while the cad export is not there. all lengths in millimetres in the
 // device frame at pan 0 and tilt 0, x to the right, y forward, z up
@@ -146,7 +146,7 @@ export function panelJoint(assembly: Assembly): string | null {
   return assembly.joints.tilt ? 'tilt' : null;
 }
 
-// the stand in, sized like the printed body in the blueprint and the cad
+// the stand in, sized like the printed body in the cad
 // parameters: a rounded base, a slim neck on a round foot behind the centre,
 // the head on two ears in front of the tilt axis
 export const STANDIN = {

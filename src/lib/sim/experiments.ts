@@ -1,4 +1,4 @@
-// the three experiments of section 7 for the seminar paper, the same steps as
+// the three experiments for the seminar paper, the same steps as
 // experiments.py on the pi. each one reports its phase and progress with exp
 // messages and ends with a result in the shape protocol.ts gives it
 

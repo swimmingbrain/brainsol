@@ -51,7 +51,7 @@
   // whole percent steps of colour, the noise in the third decimal stays out of the style
   const fills = $derived(areas.map((area) => heatColor(levels ? Math.round(levels[area.index] * 100) / 100 : 0, colors.heat)));
 
-  // the dead band of the tracker, from its settings or the defaults of section 6
+  // the dead band of the tracker, from its settings or the controller defaults
   const deadIn = $derived(connection.config?.params.dead_in.v ?? 0.025);
   const deadOut = $derived(connection.config?.params.dead_out.v ?? 0.05);
   const bandInner = $derived(spread(deadIn) * TRAVEL);

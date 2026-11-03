@@ -1,5 +1,5 @@
 // a tiny typed t(). english and german dictionaries, merged from the core and
-// one pair of files per stream (twin, panels, admin, sim). t() reads the
+// one pair of files per area (twin, panels, admin, sim). t() reads the
 // language from the preferences store, so a template that calls it follows a
 // language switch on its own
 

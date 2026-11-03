@@ -1,4 +1,4 @@
-// how an angle becomes a servo pulse and back, the mapping of section 3:
+// how an angle becomes a servo pulse and back, the same as kinematics.py on the pi:
 // us = centre_us + dir * (angle - angle0) * us_per_deg. the engine keeps one
 // map per axis in its calibration, the simulated servos turn with the default
 // maps, so a wrong zero shows up the way it would on the real head

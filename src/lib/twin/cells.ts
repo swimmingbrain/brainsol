@@ -1,6 +1,6 @@
 // the sky map of a scan as patches on the sky sphere. cell (tilt[i], pan[j])
-// is where the panel looked at that pose, the direction n(pan, tilt) of
-// section 3, so the rear half of the sky comes from the poses over the top.
+// is where the panel looked at that pose, the panel normal n(pan, tilt), so
+// the rear half of the sky comes from the poses over the top.
 // a patch spans half the way to its neighbours and leaves a small gap, like the
 // marks of a chart. two poses whose patches lie on top of each other, pan 90
 // and pan -90 over the top, share one. the poses at tilt 90 all look up but

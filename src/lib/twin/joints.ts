@@ -1,4 +1,4 @@
-// the joints of the 3D model contract (blueprint section 9). every joint turns
+// the joints of the 3D model contract in assembly.json. every joint turns
 // its group about an axis through an origin, both given in the device frame at
 // pan 0 and tilt 0, and carries its parent along. the matrices are 4 by 4 and
 // column major, the same layout as three.js, so they drop into Matrix4.fromArray

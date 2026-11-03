@@ -1,4 +1,4 @@
-// the sky map of section 7, the same as scan.py on the pi. the head visits a
+// the sky map, the same as scan.py on the pi. the head visits a
 // grid of poses in a serpentine, settles, averages the light at each one and
 // the page gets the map after every cell. a cell (pan, tilt) looks along the
 // panel normal of that pose, so the rear half of the sky sits at tilt over 90

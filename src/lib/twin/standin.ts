@@ -190,7 +190,7 @@ function head(): Piece[] {
     caps.push(cap);
   }
 
-  // a collar around each light sensor, the shade wall of section 5
+  // a collar around each light sensor, the shade wall of the light model
   const collars: BufferGeometry[] = [];
   for (const name of ['L', 'R', 'U', 'D'] as const) {
     const p = STANDIN_ASSEMBLY.sensors[name]!;

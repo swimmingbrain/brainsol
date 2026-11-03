@@ -1,4 +1,4 @@
-// the words the shell, the shared kit and every stream use. keys are grouped by
+// the words the shell, the shared kit and every area use. keys are grouped by
 // the first word, placeholders in braces are filled by t()
 
 export const coreEn = {

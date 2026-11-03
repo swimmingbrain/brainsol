@@ -30,7 +30,7 @@ export function wrap180(deg: number): number {
   return wrapped === -180 && deg > 0 ? 180 : wrapped;
 }
 
-// the mechanical range of section 3 when no config has come in yet
+// the mechanical range of the two axes when no config has come in yet
 export const FALLBACK_LIMITS: Limits = { pan: [-90, 90], tilt: [0, 180] };
 
 export function modeCommand(mode: Mode): Command {
@@ -69,7 +69,7 @@ export function quickPose(name: PoseName, limits: Limits | null | undefined): Po
   return clampPose(POSES[name], limits);
 }
 
-// the two scenes of section 5. the sun scene keeps the direction of the light
+// the two light scenes. the sun scene keeps the direction of the light
 export type SceneName = 'phone' | 'sun';
 export const SCENES: Record<SceneName, Partial<SimLight>> = {
   phone: { az: 25, el: 40, lux: 900, amb: 60, on: true },

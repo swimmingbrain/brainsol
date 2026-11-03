@@ -1,4 +1,4 @@
-// the tracking loop of section 6, the same logic as the python side. it runs at
+// the tracking loop, the same logic as the python side. it runs at
 // a fixed 50 Hz and commands axis speeds, not positions, so the motion stays
 // smooth. hysteresis on each axis stops the hunting, 1 / cos(tilt) keeps the pan
 // response alive at steep tilt, its sign turns pan around behind the zenith and

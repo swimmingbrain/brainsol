@@ -1,4 +1,4 @@
-// the calibration steps of section 7, the same as calibration.py on the pi.
+// the calibration steps, the same as calibration.py on the pi.
 // dark and bright average what the simulated sensors read right now, so a dark
 // capture wants the lamp off (simlight on false), just as the real one wants
 // the sensors covered. polarity wiggles the head under the lamp and learns the

@@ -1,4 +1,4 @@
-// the modes of section 7, the same as modes.py on the pi. each tick a mode
+// the modes, the same as modes.py on the pi. each tick a mode
 // says what it wants from the motion limiter: the tracking loop, a seek to a
 // pose, or axis speeds. all of them go through the same speed and acceleration
 // limits, so a change of mode never jumps in speed

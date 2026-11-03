@@ -3,7 +3,7 @@
 
 import { PARAM_KEYS, type Param, type ParamKey } from '$lib/link/protocol';
 
-// the defaults of section 6. the config has no default, reset goes back to
+// the controller defaults. the config has no default, reset goes back to
 // these, kept inside the range the tracker allows
 export const DEFAULTS: Record<ParamKey, number> = {
   kp: 90,
