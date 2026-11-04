@@ -77,7 +77,10 @@ describe('assembly.json', () => {
     const a = parseAssembly(JSON.parse(readFileSync(new URL('assembly.json', models), 'utf-8')));
     expect(a).not.toBeNull();
     expect(filesOf(a!)).toEqual(['base.glb', 'neck.glb', 'head.glb', 'panel.glb']);
-    for (const file of filesOf(a!)) expect(statSync(new URL(file, models)).size, file).toBeLessThan(400_000);
+    // the base carries the engraved signature of the lid and gets more room, the export checks the same limits
+    const sizes = filesOf(a!).map((file) => statSync(new URL(file, models)).size);
+    filesOf(a!).forEach((file, i) => expect(sizes[i], file).toBeLessThan(file === 'base.glb' ? 600_000 : 400_000));
+    expect(sizes.reduce((sum, size) => sum + size, 0)).toBeLessThan(1_500_000);
     expect(filesOf(STANDIN_ASSEMBLY)).toEqual([]);
   });
 
