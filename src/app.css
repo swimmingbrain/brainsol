@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+/* geist serif in its regular shape, the one face of the page. the file comes
+   with the repo (src/lib/fonts, license in OFL.txt there), so no font service is asked */
+@font-face {
+  font-family: 'Geist Serif';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./lib/fonts/GeistSerif-Regular.woff2') format('woff2');
+}
+
 :root {
   --bg-deep: #111113;
   --bg-surface: #19191c;
@@ -42,9 +52,11 @@
   --heat-4: #a87c52;
   --heat-5: #d19a66;
 
-  --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-editor: 'JetBrains Mono', monospace;
-  --font-brand: 'Instrument Serif', serif;
+  /* times only fills in for the few signs geist serif does not have, like the
+     square in w/m2, the greek letters and the root sign */
+  --font-ui: 'Geist Serif', 'Times New Roman', Times, serif;
+  --font-editor: var(--font-ui);
+  --font-brand: var(--font-ui);
 
   --topbar-h: 44px;
   --statusbar-h: 24px;
@@ -117,8 +129,11 @@ html, body {
   font-size: 13px;
   color: var(--text-primary);
   background: var(--bg-deep);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* geist serif has one weight and no italic. a bold or slanted copy made up
+     by the browser smears the hairlines, so the page leans on size and colour.
+     the text keeps the smoothing of the system, the thinner one of macos would
+     wash the hairlines out */
+  font-synthesis: none;
 }
 
 ::selection {

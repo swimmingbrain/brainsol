@@ -1,12 +1,5 @@
 <script lang="ts">
-  // the fonts come with the build, the page asks no other server for anything
-  import '@fontsource/inter/latin-400.css';
-  import '@fontsource/inter/latin-500.css';
-  import '@fontsource/inter/latin-600.css';
-  import '@fontsource/inter/latin-700.css';
-  import '@fontsource/jetbrains-mono/latin-400.css';
-  import '@fontsource/jetbrains-mono/latin-500.css';
-  import '@fontsource/instrument-serif/latin-400-italic.css';
+  // the font comes with the build through app.css, the page asks no other server for anything
   import '../app.css';
   import Toast from '$lib/ui/Toast.svelte';
   import type { Snippet } from 'svelte';

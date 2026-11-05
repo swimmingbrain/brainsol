@@ -89,7 +89,8 @@
   } = $props();
 
   const colors = $derived(themeColors());
-  const FONT = '10px "JetBrains Mono", monospace';
+  const FAMILY = '"Geist Serif", "Times New Roman", serif';
+  const FONT = `10px ${FAMILY}`;
 
   const clock = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
   const clockShort = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
@@ -224,7 +225,7 @@
       ctx.lineTo(left + width, py);
       ctx.stroke();
     }
-    ctx.font = `${10 * ratio}px "JetBrains Mono", monospace`;
+    ctx.font = `${10 * ratio}px ${FAMILY}`;
     ctx.fillStyle = colors.text;
     ctx.textBaseline = 'top';
     for (const mark of marks) {
@@ -272,7 +273,7 @@
     observer.observe(target);
     const sight = new IntersectionObserver(([entry]) => (inView = entry.isIntersecting));
     sight.observe(target);
-    // the canvas draws text with the font it has, once the mono face is in it draws again
+    // the canvas draws text with the font it has, once geist serif is in it draws again
     document.fonts?.load(FONT).then(() => plot?.redraw(false, true));
     return () => {
       observer.disconnect();
