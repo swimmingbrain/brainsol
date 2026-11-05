@@ -132,6 +132,8 @@ html, body {
      the text keeps the smoothing of the system, the thinner one of macos would
      wash the hairlines out */
   font-synthesis: none;
+  /* figures of equal width everywhere, a live number never shakes its line */
+  font-variant-numeric: tabular-nums;
 }
 
 ::selection {
