@@ -32,17 +32,12 @@ tailwindcss 4: the reset the theme is built on, compiled into app.css
 MIT
 https://github.com/tailwindlabs/tailwindcss
 
-The fonts are self hosted. They come from the fontsource packages and are copied into the
-build, nothing is loaded from a font service:
+The font is self hosted. The file sits in src/lib/fonts and is copied into the build,
+nothing is loaded from a font service:
 
-@fontsource/inter 5.3.0: Inter, the interface
+Geist Serif 1.003 (GeistSerif-Regular.woff2): every text of the page, the wordmark included.
+Taken unchanged from the geist package 1.9.2 on npm. The full license text is in
+src/lib/fonts/OFL.txt
+Copyright 2026 The Geist Project Authors
 SIL Open Font License 1.1
-https://github.com/rsms/inter
-
-@fontsource/jetbrains-mono 5.3.0: JetBrains Mono, values, labels and the status bar
-SIL Open Font License 1.1
-https://github.com/JetBrains/JetBrainsMono
-
-@fontsource/instrument-serif 5.3.0: Instrument Serif italic, the wordmark
-SIL Open Font License 1.1
-https://github.com/Instrument/instrument-serif
+https://github.com/vercel/geist-font

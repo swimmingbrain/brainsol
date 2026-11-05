@@ -87,7 +87,7 @@ The twin draws the real tracker from the CAD export of brainsolpi in `static/mod
 | Charts | uPlot |
 | Sun position | SunCalc |
 | QR codes | uqr |
-| Fonts | Inter, JetBrains Mono, Instrument Serif through fontsource |
+| Font | Geist Serif, self hosted |
 | Language | TypeScript |
 
 ## License
