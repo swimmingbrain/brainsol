@@ -395,7 +395,6 @@
 
   .big,
   .mid {
-    font-family: var(--font-editor);
     font-weight: 500;
     color: var(--text-strong);
     letter-spacing: -0.02em;
@@ -434,7 +433,6 @@
   }
 
   .facts b {
-    font-family: var(--font-editor);
     font-weight: 500;
     color: var(--text-primary);
   }
@@ -509,7 +507,6 @@
   }
 
   code {
-    font-family: var(--font-editor);
     font-size: 11.5px;
     color: var(--text-primary);
     white-space: nowrap;

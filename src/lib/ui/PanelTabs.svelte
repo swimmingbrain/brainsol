@@ -150,7 +150,6 @@
   }
 
   .badge {
-    font-family: var(--font-editor);
     font-size: 9px;
     line-height: 14px;
     min-width: 14px;

@@ -277,7 +277,6 @@
   .readout {
     display: flex;
     gap: 12px;
-    font-family: var(--font-editor);
     font-size: 10.5px;
     color: var(--text-muted);
   }

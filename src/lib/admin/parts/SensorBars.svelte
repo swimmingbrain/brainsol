@@ -56,7 +56,6 @@
   }
 
   .name {
-    font-family: var(--font-editor);
     font-size: 11px;
     color: var(--text-muted);
   }
@@ -97,7 +96,6 @@
   }
 
   .value {
-    font-family: var(--font-editor);
     font-size: 11px;
     text-align: right;
     color: var(--text-secondary);
@@ -126,6 +124,5 @@
 
   .max {
     margin-left: auto;
-    font-family: var(--font-editor);
   }
 </style>

@@ -75,7 +75,6 @@
     justify-content: center;
     gap: 6px;
     flex-shrink: 0;
-    font-family: var(--font-ui);
     font-weight: 500;
     line-height: 1;
     white-space: nowrap;

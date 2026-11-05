@@ -204,7 +204,6 @@
 
   .running-pct {
     margin-left: auto;
-    font-family: var(--font-editor);
     color: var(--text-strong);
     font-variant-numeric: tabular-nums;
   }
@@ -348,14 +347,12 @@
     grid-row: 1 / 3;
     grid-column: 2;
     align-self: center;
-    font-family: var(--font-editor);
     font-size: 12px;
     color: var(--text-strong);
     font-variant-numeric: tabular-nums;
   }
 
   .row-when {
-    font-family: var(--font-editor);
     font-size: 10.5px;
     color: var(--text-muted);
   }
@@ -393,7 +390,6 @@
   }
 
   .detail-when {
-    font-family: var(--font-editor);
     font-size: 11px;
     color: var(--text-muted);
   }

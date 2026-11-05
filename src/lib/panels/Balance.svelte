@@ -198,7 +198,6 @@
   }
 
   .name {
-    font-family: var(--font-ui);
     font-size: 9px;
     font-weight: 600;
     text-anchor: middle;
@@ -208,7 +207,6 @@
 
   /* 100 % has to fit across the ring on the left and the right */
   .level {
-    font-family: var(--font-editor);
     font-size: 10px;
     letter-spacing: -0.02em;
     font-weight: 500;
@@ -276,7 +274,6 @@
 
   dd {
     height: 18px;
-    font-family: var(--font-editor);
     font-size: 13px;
     font-weight: 500;
     color: var(--text-strong);

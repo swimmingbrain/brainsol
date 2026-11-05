@@ -100,8 +100,6 @@
   }
 
   .logo-name {
-    font-family: var(--font-brand);
-    font-style: italic;
     font-size: 18px;
     color: var(--text-primary);
   }
@@ -153,7 +151,6 @@
 
   .footer a {
     font-size: 12px;
-    font-family: var(--font-editor);
     color: var(--text-muted);
     text-decoration: none;
   }

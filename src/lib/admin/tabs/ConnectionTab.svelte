@@ -179,7 +179,6 @@
   }
 
   .mono {
-    font-family: var(--font-editor);
     font-size: 11.5px;
   }
 
@@ -187,7 +186,6 @@
     width: 100%;
     height: 30px;
     padding: 0 8px;
-    font-family: var(--font-editor);
     font-size: 12px;
     color: var(--text-primary);
     background: var(--bg-elevated);
@@ -205,7 +203,6 @@
   }
 
   .resolved {
-    font-family: var(--font-editor);
     font-size: 10.5px;
     color: var(--text-muted);
     overflow-wrap: anywhere;
@@ -236,7 +233,6 @@
   }
 
   .url {
-    font-family: var(--font-editor);
     font-size: 11px;
     line-height: 1.45;
     color: var(--text-primary);

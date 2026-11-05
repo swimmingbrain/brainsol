@@ -44,7 +44,6 @@
     gap: 5px;
     height: 20px;
     padding: 0 7px;
-    font-family: var(--font-editor);
     font-size: 10.5px;
     font-weight: 500;
     color: var(--text-secondary);

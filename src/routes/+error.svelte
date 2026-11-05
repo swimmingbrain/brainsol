@@ -42,7 +42,6 @@
   }
 
   h1 {
-    font-family: var(--font-editor);
     font-size: 28px;
     font-weight: 500;
     color: var(--text-primary);
@@ -57,7 +56,6 @@
 
   a {
     font-size: 12px;
-    font-family: var(--font-editor);
     color: var(--text-muted);
     text-decoration: none;
   }

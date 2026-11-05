@@ -137,7 +137,6 @@
   }
 
   .value {
-    font-family: var(--font-editor);
     font-weight: 500;
     color: var(--text-strong);
     font-variant-numeric: tabular-nums;
@@ -151,7 +150,6 @@
 
   .at {
     margin-left: auto;
-    font-family: var(--font-editor);
     font-size: 10px;
     color: var(--text-muted);
   }
@@ -171,7 +169,6 @@
 
   .tick,
   .label {
-    font-family: var(--font-editor);
     font-size: 10px;
     fill: var(--text-muted);
   }

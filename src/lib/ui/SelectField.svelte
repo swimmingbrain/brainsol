@@ -29,7 +29,6 @@
   .select {
     width: 100%;
     padding: 3px 6px;
-    font-family: var(--font-ui);
     font-size: 11.5px;
     line-height: 16px;
     color: var(--text-primary);

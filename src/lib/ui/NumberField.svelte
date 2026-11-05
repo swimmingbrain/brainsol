@@ -165,7 +165,6 @@
     display: block;
     width: 100%;
     padding: 3px 6px;
-    font-family: var(--font-editor);
     font-size: 11.5px;
     line-height: 16px;
     color: var(--accent);

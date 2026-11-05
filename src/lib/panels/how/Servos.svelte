@@ -99,7 +99,6 @@
   }
 
   text {
-    font-family: var(--font-editor);
     font-size: 10px;
     fill: var(--text-muted);
   }

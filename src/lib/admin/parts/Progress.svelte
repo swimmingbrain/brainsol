@@ -45,7 +45,6 @@
   }
 
   .text {
-    font-family: var(--font-editor);
     font-size: 10.5px;
     color: var(--text-muted);
     white-space: nowrap;

@@ -32,7 +32,7 @@
 </script>
 
 <script lang="ts">
-  // one uplot chart in the house style: hairline grid, mono labels, thin
+  // one uplot chart in the house style: hairline grid, small labels, thin
   // lines in the chart colours, a readout row above it in place of the
   // legend. it is built once, fed with setData, resized with its box and
   // repainted on a theme switch. hovering pauses a live chart
@@ -362,7 +362,6 @@
   }
 
   .value {
-    font-family: var(--font-editor);
     font-weight: 500;
     color: var(--text-strong);
     font-variant-numeric: tabular-nums;
@@ -376,7 +375,6 @@
 
   .at {
     margin-left: auto;
-    font-family: var(--font-editor);
     font-size: 10px;
     color: var(--text-muted);
     font-variant-numeric: tabular-nums;
@@ -393,7 +391,8 @@
     border-right: 1px solid var(--text-muted);
   }
 
+  /* uplot sets a system font on what it writes as html, the page font wins */
   .canvas :global(.uplot) {
-    font-family: var(--font-editor);
+    font-family: inherit;
   }
 </style>

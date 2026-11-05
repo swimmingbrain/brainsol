@@ -168,7 +168,6 @@
   }
 
   .key {
-    font-family: var(--font-editor);
     font-size: 10px;
     color: var(--text-muted);
   }

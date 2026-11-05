@@ -1,5 +1,5 @@
 <script lang="ts">
-  // one key number of the side column. a label, the figure in mono with its
+  // one key number of the side column. a label, the figure with its
   // unit, and one quiet line under it that says where the number comes from.
   // every line keeps its height while a value is missing, so the grid never moves.
   // the longer explanation sits behind the label: a tap, a click or the keyboard
@@ -28,7 +28,7 @@
     caption?: string;
     // a boxed word at the end of the caption line, like estimated
     tag?: string;
-    // a word instead of a number, set in the text face
+    // a word instead of a number, set smaller than a figure
     word?: boolean;
     // a state colour for a small dot in front of the value
     dot?: 'neutral' | 'success' | 'warning' | 'error' | null;
@@ -229,7 +229,6 @@
   }
 
   .value {
-    font-family: var(--font-editor);
     font-size: 21px;
     font-weight: 500;
     line-height: 28px;
@@ -239,7 +238,6 @@
   }
 
   .value.word {
-    font-family: var(--font-ui);
     font-size: 16px;
     font-weight: 600;
     letter-spacing: -0.01em;
@@ -247,13 +245,8 @@
 
   .before,
   .unit {
-    font-family: var(--font-editor);
     font-size: 12px;
     color: var(--text-muted);
-  }
-
-  .before {
-    font-family: var(--font-ui);
   }
 
   .dot {
@@ -306,7 +299,6 @@
   .tag {
     flex-shrink: 0;
     padding: 0 4px;
-    font-family: var(--font-editor);
     font-size: 9.5px;
     line-height: 14px;
     color: var(--text-secondary);

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { fmt } from '$lib/i18n';
 
-  // one value a machine produced: a small label over a mono figure and its
+  // one value a machine produced: a small label over a figure and its
   // unit. while the value is null a quiet bar holds its place, so nothing jumps
   // when the first frame arrives
   let {
@@ -70,18 +70,12 @@
   }
 
   .value {
-    font-family: var(--font-editor);
     font-weight: 500;
     color: var(--text-strong);
     font-variant-numeric: tabular-nums;
   }
 
-  .value.word {
-    font-family: var(--font-ui);
-  }
-
   .unit {
-    font-family: var(--font-editor);
     color: var(--text-muted);
   }
 

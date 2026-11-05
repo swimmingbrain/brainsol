@@ -82,7 +82,6 @@
     color: var(--text-muted);
     flex-shrink: 0;
     user-select: none;
-    font-family: var(--font-editor);
     min-width: 0;
   }
 

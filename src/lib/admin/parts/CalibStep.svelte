@@ -85,7 +85,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: var(--font-editor);
     font-size: 10.5px;
     color: var(--text-muted);
     border: 1px solid var(--border);
@@ -138,7 +137,6 @@
   }
 
   .detail {
-    font-family: var(--font-editor);
     font-size: 10.5px;
     line-height: 1.4;
     color: var(--text-muted);

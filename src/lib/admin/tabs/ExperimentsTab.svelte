@@ -134,7 +134,6 @@
   }
 
   .result b {
-    font-family: var(--font-editor);
     font-weight: 500;
     color: var(--text-strong);
   }

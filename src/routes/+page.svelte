@@ -211,8 +211,6 @@
   }
 
   .footer-name {
-    font-family: var(--font-brand);
-    font-style: italic;
     font-size: 14px;
     color: var(--text-primary);
   }
@@ -222,7 +220,6 @@
     flex-wrap: wrap;
     gap: 16px;
     font-size: 11px;
-    font-family: var(--font-editor);
   }
 
   .footer-links a {
@@ -236,7 +233,6 @@
   .footer-credit {
     font-size: 11px;
     color: var(--text-muted);
-    font-family: var(--font-editor);
   }
 
   .footer-credit a {

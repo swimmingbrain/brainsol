@@ -143,7 +143,6 @@
     min-width: 0;
     height: 22px;
     padding: 0 6px;
-    font-family: var(--font-editor);
     font-size: 11.5px;
     color: var(--text-primary);
     background: var(--bg-elevated);

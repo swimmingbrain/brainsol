@@ -123,8 +123,6 @@
   }
 
   .logo-text {
-    font-family: var(--font-brand);
-    font-style: italic;
     font-size: 16px;
     color: var(--text-primary);
   }
@@ -133,7 +131,6 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    font-family: var(--font-editor);
     font-size: 11px;
     color: var(--text-muted);
     flex-shrink: 0;

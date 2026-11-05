@@ -1,5 +1,5 @@
 <script lang="ts">
-  // one result number in a section: a label, the figure in mono and a quiet note
+  // one result number in a section: a label, the figure and a quiet note
   let {
     label,
     value,
@@ -37,7 +37,6 @@
 
   .value {
     height: 30px;
-    font-family: var(--font-editor);
     font-size: 24px;
     font-weight: 500;
     line-height: 30px;

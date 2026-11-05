@@ -55,8 +55,6 @@
   /* times only fills in for the few signs geist serif does not have, like the
      square in w/m2, the greek letters and the root sign */
   --font-ui: 'Geist Serif', 'Times New Roman', Times, serif;
-  --font-editor: var(--font-ui);
-  --font-brand: var(--font-ui);
 
   --topbar-h: 44px;
   --statusbar-h: 24px;
@@ -197,8 +195,7 @@ kbd {
   min-width: 18px;
   height: 18px;
   padding: 0 4px;
-  font-family: var(--font-editor);
-  font-size: 10px;
+  font-size: 11px;
   color: var(--text-secondary);
   background: var(--bg-elevated);
   border: 1px solid var(--border);

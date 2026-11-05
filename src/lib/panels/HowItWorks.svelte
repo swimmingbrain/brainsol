@@ -167,7 +167,6 @@
     width: 22px;
     height: 22px;
     flex-shrink: 0;
-    font-family: var(--font-editor);
     font-size: 11px;
     color: var(--on-accent);
     background: var(--accent);
@@ -188,7 +187,6 @@
   .step .now {
     margin-top: auto;
     padding-top: 10px;
-    font-family: var(--font-editor);
     font-size: 11px;
     line-height: 1.5;
     color: var(--text-muted);
@@ -242,7 +240,6 @@
   }
 
   .num-cell {
-    font-family: var(--font-editor);
     color: var(--text-strong);
   }
 

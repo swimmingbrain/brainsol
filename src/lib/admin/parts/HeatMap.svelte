@@ -101,7 +101,6 @@
   }
 
   .tick {
-    font-family: var(--font-editor);
     font-size: 9.5px;
     color: var(--text-muted);
     white-space: nowrap;
@@ -146,7 +145,6 @@
   }
 
   .scale {
-    font-family: var(--font-editor);
     white-space: nowrap;
   }
 </style>

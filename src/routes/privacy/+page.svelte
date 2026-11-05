@@ -145,8 +145,6 @@
   }
 
   .logo-name {
-    font-family: var(--font-brand);
-    font-style: italic;
     font-size: 18px;
     color: var(--text-primary);
   }
@@ -169,7 +167,6 @@
   .updated {
     font-size: 12px;
     color: var(--text-muted);
-    font-family: var(--font-editor);
     margin-bottom: 32px;
   }
 
@@ -200,9 +197,8 @@
     color: var(--accent-hover);
   }
 
-  /* the storage keys are named exactly, so they are set in the mono face */
+  /* the storage keys are named exactly, so they sit in a small box of their own */
   p :global(code) {
-    font-family: var(--font-editor);
     font-size: 12px;
     color: var(--text-primary);
     background: var(--bg-surface);
@@ -222,7 +218,6 @@
 
   .footer a {
     font-size: 12px;
-    font-family: var(--font-editor);
     color: var(--text-muted);
     text-decoration: none;
   }

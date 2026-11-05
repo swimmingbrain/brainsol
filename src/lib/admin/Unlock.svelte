@@ -182,7 +182,6 @@
     width: 100%;
     height: 44px;
     padding: 0 12px;
-    font-family: var(--font-editor);
     font-size: 20px;
     letter-spacing: 0.35em;
     color: var(--text-strong);

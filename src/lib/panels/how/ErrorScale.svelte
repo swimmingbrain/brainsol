@@ -61,7 +61,6 @@
 
   .name,
   .tick {
-    font-family: var(--font-editor);
     font-size: 10px;
     fill: var(--text-muted);
     text-anchor: middle;
@@ -84,13 +83,11 @@
   }
 
   .formula {
-    font-family: var(--font-editor);
     font-size: 10.5px;
     fill: var(--text-primary);
   }
 
   .value {
-    font-family: var(--font-editor);
     font-size: 11px;
     font-weight: 500;
     fill: var(--text-strong);
