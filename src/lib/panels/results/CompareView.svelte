@@ -29,30 +29,22 @@
   <Figure label={t('panels.results.spread')} value={fmt(result.spread * 100, 1)} unit={t('panels.results.points')} note={t('panels.results.spreadNote')} />
   <Figure label={t('panels.results.rounds')} value={String(result.rounds.length)} note={t('panels.results.roundsNote')} />
 </div>
-<Bars {groups} {series} unit="lx" digits={0} maxBar={28} height={220} idle={t('panels.results.roundAxis')} label={t('panels.results.compareAria')} />
+<Bars {groups} {series} unit="lx" digits={0} maxBar={28} height={180} idle={t('panels.results.roundAxis')} label={t('panels.results.compareAria')} />
 <p class="caption">{t('panels.results.compareCaption')}</p>
 
 <style>
+  /* two figures a row, the dock column is narrow */
   .figures {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px 24px;
-    margin-bottom: 18px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 16px;
+    margin-bottom: 14px;
   }
 
   .caption {
-    margin-top: 10px;
-    max-width: 640px;
-    font-size: 12.5px;
-    line-height: 1.55;
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 1.5;
     color: var(--text-secondary);
-  }
-
-  /* three figures still fit side by side on a phone */
-  @media (max-width: 600px) {
-    .figures {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-    }
   }
 </style>

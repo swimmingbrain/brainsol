@@ -36,32 +36,24 @@
   y={{ include: [0], minSpan: 4 }}
   lines={[0]}
   {marks}
-  height={240}
+  height={200}
   hint={t('panels.results.stepAxis')}
   label={t('panels.results.stepAria')} />
 <p class="caption">{t('panels.results.stepCaption')}</p>
 
 <style>
+  /* two figures a row, the dock column is narrow */
   .figures {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px 24px;
-    margin-bottom: 18px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 16px;
+    margin-bottom: 14px;
   }
 
   .caption {
-    margin-top: 10px;
-    max-width: 640px;
-    font-size: 12.5px;
-    line-height: 1.55;
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 1.5;
     color: var(--text-secondary);
-  }
-
-  /* three figures still fit side by side on a phone */
-  @media (max-width: 600px) {
-    .figures {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-    }
   }
 </style>

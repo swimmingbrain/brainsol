@@ -36,9 +36,9 @@
   }
 
   .value {
-    height: 30px;
-    font-size: 24px;
-    line-height: 30px;
+    height: 26px;
+    font-size: 20px;
+    line-height: 26px;
     letter-spacing: -0.02em;
     color: var(--text-strong);
     font-variant-numeric: tabular-nums;
@@ -47,7 +47,7 @@
 
   .unit {
     margin-left: 4px;
-    font-size: 12.5px;
+    font-size: 12px;
     letter-spacing: 0;
     color: var(--text-muted);
   }
@@ -62,12 +62,7 @@
 
   .note {
     font-size: 12px;
+    line-height: 1.4;
     color: var(--text-muted);
-  }
-
-  @media (max-width: 600px) {
-    .value {
-      font-size: 20px;
-    }
   }
 </style>

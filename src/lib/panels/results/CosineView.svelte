@@ -38,30 +38,24 @@
   x="number"
   xFormat={(v) => `${fmt(v, 0)}°`}
   y={{ min: 0, include: [0] }}
-  height={240}
+  height={200}
   hint={t('panels.results.angleAxis')}
   label={t('panels.results.cosineAria')} />
 <p class="caption">{t('panels.results.cosineCaption')}</p>
 
 <style>
+  /* two figures a row, the dock column is narrow */
   .figures {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px 24px;
-    margin-bottom: 18px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 16px;
+    margin-bottom: 14px;
   }
 
   .caption {
-    margin-top: 10px;
-    max-width: 640px;
-    font-size: 12.5px;
-    line-height: 1.55;
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 1.5;
     color: var(--text-secondary);
-  }
-
-  @media (max-width: 600px) {
-    .figures {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
   }
 </style>
