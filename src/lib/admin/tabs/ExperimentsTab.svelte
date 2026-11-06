@@ -5,6 +5,7 @@
   import Group from '../parts/Group.svelte';
   import Note from '../parts/Note.svelte';
   import Progress from '../parts/Progress.svelte';
+  import ResultsGroup from './exp/ResultsGroup.svelte';
   import Button from '$lib/ui/Button.svelte';
   import { connection } from '$lib/stores/connection.svelte';
   import { telemetry } from '$lib/stores/telemetry.svelte';
@@ -23,6 +24,9 @@
   const result = $derived(exp && isOver(exp) ? headline(exp) : null);
 
   const phase = $derived(exp ? phaseText(exp.phase) : '');
+
+  // the finished result drawn under the list, the newest until one is picked
+  let picked = $state<string | null>(null);
 
   function start(kind: ExpKind) {
     void runner.run(expCommand(kind), { key: `exp.${kind}`, feature: 'exp' });
@@ -97,6 +101,8 @@
     <Note>{t('admin.exp.other')}</Note>
   {/if}
 </Group>
+
+<ResultsGroup bind:selected={picked} />
 
 <style>
   .now {

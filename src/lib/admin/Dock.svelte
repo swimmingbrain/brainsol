@@ -2,7 +2,7 @@
   // the admin dock. it only exists while the tools are unlocked: beside the
   // stage on a wide screen, under it on a phone. every tab talks to the tracker
   // through the runner, which goes through connection.send
-  import { untrack } from 'svelte';
+  import { onMount, untrack } from 'svelte';
   import DockTabs, { type DockTab } from './parts/DockTabs.svelte';
   import ActivityBar from './parts/ActivityBar.svelte';
   import ControlTab from './tabs/ControlTab.svelte';
@@ -15,6 +15,7 @@
   import { connection } from '$lib/stores/connection.svelte';
   import { t } from '$lib/i18n';
   import { runner, session, type TabId } from './session.svelte';
+  import { session as results } from '$lib/panels/results/session.svelte';
 
   const tabs = $derived<DockTab<TabId>[]>([
     { id: 'control', label: t('admin.tab.control'), icon: 'move' },
@@ -25,6 +26,10 @@
     { id: 'system', label: t('admin.tab.system'), icon: 'chip' },
     { id: 'link', label: t('admin.tab.link'), icon: 'link' }
   ]);
+
+  // finished experiments are kept from the moment the tools open, for the
+  // experiments tab, even while another tab or presentation mode hides it
+  onMount(() => results.watch());
 
   // a fresh hello is a new tracker or a restarted one, what it cannot do is found out again
   $effect(() => {
