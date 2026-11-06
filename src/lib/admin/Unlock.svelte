@@ -176,14 +176,15 @@
     color: var(--text-secondary);
   }
 
-  /* big enough for a thumb and for reading from a step away */
+  /* big enough for a thumb and for reading from a step away. the masking dot
+     of geist serif is small, so the field sets it large */
   .pin {
     display: block;
     width: 100%;
     height: 44px;
     padding: 0 12px;
-    font-size: 20px;
-    letter-spacing: 0.35em;
+    font-size: 28px;
+    letter-spacing: 0.22em;
     color: var(--text-strong);
     background: var(--bg-elevated);
     border: 1px solid var(--border);
