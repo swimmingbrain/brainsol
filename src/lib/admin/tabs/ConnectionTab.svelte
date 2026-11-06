@@ -78,16 +78,16 @@
       </Chip>
     </dd>
     <dt>{t('admin.link.where')}</dt>
-    <dd class="mono">{live ? (connection.host ?? '') : t('admin.link.browser')}</dd>
+    <dd class="exact">{live ? (connection.host ?? '') : t('admin.link.browser')}</dd>
     {#if hello}
       <dt>{t('admin.link.tracker')}</dt>
-      <dd class="mono">{hello.name} {hello.version}, {t(`admin.sys.drv.${hello.driver}` as Key)}</dd>
+      <dd class="exact">{hello.name} {hello.version}, {t(`admin.sys.drv.${hello.driver}` as Key)}</dd>
     {/if}
     <dt>{t('admin.link.status')}</dt>
     <dd>{t(`admin.link.status.${connection.status}` as Key)}</dd>
     {#if live && connection.latency !== null}
       <dt>{t('admin.link.latency')}</dt>
-      <dd class="mono">{fmt(connection.latency, 0)} ms</dd>
+      <dd class="exact">{fmt(connection.latency, 0)} ms</dd>
     {/if}
   </dl>
   {#if problem}
@@ -178,7 +178,8 @@
     overflow-wrap: anywhere;
   }
 
-  .mono {
+  /* machine values, a step smaller than the words around them */
+  .exact {
     font-size: 12px;
   }
 
