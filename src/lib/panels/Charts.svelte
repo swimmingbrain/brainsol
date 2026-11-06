@@ -162,7 +162,7 @@
 
 <style>
   .window {
-    width: 156px;
+    width: 168px;
   }
 
   .body {
