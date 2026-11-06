@@ -13,13 +13,13 @@ describe('the sensor windows', () => {
     expect(luxLevel(80000)).toBe(1);
   });
 
-  it('keeps the lux window apart from the copper eyes', () => {
+  it('keeps the teal lux window apart from the orange eyes', () => {
     const lit = LUX_RAMP[LUX_RAMP.length - 1];
-    const copper = EYE_RAMP[EYE_RAMP.length - 1];
+    const orange = EYE_RAMP[EYE_RAMP.length - 1];
     // blue over red for the window, red over blue for the eyes
     expect(lit[2]).toBeGreaterThan(lit[0]);
-    expect(copper[0]).toBeGreaterThan(copper[2]);
-    expect(steps(lit, copper)).toBeGreaterThan(60);
+    expect(orange[0]).toBeGreaterThan(orange[2]);
+    expect(steps(lit, orange)).toBeGreaterThan(60);
   });
 
   it('eases to the level and then rests without asking for frames', () => {

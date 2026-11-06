@@ -1,21 +1,21 @@
 import { describe, expect, it } from 'vitest';
 import { color, mix, parseColor, ramp, steps, toHex, type Rgb } from './ramp';
 
-const HEAT: Rgb[] = ['#26221f', '#4a3a2b', '#7a5c3d', '#a87c52', '#d19a66'].map((c) => parseColor(c)!);
+const HEAT: Rgb[] = ['#31231c', '#5d3c2b', '#8f5537', '#c57042', '#ff8b4b'].map((c) => parseColor(c)!);
 
 describe('colours', () => {
   it('read the token formats', () => {
     expect(parseColor('#ffffff')).toEqual([1, 1, 1]);
     expect(parseColor(' #000 ')).toEqual([0, 0, 0]);
-    expect(toHex(parseColor('#d19a66')!)).toBe('#d19a66');
+    expect(toHex(parseColor('#ff8b4b')!)).toBe('#ff8b4b');
     expect(toHex(parseColor('#abc')!)).toBe('#aabbcc');
-    expect(toHex(parseColor('rgba(209, 154, 102, 0.10)')!)).toBe('#d19a66');
+    expect(toHex(parseColor('rgba(255, 139, 75, 0.10)')!)).toBe('#ff8b4b');
     expect(toHex(parseColor('rgb(17 17 19)')!)).toBe('#111113');
   });
 
   it('give null for anything else and the fallback through color', () => {
     expect(parseColor('')).toBeNull();
-    expect(parseColor('copper')).toBeNull();
+    expect(parseColor('amber')).toBeNull();
     expect(parseColor(undefined)).toBeNull();
     expect(parseColor('#12345')).toBeNull();
     expect(toHex(color('', '#2e2e33'))).toBe('#2e2e33');

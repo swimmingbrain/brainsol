@@ -1,31 +1,31 @@
 import { describe, expect, it } from 'vitest';
 import { bubble, follow, heatColor, inkOn, parseColor, spread } from './balance';
 
-const RAMP = ['#26221f', '#4a3a2b', '#7a5c3d', '#a87c52', '#d19a66'];
+const RAMP = ['#31231c', '#5d3c2b', '#8f5537', '#c57042', '#ff8b4b'];
 
 describe('the heat ramp', () => {
   it('reads the colours css hands out', () => {
-    expect(parseColor('#d19a66')).toEqual([209, 154, 102]);
+    expect(parseColor('#ff8b4b')).toEqual([255, 139, 75]);
     expect(parseColor('#fff')).toEqual([255, 255, 255]);
-    expect(parseColor('rgba(209, 154, 102, 0.10)')).toEqual([209, 154, 102]);
-    expect(parseColor('copper')).toBeNull();
+    expect(parseColor('rgba(255, 139, 75, 0.10)')).toEqual([255, 139, 75]);
+    expect(parseColor('amber')).toBeNull();
   });
 
   it('puts the ends of a level on the first and last step and runs straight between', () => {
-    expect(heatColor(0, RAMP)).toBe('#26221f');
-    expect(heatColor(1, RAMP)).toBe('#d19a66');
-    expect(heatColor(0.5, RAMP)).toBe('#7a5c3d');
-    expect(heatColor(0.125, RAMP)).toBe('#382e25');
-    expect(heatColor(-3, RAMP)).toBe('#26221f');
-    expect(heatColor(7, RAMP)).toBe('#d19a66');
+    expect(heatColor(0, RAMP)).toBe('#31231c');
+    expect(heatColor(1, RAMP)).toBe('#ff8b4b');
+    expect(heatColor(0.5, RAMP)).toBe('#8f5537');
+    expect(heatColor(0.125, RAMP)).toBe('#473024');
+    expect(heatColor(-3, RAMP)).toBe('#31231c');
+    expect(heatColor(7, RAMP)).toBe('#ff8b4b');
   });
 
   it('keeps the ink readable on every step in both themes', () => {
-    expect(inkOn('#26221f')).toBe('light');
-    expect(inkOn('#d19a66')).toBe('dark');
-    expect(inkOn('#f3ebe2')).toBe('dark');
-    expect(inkOn('#a8692a')).toBe('light');
-    expect(inkOn('#4a3a2b')).toBe('light');
+    expect(inkOn('#31231c')).toBe('light');
+    expect(inkOn('#ff8b4b')).toBe('dark');
+    expect(inkOn('#fdece4')).toBe('dark');
+    expect(inkOn('#de6b22')).toBe('dark');
+    expect(inkOn('#5d3c2b')).toBe('light');
   });
 });
 
