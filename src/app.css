@@ -42,11 +42,15 @@
   --shadow: rgba(0, 0, 0, 0.4);
   --selection: rgba(255, 139, 75, 0.25);
 
-  /* charts: three series in a fixed order, checked for colour blind safety on
-     the surfaces. the accent is too light and too grey to tell series apart */
-  --chart-1: #5b8fc9;
-  --chart-2: #c4853f;
-  --chart-3: #8f6bb8;
+  /* the one second colour, only where two things must be told apart */
+  --secondary: #03bcbc;
+
+  /* charts: three series in a fixed order, the orange, the teal and a grey
+     that is darker than the teal, so the three stay apart for colour blind
+     eyes too. checked with a simulation of the three kinds on both surfaces */
+  --chart-1: var(--accent);
+  --chart-2: var(--secondary);
+  --chart-3: #7a7a84;
   --chart-neutral: #5a5a62;
   --chart-track: #2a2a2e;
   --chart-grid: #2e2e33;
@@ -108,9 +112,7 @@
   --shadow: rgba(0, 0, 0, 0.12);
   --selection: rgba(255, 139, 75, 0.28);
 
-  --chart-1: #3d74b8;
-  --chart-2: #b06f2c;
-  --chart-3: #7d57ad;
+  --chart-3: #71717a;
   --chart-neutral: #b4b4bb;
   --chart-track: #e4e4e7;
   --chart-grid: #e0e0e4;

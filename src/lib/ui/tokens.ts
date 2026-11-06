@@ -22,7 +22,7 @@ export interface ChartColors {
 
 export function chartColors(): ChartColors {
   return {
-    series: [cssVar('--chart-1', '#5b8fc9'), cssVar('--chart-2', '#c4853f'), cssVar('--chart-3', '#8f6bb8')],
+    series: [cssVar('--chart-1', '#ff8b4b'), cssVar('--chart-2', '#03bcbc'), cssVar('--chart-3', '#7a7a84')],
     neutral: cssVar('--chart-neutral', '#5a5a62'),
     track: cssVar('--chart-track', '#2a2a2e'),
     grid: cssVar('--chart-grid', '#2e2e33'),

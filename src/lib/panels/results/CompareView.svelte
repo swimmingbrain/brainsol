@@ -19,8 +19,8 @@
     }))
   );
   const series = $derived([
-    { label: t('panels.results.fixedPose'), color: 'series1' as const },
-    { label: t('panels.results.tracked'), color: 'series2' as const }
+    { label: t('panels.results.fixedPose'), color: 'series3' as const },
+    { label: t('panels.results.tracked'), color: 'series1' as const }
   ]);
 </script>
 

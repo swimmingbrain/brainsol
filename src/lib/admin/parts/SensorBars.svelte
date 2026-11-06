@@ -92,7 +92,7 @@
 
   .mark.bright,
   .key.bright {
-    background: var(--accent);
+    background: var(--text-strong);
   }
 
   .value {

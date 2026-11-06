@@ -37,7 +37,7 @@
         ? [
             {
               id: 'lux',
-              series: [{ label: t('q.light'), color: 'series1', unit: 'lx', format: (v) => lux(v) }],
+              series: [{ label: t('q.light'), color: 'series2', unit: 'lx', format: (v) => lux(v) }],
               columns: [{ col: 'lux' }],
               y: { include: [0], minSpan: 10 }
             } satisfies PlotSpec
@@ -45,7 +45,7 @@
         : []),
       {
         id: 'level',
-        series: [{ label: t('panels.charts.level'), color: 'series2', unit: '%', digits: 0 }],
+        series: [{ label: t('panels.charts.level'), color: 'series1', unit: '%', digits: 0 }],
         columns: [{ col: 'lvl', map: (v) => v * 100 }],
         y: { min: 0, max: 100, include: [0, 100] }
       }

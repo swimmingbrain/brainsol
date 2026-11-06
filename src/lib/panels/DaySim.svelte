@@ -137,9 +137,9 @@
   const labels = $derived<[string, string, string]>([t('panels.day.fixed'), t('panels.day.single'), t('panels.day.dual')]);
 
   const series = $derived<PlotSeries[]>([
-    { label: labels[0], color: 'series1', unit: 'W/m²', digits: 0 },
+    { label: labels[0], color: 'series3', unit: 'W/m²', digits: 0 },
     { label: labels[1], color: 'series2', unit: 'W/m²', digits: 0 },
-    { label: labels[2], color: 'series3', unit: 'W/m²', digits: 0 }
+    { label: labels[2], color: 'series1', unit: 'W/m²', digits: 0 }
   ]);
 
   // the chart shows the hours with sun and one on either side
