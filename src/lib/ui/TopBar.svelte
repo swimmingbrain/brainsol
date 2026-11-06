@@ -177,13 +177,28 @@
     flex-shrink: 0;
   }
 
+  /* a phone keeps the source chip whole: a smaller wordmark, no rule after
+     it and a narrower language switch */
   @media (max-width: 420px) {
     .viewers {
       display: none;
     }
+
+    .logo-text {
+      font-size: 17px;
+    }
+
+    .left .separator {
+      display: none;
+    }
+
+    .lang {
+      width: 64px;
+      margin-right: 2px;
+    }
   }
 
-  @media (max-width: 370px) {
+  @media (max-width: 380px) {
     .logo-text {
       display: none;
     }
