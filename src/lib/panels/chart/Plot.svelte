@@ -90,7 +90,7 @@
 
   const colors = $derived(themeColors());
   const FAMILY = '"Geist Serif", "Times New Roman", serif';
-  const FONT = `10px ${FAMILY}`;
+  const FONT = `11px ${FAMILY}`;
 
   const clock = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
   const clockShort = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
@@ -225,7 +225,7 @@
       ctx.lineTo(left + width, py);
       ctx.stroke();
     }
-    ctx.font = `${10 * ratio}px ${FAMILY}`;
+    ctx.font = `${11 * ratio}px ${FAMILY}`;
     ctx.fillStyle = colors.text;
     ctx.textBaseline = 'top';
     for (const mark of marks) {
@@ -337,7 +337,7 @@
     flex-wrap: wrap;
     gap: 2px 12px;
     min-height: 20px;
-    font-size: 11px;
+    font-size: 11.5px;
     color: var(--text-secondary);
   }
 
@@ -362,7 +362,6 @@
   }
 
   .value {
-    font-weight: 500;
     color: var(--text-strong);
     font-variant-numeric: tabular-nums;
   }
@@ -370,12 +369,11 @@
   .unit {
     margin-left: 2px;
     color: var(--text-muted);
-    font-weight: 400;
   }
 
   .at {
     margin-left: auto;
-    font-size: 10px;
+    font-size: 11px;
     color: var(--text-muted);
     font-variant-numeric: tabular-nums;
   }

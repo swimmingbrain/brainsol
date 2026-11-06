@@ -161,7 +161,7 @@
     align-items: center;
     gap: 5px;
     margin-left: 10px;
-    font-size: 11px;
+    font-size: 11.5px;
     color: var(--error);
   }
 
@@ -191,7 +191,7 @@
     align-items: baseline;
     gap: 8px;
     padding: 4px 8px;
-    font-size: 11px;
+    font-size: 11.5px;
     line-height: 1.45;
     border-top: 1px solid var(--border);
   }
@@ -201,7 +201,7 @@
   }
 
   time {
-    font-size: 10.5px;
+    font-size: 11px;
     color: var(--text-muted);
   }
 

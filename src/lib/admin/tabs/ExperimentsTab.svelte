@@ -114,13 +114,12 @@
   }
 
   .name {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-primary);
+    font-size: 13.5px;
+    color: var(--text-strong);
   }
 
   .phase {
-    font-size: 11.5px;
+    font-size: 12px;
     color: var(--text-secondary);
   }
 
@@ -129,18 +128,17 @@
   }
 
   .result {
-    font-size: 12px;
+    font-size: 12.5px;
     color: var(--text-secondary);
   }
 
   .result b {
-    font-weight: 500;
     color: var(--text-strong);
   }
 
   .link {
     align-self: flex-start;
-    font-size: 11.5px;
+    font-size: 12px;
     color: var(--accent-ink);
   }
 
@@ -178,7 +176,7 @@
   }
 
   .text p {
-    font-size: 11.5px;
+    font-size: 12px;
     line-height: 1.45;
     color: var(--text-muted);
   }

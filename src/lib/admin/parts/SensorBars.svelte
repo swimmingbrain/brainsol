@@ -56,7 +56,7 @@
   }
 
   .name {
-    font-size: 11px;
+    font-size: 11.5px;
     color: var(--text-muted);
   }
 
@@ -96,7 +96,7 @@
   }
 
   .value {
-    font-size: 11px;
+    font-size: 11.5px;
     text-align: right;
     color: var(--text-secondary);
     font-variant-numeric: tabular-nums;
@@ -106,7 +106,7 @@
     display: flex;
     gap: 12px;
     padding-left: 22px;
-    font-size: 10.5px;
+    font-size: 11px;
     color: var(--text-muted);
   }
 

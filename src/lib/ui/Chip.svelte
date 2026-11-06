@@ -44,8 +44,7 @@
     gap: 5px;
     height: 20px;
     padding: 0 7px;
-    font-size: 10.5px;
-    font-weight: 500;
+    font-size: 11px;
     color: var(--text-secondary);
     background: var(--bg-elevated);
     border: 1px solid var(--border);

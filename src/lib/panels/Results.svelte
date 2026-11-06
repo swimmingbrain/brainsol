@@ -190,12 +190,11 @@
     align-items: baseline;
     gap: 10px;
     margin-bottom: 8px;
-    font-size: 12px;
+    font-size: 12.5px;
   }
 
   .running-kind {
-    font-weight: 600;
-    color: var(--text-primary);
+    color: var(--text-strong);
   }
 
   .running-phase {
@@ -243,14 +242,13 @@
   }
 
   .empty-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-primary);
+    font-size: 16px;
+    color: var(--text-strong);
   }
 
   .empty-text {
     margin-top: 6px;
-    font-size: 13px;
+    font-size: 13.5px;
     line-height: 1.6;
     color: var(--text-secondary);
   }
@@ -261,22 +259,21 @@
     flex-direction: column;
     gap: 8px;
     margin-top: 20px;
-    font-size: 12.5px;
+    font-size: 13px;
     line-height: 1.55;
     color: var(--text-secondary);
   }
 
   .kinds.small {
     margin-top: 24px;
-    font-size: 11.5px;
+    font-size: 12px;
     color: var(--text-muted);
   }
 
   /* the name on its own line, the sentence below it starts afresh */
   .kind-name {
     display: block;
-    font-weight: 600;
-    color: var(--text-primary);
+    color: var(--text-strong);
   }
 
   /* the explanation of the kinds sits under the list, on a phone after the chart */
@@ -301,7 +298,7 @@
 
   .list-head {
     margin-bottom: 8px;
-    font-size: 11.5px;
+    font-size: 12px;
     color: var(--text-muted);
   }
 
@@ -336,7 +333,7 @@
   }
 
   .row-kind {
-    font-size: 12.5px;
+    font-size: 13px;
     color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
@@ -347,13 +344,13 @@
     grid-row: 1 / 3;
     grid-column: 2;
     align-self: center;
-    font-size: 12px;
+    font-size: 12.5px;
     color: var(--text-strong);
     font-variant-numeric: tabular-nums;
   }
 
   .row-when {
-    font-size: 10.5px;
+    font-size: 11px;
     color: var(--text-muted);
   }
 
@@ -384,18 +381,17 @@
   }
 
   h3 {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text-primary);
+    font-size: 17px;
+    color: var(--text-strong);
   }
 
   .detail-when {
-    font-size: 11px;
+    font-size: 11.5px;
     color: var(--text-muted);
   }
 
   .quiet {
-    font-size: 12.5px;
+    font-size: 13px;
     color: var(--text-muted);
   }
 

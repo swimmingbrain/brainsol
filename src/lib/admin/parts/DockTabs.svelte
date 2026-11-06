@@ -84,8 +84,7 @@
     flex: 1 1 0;
     min-width: 30px;
     padding: 0 6px;
-    font-size: 11px;
-    font-weight: 500;
+    font-size: 11.5px;
     color: var(--text-muted);
     white-space: nowrap;
     transition: color 0.1s ease, background 0.1s ease;

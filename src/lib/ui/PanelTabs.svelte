@@ -104,8 +104,7 @@
     align-items: center;
     gap: 4px;
     padding: 5px 12px;
-    font-size: 11px;
-    font-weight: 500;
+    font-size: 11.5px;
     color: var(--text-muted);
     white-space: nowrap;
   }
@@ -150,7 +149,7 @@
   }
 
   .badge {
-    font-size: 9px;
+    font-size: 10px;
     line-height: 14px;
     min-width: 14px;
     padding: 0 3px;

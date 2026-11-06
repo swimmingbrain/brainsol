@@ -167,19 +167,18 @@
     width: 22px;
     height: 22px;
     flex-shrink: 0;
-    font-size: 11px;
+    font-size: 11.5px;
     color: var(--on-accent);
     background: var(--accent);
   }
 
   h3 {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-primary);
+    font-size: 16.5px;
+    color: var(--text-strong);
   }
 
   .step p {
-    font-size: 13px;
+    font-size: 13.5px;
     line-height: 1.6;
     color: var(--text-secondary);
   }
@@ -187,7 +186,7 @@
   .step .now {
     margin-top: auto;
     padding-top: 10px;
-    font-size: 11px;
+    font-size: 11.5px;
     line-height: 1.5;
     color: var(--text-muted);
   }
@@ -206,23 +205,21 @@
   table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 12.5px;
+    font-size: 13px;
     line-height: 1.5;
   }
 
   thead th {
     padding: 0 10px 8px 0;
-    font-size: 11.5px;
-    font-weight: 600;
+    font-size: 12.5px;
     text-align: left;
-    color: var(--text-primary);
+    color: var(--text-strong);
     border-bottom: 1px solid var(--border);
   }
 
   tbody th {
     width: 26%;
     padding: 8px 10px 8px 0;
-    font-weight: 400;
     text-align: left;
     vertical-align: top;
     color: var(--text-muted);
@@ -245,7 +242,7 @@
 
   .foot {
     margin-top: 10px;
-    font-size: 11.5px;
+    font-size: 12px;
     line-height: 1.5;
     color: var(--text-muted);
   }
@@ -269,7 +266,7 @@
     /* on a phone each row gets its label on a line of its own and the
        values side by side under it, so no column is squeezed to a few letters */
     table {
-      font-size: 12px;
+      font-size: 12.5px;
     }
 
     tr {

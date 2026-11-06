@@ -55,8 +55,7 @@
     justify-content: center;
     gap: 5px;
     padding: 0 8px;
-    font-size: 11px;
-    font-weight: 500;
+    font-size: 11.5px;
     color: var(--text-muted);
     white-space: nowrap;
     transition: background 0.1s ease, color 0.1s ease;
@@ -74,7 +73,7 @@
   .sm .segment {
     height: 18px;
     padding: 0 6px;
-    font-size: 10.5px;
+    font-size: 11px;
   }
 
   .segment:hover:not(:disabled):not(.on) {
@@ -98,12 +97,12 @@
   @media (pointer: coarse) {
     .md .segment {
       height: 40px;
-      font-size: 12.5px;
+      font-size: 13px;
     }
 
     .sm .segment {
       height: 34px;
-      font-size: 12px;
+      font-size: 12.5px;
     }
   }
 </style>

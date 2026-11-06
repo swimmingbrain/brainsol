@@ -39,7 +39,7 @@
 
   .field-label {
     flex: 0 0 110px;
-    font-size: 11.5px;
+    font-size: 12px;
     color: var(--text-secondary);
     white-space: nowrap;
     overflow: hidden;

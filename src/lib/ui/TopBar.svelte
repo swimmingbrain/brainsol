@@ -123,15 +123,17 @@
   }
 
   .logo-text {
-    font-size: 16px;
-    color: var(--text-primary);
+    font-size: 19px;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    color: var(--text-strong);
   }
 
   .viewers {
     display: flex;
     align-items: center;
     gap: 4px;
-    font-size: 11px;
+    font-size: 11.5px;
     color: var(--text-muted);
     flex-shrink: 0;
   }

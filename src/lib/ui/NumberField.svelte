@@ -165,7 +165,7 @@
     display: block;
     width: 100%;
     padding: 3px 6px;
-    font-size: 11.5px;
+    font-size: 12px;
     line-height: 16px;
     color: var(--accent-ink);
     background: var(--bg-elevated);
@@ -201,7 +201,7 @@
     .number,
     .number-input {
       padding: 11px 8px;
-      font-size: 13px;
+      font-size: 13.5px;
     }
   }
 </style>

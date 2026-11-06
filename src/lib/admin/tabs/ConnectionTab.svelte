@@ -163,11 +163,11 @@
     gap: 6px 6px;
     align-items: center;
     margin: 0;
-    font-size: 12px;
+    font-size: 12.5px;
   }
 
   dt {
-    font-size: 11.5px;
+    font-size: 12px;
     color: var(--text-secondary);
   }
 
@@ -179,14 +179,14 @@
   }
 
   .mono {
-    font-size: 11.5px;
+    font-size: 12px;
   }
 
   .address input {
     width: 100%;
     height: 30px;
     padding: 0 8px;
-    font-size: 12px;
+    font-size: 12.5px;
     color: var(--text-primary);
     background: var(--bg-elevated);
     border: 1px solid var(--border);
@@ -203,7 +203,7 @@
   }
 
   .resolved {
-    font-size: 10.5px;
+    font-size: 11px;
     color: var(--text-muted);
     overflow-wrap: anywhere;
   }
@@ -233,7 +233,7 @@
   }
 
   .url {
-    font-size: 11px;
+    font-size: 11.5px;
     line-height: 1.45;
     color: var(--text-primary);
     overflow-wrap: anywhere;

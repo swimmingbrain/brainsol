@@ -104,8 +104,10 @@
     color: var(--text-primary);
   }
 
+  /* a document reads better with the figures of running text */
   .content {
     flex: 1;
+    font-variant-numeric: proportional-nums;
     max-width: 720px;
     margin: 0 auto;
     padding: 48px 32px;
@@ -113,16 +115,16 @@
   }
 
   h1 {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--text-primary);
+    font-size: 32px;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--text-strong);
     margin-bottom: 24px;
   }
 
   h2 {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-primary);
+    font-size: 18px;
+    color: var(--text-strong);
     margin: 24px 0 8px;
   }
 
@@ -150,7 +152,7 @@
   }
 
   .footer a {
-    font-size: 12px;
+    font-size: 12.5px;
     color: var(--text-muted);
     text-decoration: none;
   }

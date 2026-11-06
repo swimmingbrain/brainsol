@@ -198,8 +198,7 @@
   }
 
   .name {
-    font-size: 9px;
-    font-weight: 600;
+    font-size: 10px;
     text-anchor: middle;
     dominant-baseline: middle;
     opacity: 0.75;
@@ -207,9 +206,8 @@
 
   /* 100 % has to fit across the ring on the left and the right */
   .level {
-    font-size: 10px;
+    font-size: 11px;
     letter-spacing: -0.02em;
-    font-weight: 500;
     text-anchor: middle;
     dominant-baseline: middle;
     font-variant-numeric: tabular-nums;
@@ -267,22 +265,21 @@
   }
 
   dt {
-    font-size: 11px;
+    font-size: 11.5px;
     color: var(--text-muted);
     white-space: nowrap;
   }
 
   dd {
     height: 18px;
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 13.5px;
     color: var(--text-strong);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
 
   dd.quiet {
-    font-size: 11px;
+    font-size: 11.5px;
     color: var(--text-secondary);
   }
 
@@ -297,7 +294,7 @@
 
   .caption {
     margin-top: 10px;
-    font-size: 11px;
+    font-size: 11.5px;
     line-height: 1.5;
     color: var(--text-secondary);
   }

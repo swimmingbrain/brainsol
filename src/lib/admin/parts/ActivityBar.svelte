@@ -52,7 +52,7 @@
   }
 
   .what {
-    font-size: 12px;
+    font-size: 12.5px;
     color: var(--text-primary);
     white-space: nowrap;
   }
@@ -60,7 +60,7 @@
   .detail {
     flex: 1;
     min-width: 0;
-    font-size: 10.5px;
+    font-size: 11px;
     color: var(--text-muted);
     white-space: nowrap;
     overflow: hidden;

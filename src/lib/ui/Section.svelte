@@ -28,10 +28,10 @@
   }
 
   h2 {
-    font-size: 24px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    color: var(--text-primary);
+    font-size: 30px;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    color: var(--text-strong);
   }
 
   .lead {
@@ -48,7 +48,7 @@
 
   @media (max-width: 600px) {
     h2 {
-      font-size: 20px;
+      font-size: 25px;
     }
 
     .content {

@@ -138,7 +138,7 @@
   }
 
   .label {
-    font-size: 11px;
+    font-size: 11.5px;
     color: var(--text-muted);
     white-space: nowrap;
     overflow: hidden;
@@ -203,7 +203,7 @@
     width: max-content;
     max-width: min(250px, calc(200% + 16px));
     padding: 7px 10px;
-    font-size: 11.5px;
+    font-size: 12px;
     line-height: 1.45;
     color: var(--text-secondary);
     white-space: normal;
@@ -230,7 +230,6 @@
 
   .value {
     font-size: 21px;
-    font-weight: 500;
     line-height: 28px;
     letter-spacing: -0.02em;
     color: var(--text-strong);
@@ -238,14 +237,13 @@
   }
 
   .value.word {
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 18px;
     letter-spacing: -0.01em;
   }
 
   .before,
   .unit {
-    font-size: 12px;
+    font-size: 12.5px;
     color: var(--text-muted);
   }
 
@@ -285,7 +283,7 @@
     gap: 6px;
     height: 16px;
     min-width: 0;
-    font-size: 10.5px;
+    font-size: 11px;
     color: var(--text-muted);
     white-space: nowrap;
   }
@@ -299,7 +297,7 @@
   .tag {
     flex-shrink: 0;
     padding: 0 4px;
-    font-size: 9.5px;
+    font-size: 10.5px;
     line-height: 14px;
     color: var(--text-secondary);
     border: 1px solid var(--border);

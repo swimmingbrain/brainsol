@@ -101,7 +101,7 @@
   }
 
   .tick {
-    font-size: 9.5px;
+    font-size: 10.5px;
     color: var(--text-muted);
     white-space: nowrap;
   }
@@ -125,7 +125,7 @@
     align-items: center;
     gap: 4px 8px;
     margin-top: 8px;
-    font-size: 10.5px;
+    font-size: 11px;
     color: var(--text-muted);
   }
 

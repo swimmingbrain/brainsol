@@ -47,7 +47,7 @@
     border: 1px solid var(--border);
     border-left: 2px solid var(--accent-ink);
     color: var(--text-primary);
-    font-size: 12px;
+    font-size: 12.5px;
     line-height: 1.45;
     box-shadow: 0 4px 16px var(--shadow);
     animation: slide-in-right 150ms ease;
@@ -90,7 +90,7 @@
       max-width: none;
       min-height: var(--statusbar-h);
       padding: 3px 6px 3px 10px;
-      font-size: 11.5px;
+      font-size: 12px;
       line-height: 1.4;
       border-width: 1px 0 0 2px;
       box-shadow: none;

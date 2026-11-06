@@ -127,9 +127,8 @@
   }
 
   .dialog-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-primary);
+    font-size: 19px;
+    color: var(--text-strong);
     margin-bottom: 4px;
   }
 
@@ -149,7 +148,7 @@
   }
 
   .dialog-desc {
-    font-size: 12px;
+    font-size: 12.5px;
     line-height: 1.5;
     color: var(--text-secondary);
     margin-bottom: 16px;

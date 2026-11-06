@@ -335,9 +335,8 @@
   }
 
   h3 {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-primary);
+    font-size: 15px;
+    color: var(--text-strong);
     margin-bottom: 4px;
   }
 
@@ -350,7 +349,7 @@
 
   .hint {
     margin-top: 4px;
-    font-size: 11.5px;
+    font-size: 12px;
     line-height: 1.5;
     color: var(--text-muted);
   }
@@ -381,7 +380,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 11.5px;
+    font-size: 12px;
     color: var(--text-secondary);
     white-space: nowrap;
   }
@@ -395,7 +394,6 @@
 
   .big,
   .mid {
-    font-weight: 500;
     color: var(--text-strong);
     letter-spacing: -0.02em;
     font-variant-numeric: tabular-nums;
@@ -412,13 +410,13 @@
 
   .unit {
     margin-left: 4px;
-    font-size: 11px;
+    font-size: 11.5px;
     letter-spacing: 0;
     color: var(--text-muted);
   }
 
   .gain {
-    font-size: 11.5px;
+    font-size: 12px;
     color: var(--text-muted);
     white-space: nowrap;
   }
@@ -427,13 +425,12 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
-    font-size: 11.5px;
+    font-size: 12px;
     color: var(--text-muted);
     white-space: nowrap;
   }
 
   .facts b {
-    font-weight: 500;
     color: var(--text-primary);
   }
 
@@ -457,7 +454,7 @@
 
   .year-head p {
     max-width: 640px;
-    font-size: 13px;
+    font-size: 13.5px;
     line-height: 1.6;
     color: var(--text-secondary);
   }
@@ -494,7 +491,7 @@
     display: grid;
     grid-template-columns: 150px minmax(0, 1fr);
     gap: 8px 16px;
-    font-size: 12px;
+    font-size: 12.5px;
     line-height: 1.55;
   }
 
@@ -507,15 +504,14 @@
   }
 
   code {
-    font-size: 11.5px;
+    font-size: 12px;
     color: var(--text-primary);
     white-space: nowrap;
   }
 
   h4 {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-secondary);
+    font-size: 13px;
+    color: var(--text-primary);
     margin-bottom: 6px;
   }
 
@@ -524,7 +520,7 @@
     flex-direction: column;
     gap: 6px;
     padding-left: 16px;
-    font-size: 12px;
+    font-size: 12.5px;
     line-height: 1.55;
     color: var(--text-secondary);
   }

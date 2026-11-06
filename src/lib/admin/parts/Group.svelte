@@ -42,9 +42,8 @@
   }
 
   h3 {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-secondary);
+    font-size: 13px;
+    color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -59,7 +58,7 @@
 
   .hint {
     margin-top: 2px;
-    font-size: 11.5px;
+    font-size: 12px;
     line-height: 1.45;
     color: var(--text-muted);
   }

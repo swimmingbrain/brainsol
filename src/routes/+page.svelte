@@ -211,7 +211,7 @@
   }
 
   .footer-name {
-    font-size: 14px;
+    font-size: 15px;
     color: var(--text-primary);
   }
 
@@ -219,7 +219,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
-    font-size: 11px;
+    font-size: 11.5px;
   }
 
   .footer-links a {
@@ -231,7 +231,7 @@
   }
 
   .footer-credit {
-    font-size: 11px;
+    font-size: 11.5px;
     color: var(--text-muted);
   }
 
@@ -245,7 +245,7 @@
 
   .heart {
     color: var(--error);
-    font-size: 12px;
+    font-size: 12.5px;
   }
 
   /* the status bar carries the credit, the footer only once that one hides it */

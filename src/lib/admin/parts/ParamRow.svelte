@@ -160,7 +160,7 @@
   }
 
   .name {
-    font-size: 12px;
+    font-size: 12.5px;
     color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
@@ -168,7 +168,7 @@
   }
 
   .key {
-    font-size: 10px;
+    font-size: 11px;
     color: var(--text-muted);
   }
 
@@ -216,7 +216,7 @@
   }
 
   .hint {
-    font-size: 11px;
+    font-size: 11.5px;
     line-height: 1.45;
     color: var(--text-muted);
   }

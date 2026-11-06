@@ -275,9 +275,9 @@
   }
 
   .say {
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--text-primary);
+    font-size: 18px;
+    letter-spacing: -0.005em;
+    color: var(--text-strong);
   }
 
   .numbers {
@@ -303,7 +303,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 12px;
+    font-size: 12.5px;
     color: var(--text-muted);
   }
 
@@ -313,7 +313,7 @@
 
   .hint.view {
     margin-left: auto;
-    font-size: 11px;
+    font-size: 11.5px;
   }
 
   .hint.touch {
@@ -337,7 +337,7 @@
     transform: translate(-50%, -50%);
     max-width: min(440px, calc(100% - 32px));
     padding: 10px 14px;
-    font-size: 12px;
+    font-size: 12.5px;
     color: var(--text-secondary);
     background: var(--bg-surface);
     border: 1px solid var(--border);
@@ -352,8 +352,8 @@
   }
 
   .present .say {
-    font-size: 30px;
-    font-weight: 500;
+    font-size: 36px;
+    letter-spacing: -0.01em;
     color: var(--text-strong);
   }
 
@@ -368,7 +368,7 @@
     }
 
     .say {
-      font-size: 13px;
+      font-size: 15px;
     }
 
     .numbers {

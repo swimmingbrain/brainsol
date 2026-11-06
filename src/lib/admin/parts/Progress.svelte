@@ -45,7 +45,7 @@
   }
 
   .text {
-    font-size: 10.5px;
+    font-size: 11px;
     color: var(--text-muted);
     white-space: nowrap;
   }

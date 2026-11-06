@@ -43,7 +43,7 @@
   .caption {
     margin-top: 10px;
     max-width: 640px;
-    font-size: 12px;
+    font-size: 12.5px;
     line-height: 1.55;
     color: var(--text-secondary);
   }

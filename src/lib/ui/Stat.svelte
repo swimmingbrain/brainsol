@@ -54,7 +54,7 @@
   }
 
   .label {
-    font-size: 11px;
+    font-size: 11.5px;
     color: var(--text-muted);
     white-space: nowrap;
     overflow: hidden;
@@ -70,7 +70,6 @@
   }
 
   .value {
-    font-weight: 500;
     color: var(--text-strong);
     font-variant-numeric: tabular-nums;
   }
@@ -89,11 +88,11 @@
   }
 
   .sm .value {
-    font-size: 12px;
+    font-size: 12.5px;
   }
 
   .sm .unit {
-    font-size: 10px;
+    font-size: 11px;
   }
 
   .md .value {
@@ -101,7 +100,7 @@
   }
 
   .md .unit {
-    font-size: 11px;
+    font-size: 11.5px;
   }
 
   .lg .value {
@@ -109,7 +108,7 @@
   }
 
   .lg .unit {
-    font-size: 12px;
+    font-size: 12.5px;
   }
 
   /* read from the back of a room on a projector */
@@ -120,7 +119,6 @@
 
   .xl .value {
     font-size: 44px;
-    font-weight: 500;
     letter-spacing: -0.02em;
   }
 

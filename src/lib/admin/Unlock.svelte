@@ -163,7 +163,7 @@
 
 <style>
   .note {
-    font-size: 12.5px;
+    font-size: 13px;
     line-height: 1.5;
     color: var(--text-secondary);
   }
@@ -172,7 +172,7 @@
     display: block;
     margin-top: 16px;
     margin-bottom: 6px;
-    font-size: 11.5px;
+    font-size: 12px;
     color: var(--text-secondary);
   }
 
@@ -211,7 +211,7 @@
     gap: 6px;
     min-height: 18px;
     margin-top: 8px;
-    font-size: 12px;
+    font-size: 12.5px;
     line-height: 1.4;
     color: var(--text-secondary);
   }

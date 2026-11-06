@@ -33,7 +33,7 @@
 
     <h2>What the page connects to</h2>
     <p>
-      The page itself, its fonts included, comes from the site you opened it on. It also reads
+      The page itself, its font included, comes from the site you opened it on. It also reads
       <code>config.json</code> from the same site, a small file that says which tracker to show.
     </p>
     <p>
@@ -149,8 +149,10 @@
     color: var(--text-primary);
   }
 
+  /* a document reads better with the figures of running text */
   .content {
     flex: 1;
+    font-variant-numeric: proportional-nums;
     max-width: 720px;
     margin: 0 auto;
     padding: 48px 32px;
@@ -158,22 +160,22 @@
   }
 
   h1 {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--text-primary);
+    font-size: 32px;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--text-strong);
     margin-bottom: 4px;
   }
 
   .updated {
-    font-size: 12px;
+    font-size: 12.5px;
     color: var(--text-muted);
     margin-bottom: 32px;
   }
 
   h2 {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-primary);
+    font-size: 18px;
+    color: var(--text-strong);
     margin: 24px 0 8px;
   }
 
@@ -199,7 +201,7 @@
 
   /* the storage keys are named exactly, so they sit in a small box of their own */
   p :global(code) {
-    font-size: 12px;
+    font-size: 12.5px;
     color: var(--text-primary);
     background: var(--bg-surface);
     border: 1px solid var(--border);
@@ -217,7 +219,7 @@
   }
 
   .footer a {
-    font-size: 12px;
+    font-size: 12.5px;
     color: var(--text-muted);
     text-decoration: none;
   }

@@ -30,7 +30,7 @@
   }
 
   .label {
-    font-size: 11.5px;
+    font-size: 12px;
     color: var(--text-secondary);
     white-space: nowrap;
   }
@@ -38,7 +38,6 @@
   .value {
     height: 30px;
     font-size: 24px;
-    font-weight: 500;
     line-height: 30px;
     letter-spacing: -0.02em;
     color: var(--text-strong);
@@ -48,7 +47,7 @@
 
   .unit {
     margin-left: 4px;
-    font-size: 12px;
+    font-size: 12.5px;
     letter-spacing: 0;
     color: var(--text-muted);
   }
@@ -62,7 +61,7 @@
   }
 
   .note {
-    font-size: 11.5px;
+    font-size: 12px;
     color: var(--text-muted);
   }
 

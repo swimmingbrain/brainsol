@@ -24,7 +24,7 @@
     display: flex;
     align-items: flex-start;
     gap: 6px;
-    font-size: 11.5px;
+    font-size: 12px;
     line-height: 1.45;
     color: var(--text-muted);
   }

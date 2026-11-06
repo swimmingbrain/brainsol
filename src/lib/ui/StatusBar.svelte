@@ -78,7 +78,7 @@
     justify-content: space-between;
     gap: 12px;
     padding: 0 10px;
-    font-size: 10.5px;
+    font-size: 11px;
     color: var(--text-muted);
     flex-shrink: 0;
     user-select: none;
@@ -154,7 +154,7 @@
 
   .heart {
     color: var(--error);
-    font-size: 11px;
+    font-size: 11.5px;
   }
 
   @media (max-width: 900px) {

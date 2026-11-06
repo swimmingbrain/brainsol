@@ -51,8 +51,7 @@
     height: 30px;
     min-width: 0;
     padding: 0 6px;
-    font-size: 11.5px;
-    font-weight: 500;
+    font-size: 12px;
     color: var(--text-secondary);
     white-space: nowrap;
     overflow: hidden;
@@ -90,7 +89,7 @@
   @media (pointer: coarse) {
     .mode {
       height: 44px;
-      font-size: 13px;
+      font-size: 13.5px;
     }
   }
 </style>

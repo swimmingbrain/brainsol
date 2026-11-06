@@ -277,18 +277,17 @@
   .readout {
     display: flex;
     gap: 12px;
-    font-size: 10.5px;
+    font-size: 11px;
     color: var(--text-muted);
   }
 
   .readout b {
-    font-weight: 500;
     color: var(--text-secondary);
     font-variant-numeric: tabular-nums;
   }
 
   .help {
-    font-size: 11px;
+    font-size: 11.5px;
     line-height: 1.4;
     color: var(--text-muted);
     text-align: center;

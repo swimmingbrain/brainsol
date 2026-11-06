@@ -42,9 +42,8 @@
   }
 
   h1 {
-    font-size: 28px;
-    font-weight: 500;
-    color: var(--text-primary);
+    font-size: 32px;
+    color: var(--text-strong);
     margin-bottom: 8px;
   }
 
@@ -55,7 +54,7 @@
   }
 
   a {
-    font-size: 12px;
+    font-size: 12.5px;
     color: var(--text-muted);
     text-decoration: none;
   }

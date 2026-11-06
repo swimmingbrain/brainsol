@@ -104,7 +104,7 @@
   }
 
   .label {
-    font-size: 11.5px;
+    font-size: 12px;
     color: var(--text-secondary);
   }
 
@@ -127,7 +127,7 @@
   }
 
   .best p {
-    font-size: 12px;
+    font-size: 12.5px;
     color: var(--text-secondary);
   }
 </style>

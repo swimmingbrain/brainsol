@@ -85,7 +85,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 10.5px;
+    font-size: 11px;
     color: var(--text-muted);
     border: 1px solid var(--border);
     border-radius: 50%;
@@ -118,14 +118,13 @@
   }
 
   h4 {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-primary);
+    font-size: 13.5px;
+    color: var(--text-strong);
     line-height: 20px;
   }
 
   .text {
-    font-size: 11.5px;
+    font-size: 12px;
     line-height: 1.45;
     color: var(--text-secondary);
   }
@@ -137,7 +136,7 @@
   }
 
   .detail {
-    font-size: 10.5px;
+    font-size: 11px;
     line-height: 1.4;
     color: var(--text-muted);
     overflow-wrap: anywhere;

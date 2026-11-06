@@ -103,7 +103,7 @@
   }
 
   text {
-    font-size: 10px;
+    font-size: 11px;
     fill: var(--text-muted);
     text-anchor: middle;
   }

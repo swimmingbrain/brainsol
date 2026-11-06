@@ -75,7 +75,6 @@
     justify-content: center;
     gap: 6px;
     flex-shrink: 0;
-    font-weight: 500;
     line-height: 1;
     white-space: nowrap;
     color: var(--text-secondary);
@@ -89,20 +88,19 @@
   .sm {
     height: 22px;
     padding: 0 8px;
-    font-size: 11px;
+    font-size: 11.5px;
   }
 
   .md {
     height: 28px;
     padding: 0 10px;
-    font-size: 11.5px;
+    font-size: 12px;
   }
 
   .lg {
     height: 34px;
     padding: 0 16px;
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 13.5px;
   }
 
   .only.sm {
@@ -188,13 +186,13 @@
     .sm {
       height: 40px;
       padding: 0 12px;
-      font-size: 12px;
+      font-size: 12.5px;
     }
 
     .md {
       height: 44px;
       padding: 0 14px;
-      font-size: 13px;
+      font-size: 13.5px;
     }
 
     .lg {

@@ -123,7 +123,7 @@
   }
 
   .label {
-    font-size: 11.5px;
+    font-size: 12px;
     color: var(--text-secondary);
   }
 
@@ -143,7 +143,7 @@
     min-width: 0;
     height: 22px;
     padding: 0 6px;
-    font-size: 11.5px;
+    font-size: 12px;
     color: var(--text-primary);
     background: var(--bg-elevated);
     border: 1px solid transparent;

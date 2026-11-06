@@ -119,7 +119,7 @@
     gap: 2px 14px;
     min-height: 20px;
     margin-bottom: 4px;
-    font-size: 11px;
+    font-size: 11.5px;
     color: var(--text-secondary);
   }
 
@@ -137,20 +137,18 @@
   }
 
   .value {
-    font-weight: 500;
     color: var(--text-strong);
     font-variant-numeric: tabular-nums;
   }
 
   .unit {
     margin-left: 2px;
-    font-weight: 400;
     color: var(--text-muted);
   }
 
   .at {
     margin-left: auto;
-    font-size: 10px;
+    font-size: 11px;
     color: var(--text-muted);
   }
 
@@ -169,7 +167,7 @@
 
   .tick,
   .label {
-    font-size: 10px;
+    font-size: 11px;
     fill: var(--text-muted);
   }
 

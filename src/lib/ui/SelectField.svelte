@@ -29,7 +29,7 @@
   .select {
     width: 100%;
     padding: 3px 6px;
-    font-size: 11.5px;
+    font-size: 12px;
     line-height: 16px;
     color: var(--text-primary);
     background: var(--bg-elevated);
