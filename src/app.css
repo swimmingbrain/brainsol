@@ -205,6 +205,15 @@ button {
   font-size: inherit;
 }
 
+/* parameter names, addresses and formulas stay in the page font, the reset
+   would hand them to a system mono face */
+code,
+kbd,
+samp,
+pre {
+  font-family: inherit;
+}
+
 kbd {
   display: inline-flex;
   align-items: center;
