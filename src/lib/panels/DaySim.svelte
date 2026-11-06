@@ -136,11 +136,12 @@
 
   const labels = $derived<[string, string, string]>([t('panels.day.fixed'), t('panels.day.single'), t('panels.day.dual')]);
 
-  const series = $derived<PlotSeries[]>([
-    { label: labels[0], color: 'series3', unit: 'W/m²', digits: 0 },
-    { label: labels[1], color: 'series2', unit: 'W/m²', digits: 0 },
-    { label: labels[2], color: 'series1', unit: 'W/m²', digits: 0 }
-  ]);
+  // the dual axis tracker is the orange one, the single axis gets the teal and
+  // the fixed panel stays the grey reference, in the charts and on the swatches
+  const roles = ['series3', 'series2', 'series1'] as const;
+  const swatch = (i: number) => `var(--chart-${roles[i].slice(-1)})`;
+
+  const series = $derived<PlotSeries[]>(labels.map((label, i) => ({ label, color: roles[i], unit: 'W/m²', digits: 0 })));
 
   // the chart shows the hours with sun and one on either side
   const view = $derived<PlotView>({
@@ -211,7 +212,7 @@
       <div class="figures">
         {#each kinds as kind, i (kind)}
           <div class="figure">
-            <span class="label"><span class="swatch" style="background: var(--chart-{i + 1})"></span>{labels[i]}</span>
+            <span class="label"><span class="swatch" style="background: {swatch(i)}"></span>{labels[i]}</span>
             <span class="big">{kwh(sim.energy[kind])}<span class="unit">kWh/m²</span></span>
             <span class="gain">
               {#if kind === 'fixed'}
@@ -264,7 +265,7 @@
       <div class="totals">
         {#each kinds as kind, i (kind)}
           <div class="total">
-            <span class="label"><span class="swatch" style="background: var(--chart-{i + 1})"></span>{labels[i]}</span>
+            <span class="label"><span class="swatch" style="background: {swatch(i)}"></span>{labels[i]}</span>
             <span class="mid">{fmt(year.total[kind], 0)}<span class="unit">kWh/m²</span></span>
             {#if kind !== 'fixed'}
               <span class="gain">{t('panels.day.vsFixed', { g: gainPercent(1 + (gain(year.total[kind], year.total.fixed) ?? 0)) ?? '' })}</span>
