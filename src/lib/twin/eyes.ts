@@ -1,14 +1,14 @@
 // how the sensor windows on the head light up. the four photoresistors glow
 // along the dark theme ramp from the colour of the head up to the orange, they
-// sit on the charcoal head in both themes. the lux window measures on the panel
-// plane, so it glows in the cool blue of the panel and never passes for one of
-// the four eyes
+// sit on the charcoal head in both themes. the lux window measures another
+// quantity on the panel plane, so it glows from the blue of the panel up to the
+// teal second colour and never passes for one of the four eyes
 
 import { follow } from './damp';
 import { mix, parseColor, ramp, steps, type Rgb } from './ramp';
 
 export const EYE_RAMP: Rgb[] = ['#31231c', '#5d3c2b', '#8f5537', '#c57042', '#ff8b4b'].map((c) => parseColor(c) as Rgb);
-export const LUX_RAMP: Rgb[] = ['#161b27', '#222c40', '#36445f', '#55688a', '#7d90b2'].map((c) => parseColor(c) as Rgb);
+export const LUX_RAMP: Rgb[] = ['#161b27', '#203f49', '#24666d', '#209093', '#03bcbc'].map((c) => parseColor(c) as Rgb);
 
 // changes smaller than this are noise of a resting tracker, not light
 const LEVEL_BAND = 0.05;
