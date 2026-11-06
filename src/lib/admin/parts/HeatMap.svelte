@@ -1,6 +1,6 @@
 <script lang="ts">
   // the sky map of a scan: tilt rows, pan columns, one cell per measured
-  // direction on the copper heat ramp. tilt grows upwards like a y axis, so
+  // direction on the orange heat ramp. tilt grows upwards like a y axis, so
   // the bottom row looks to the front and the top row back over the top
   import { fmt, t } from '$lib/i18n';
   import type { ScanMessage } from '$lib/link/protocol';

@@ -31,6 +31,6 @@ export function readPalette(): Palette {
     muted: color(cssVar('--text-muted'), '#8b8b94'),
     secondary: color(cssVar('--text-secondary'), '#a1a1aa'),
     accent: color(cssVar('--accent'), '#ff8b4b'),
-    heat: chart.heat.map((c, i) => color(c, ['#26221f', '#4a3a2b', '#7a5c3d', '#a87c52', '#d19a66'][i]))
+    heat: chart.heat.map((c, i) => color(c, ['#31231c', '#5d3c2b', '#8f5537', '#c57042', '#ff8b4b'][i]))
   };
 }

@@ -27,11 +27,11 @@ export function chartColors(): ChartColors {
     track: cssVar('--chart-track', '#2a2a2e'),
     grid: cssVar('--chart-grid', '#2e2e33'),
     heat: [
-      cssVar('--heat-1', '#26221f'),
-      cssVar('--heat-2', '#4a3a2b'),
-      cssVar('--heat-3', '#7a5c3d'),
-      cssVar('--heat-4', '#a87c52'),
-      cssVar('--heat-5', '#d19a66')
+      cssVar('--heat-1', '#31231c'),
+      cssVar('--heat-2', '#5d3c2b'),
+      cssVar('--heat-3', '#8f5537'),
+      cssVar('--heat-4', '#c57042'),
+      cssVar('--heat-5', '#ff8b4b')
     ],
     text: cssVar('--text-muted', '#8b8b94'),
     background: cssVar('--bg-surface', '#19191c')
