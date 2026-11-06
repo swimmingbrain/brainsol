@@ -16,17 +16,22 @@
   --bg-elevated: #212124;
   --bg-hover: #2a2a2e;
   --border: #2e2e33;
-  --border-focus: #d19a66;
+  --border-focus: #ff8b4b;
 
   --text-strong: #ececef;
   --text-primary: #d4d4d8;
   --text-secondary: #a1a1aa;
   --text-muted: #8b8b94;
 
-  --accent: #d19a66;
-  --accent-hover: #c48b4f;
-  --accent-dim: rgba(209, 154, 102, 0.10);
+  /* the brand orange. --accent fills and marks, --accent-ink is for text and
+     thin lines, the same colour here, darker in the light theme */
+  --accent: #ff8b4b;
+  --accent-hover: #ec7a39;
+  --accent-ink: #ff8b4b;
+  --accent-ink-hover: #ec7a39;
+  --accent-dim: rgba(255, 139, 75, 0.10);
   --on-accent: #111113;
+  --on-error: #111113;
 
   --success: #73c991;
   --warning: #e5c07b;
@@ -35,7 +40,7 @@
   /* dims the page behind a dialog, floating layers carry the only shadow */
   --scrim: rgba(0, 0, 0, 0.5);
   --shadow: rgba(0, 0, 0, 0.4);
-  --selection: rgba(209, 154, 102, 0.25);
+  --selection: rgba(255, 139, 75, 0.25);
 
   /* charts: three series in a fixed order, checked for colour blind safety on
      the surfaces. the accent is too light and too grey to tell series apart */
@@ -77,17 +82,22 @@
   --bg-elevated: #f0f0f2;
   --bg-hover: #e4e4e7;
   --border: #e0e0e4;
-  --border-focus: #9a5f24;
+  --border-focus: #a84900;
 
   --text-strong: #111113;
   --text-primary: #27272a;
   --text-secondary: #52525b;
   --text-muted: #68686f;
 
-  --accent: #9a5f24;
-  --accent-hover: #864f1b;
-  --accent-dim: rgba(154, 95, 36, 0.10);
-  --on-accent: #ffffff;
+  /* the orange itself is too light for text on white. text and thin lines
+     take a darker orange of the same hue, 4.5 to 1 even on --bg-hover */
+  --accent: #ff8b4b;
+  --accent-hover: #ec7a39;
+  --accent-ink: #a84900;
+  --accent-ink-hover: #8e3c00;
+  --accent-dim: rgba(255, 139, 75, 0.10);
+  --on-accent: #111113;
+  --on-error: #ffffff;
 
   --success: #2f8f57;
   --warning: #a97a12;
@@ -95,7 +105,7 @@
 
   --scrim: rgba(0, 0, 0, 0.4);
   --shadow: rgba(0, 0, 0, 0.12);
-  --selection: rgba(168, 105, 42, 0.2);
+  --selection: rgba(255, 139, 75, 0.28);
 
   --chart-1: #3d74b8;
   --chart-2: #b06f2c;
@@ -168,17 +178,17 @@ html, body {
 
 /* keyboard focus is a thin accent line inside the control, a click leaves no ring */
 :focus-visible {
-  outline: 1px solid var(--accent);
+  outline: 1px solid var(--accent-ink);
   outline-offset: -1px;
 }
 
 a {
-  color: var(--accent);
+  color: var(--accent-ink);
   text-decoration: none;
 }
 
 a:hover {
-  color: var(--accent-hover);
+  color: var(--accent-ink-hover);
 }
 
 button {

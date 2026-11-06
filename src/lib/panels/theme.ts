@@ -22,7 +22,7 @@ export function themeColors(): PanelColors {
     surface: cssVar('--bg-surface', '#19191c'),
     deep: cssVar('--bg-deep', '#111113'),
     elevated: cssVar('--bg-elevated', '#212124'),
-    accent: cssVar('--accent', '#d19a66'),
+    accent: cssVar('--accent', '#ff8b4b'),
     strong: cssVar('--text-strong', '#ececef'),
     secondary: cssVar('--text-secondary', '#a1a1aa')
   };
