@@ -1,6 +1,6 @@
 // the table under the tracker: a flat disc in the surface colour of the page,
 // a soft contact shadow under the base, quiet tick marks around the rim every
-// 15 degrees and a copper mark where the front of the tracker looks. all flat
+// 15 degrees and an orange mark where the front of the tracker looks. all flat
 // colour, no lights touch them, so they sit as quiet as the panels around
 
 import { CanvasTexture, CircleGeometry, Group, Mesh, MeshBasicMaterial, PlaneGeometry, Shape, ShapeGeometry, SRGBColorSpace } from 'three';
@@ -83,7 +83,7 @@ export class Ground {
     for (let i = 0; i <= 160; i++) rim.push(at((i / 160) * 360, radius));
     this.rim = kit.make(segments(rim), { width: 1, depthTest: false });
     const ticks: number[] = [];
-    // the front gets the copper mark instead of a tick
+    // the front gets the orange mark instead of a tick
     for (let az = 15; az < 360; az += 15) ticks.push(...at(az, radius), ...at(az, radius - (az % 45 === 0 ? 11 : 5)));
     this.ticks = kit.make(ticks, { width: 1, depthTest: false });
     this.rim.renderOrder = 2;

@@ -39,7 +39,7 @@ const JOINT_OMEGA = 22;
 const PARK = { pan: 0, tilt: 90 };
 const FOV = 28;
 const MAX_PIXEL_RATIO = 2;
-const COPPER = new Color(ROLE_COLORS.accent);
+const ORANGE = new Color(ROLE_COLORS.accent);
 // strength of the edge light on the charcoal parts in the dark theme
 const RIM = 0.12;
 // changes smaller than this are noise of a resting tracker, not light
@@ -449,7 +449,7 @@ export class Twin {
     if (!busy) w.now = goal;
     if (Math.abs(w.now - w.drawn) > 0.004) {
       w.drawn = w.now;
-      this.rig?.setWarmth(w.now, COPPER);
+      this.rig?.setWarmth(w.now, ORANGE);
       this.dirty = true;
     }
     return busy;

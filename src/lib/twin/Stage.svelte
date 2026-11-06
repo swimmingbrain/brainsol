@@ -242,7 +242,7 @@
     }
   }
 
-  /* a rim in the page colour keeps the lamp apart from a copper sky map */
+  /* a rim in the page colour keeps the lamp apart from an orange sky map */
   .lamp .core {
     width: 14px;
     height: 14px;

@@ -1,5 +1,5 @@
 // the cad export puts all printed parts of a group into one mesh with one
-// material, so the copper caps on the tilt hubs and the dark feet under the
+// material, so the orange caps on the tilt hubs and the dark feet under the
 // tray arrive in the colour of their group. the parts inside a mesh still do
 // not touch each other, so every solid can be found again by what is joined
 // to what, and the small ones get their own role back from where they sit

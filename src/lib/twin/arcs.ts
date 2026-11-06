@@ -1,7 +1,7 @@
 // two thin arcs that read like a protractor: pan on the table around the pan
 // axis, from the front to where the neck points, and tilt in a plane beside
 // the head, from the front up over the top. a faint track shows the whole
-// range, the copper part the angle right now
+// range, the orange part the angle right now
 
 import { Group, Mesh, MeshBasicMaterial, SphereGeometry, SRGBColorSpace } from 'three';
 import type { LineSegments2 } from 'three/examples/jsm/lines/LineSegments2.js';
@@ -11,7 +11,7 @@ import { segments, setLineColor, type LineKit } from './lines';
 import type { Palette } from './palette';
 import { mix } from './ramp';
 
-// the arcs are drawn in steps of this many degrees, the copper part shows as many as the angle covers
+// the arcs are drawn in steps of this many degrees, the orange part shows as many as the angle covers
 const STEP = 0.5;
 
 interface Arc {

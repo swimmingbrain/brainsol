@@ -41,7 +41,7 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   });
 }
 
-// a material named after a colour role keeps that role, a copper cap inside the head file for example
+// a material named after a colour role keeps that role, an accent cap inside the head file for example
 function roleOf(material: Material | Material[]): Role | null {
   const name = (Array.isArray(material) ? material[0]?.name : material?.name)?.toLowerCase().trim() ?? '';
   return (ROLES as string[]).includes(name) ? (name as Role) : null;

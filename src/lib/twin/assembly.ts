@@ -13,7 +13,7 @@ export const ROLES: Role[] = ['body', 'dark', 'accent', 'panel'];
 export const ROLE_COLORS: Record<Role, string> = {
   body: '#e4e2dd',
   dark: '#2a2a2e',
-  accent: '#d19a66',
+  accent: '#ff8b4b',
   panel: '#141a2a'
 };
 
