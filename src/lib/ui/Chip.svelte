@@ -74,7 +74,7 @@
   }
 
   .accent {
-    color: var(--accent);
+    color: var(--accent-ink);
     background: var(--accent-dim);
     border-color: transparent;
   }

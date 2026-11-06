@@ -181,12 +181,12 @@
   }
 
   .pad:focus-visible {
-    border-color: var(--accent);
+    border-color: var(--accent-ink);
   }
 
   .pad.dragging {
     cursor: grabbing;
-    border-color: var(--accent);
+    border-color: var(--accent-ink);
   }
 
   .pad.disabled {
@@ -271,7 +271,7 @@
   .pad.dragging .knob,
   .pad:focus-visible .knob {
     background: var(--accent-dim);
-    border-color: var(--accent);
+    border-color: var(--accent-ink);
   }
 
   .readout {

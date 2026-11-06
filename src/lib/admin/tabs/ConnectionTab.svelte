@@ -195,7 +195,7 @@
   }
 
   .address input:focus {
-    border-color: var(--accent);
+    border-color: var(--accent-ink);
   }
 
   .address input::placeholder {

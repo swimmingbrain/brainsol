@@ -144,12 +144,12 @@
   }
 
   .credit a {
-    color: var(--accent);
+    color: var(--accent-ink);
     text-decoration: none;
   }
 
   .credit a:hover {
-    color: var(--accent-hover);
+    color: var(--accent-ink-hover);
   }
 
   .heart {

@@ -157,13 +157,13 @@
 
   .danger:hover:not(:disabled) {
     background: var(--error);
-    color: var(--on-accent);
+    color: var(--on-error);
   }
 
   .active,
   .active:hover:not(:disabled) {
     background: var(--accent-dim);
-    color: var(--accent);
+    color: var(--accent-ink);
   }
 
   .btn:disabled {

@@ -318,7 +318,7 @@
 
   .row.on {
     background: var(--bg-hover);
-    box-shadow: inset 2px 0 0 var(--accent);
+    box-shadow: inset 2px 0 0 var(--accent-ink);
   }
 
   .pick {
@@ -367,7 +367,7 @@
   }
 
   .csv:hover {
-    color: var(--accent);
+    color: var(--accent-ink);
     background: var(--bg-hover);
   }
 

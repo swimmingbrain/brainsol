@@ -189,12 +189,12 @@
   }
 
   p a {
-    color: var(--accent);
+    color: var(--accent-ink);
     text-decoration: none;
   }
 
   p a:hover {
-    color: var(--accent-hover);
+    color: var(--accent-ink-hover);
   }
 
   /* the storage keys are named exactly, so they sit in a small box of their own */
@@ -223,7 +223,7 @@
   }
 
   .footer a:hover {
-    color: var(--accent);
+    color: var(--accent-ink);
   }
 
   @media (max-width: 480px) {

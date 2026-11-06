@@ -111,13 +111,13 @@
   /* the range has no outline of its own, the keyboard focus shows on the thumb */
   .slider:focus-visible::-webkit-slider-thumb {
     background: var(--accent);
-    outline: 2px solid var(--accent);
+    outline: 2px solid var(--accent-ink);
     outline-offset: 2px;
   }
 
   .slider:focus-visible::-moz-range-thumb {
     background: var(--accent);
-    outline: 2px solid var(--accent);
+    outline: 2px solid var(--accent-ink);
     outline-offset: 2px;
   }
 

@@ -92,8 +92,8 @@
   }
 
   .next .badge {
-    color: var(--accent);
-    border-color: var(--accent);
+    color: var(--accent-ink);
+    border-color: var(--accent-ink);
   }
 
   .badge.done {

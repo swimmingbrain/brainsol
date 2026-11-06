@@ -4,7 +4,7 @@
   import { t } from '$lib/i18n';
 
   const typeColors: Record<string, string> = {
-    info: 'var(--accent)',
+    info: 'var(--accent-ink)',
     success: 'var(--success)',
     warning: 'var(--warning)',
     error: 'var(--error)'
@@ -45,7 +45,7 @@
     padding: 8px 12px;
     background: var(--bg-elevated);
     border: 1px solid var(--border);
-    border-left: 2px solid var(--accent);
+    border-left: 2px solid var(--accent-ink);
     color: var(--text-primary);
     font-size: 12px;
     line-height: 1.45;

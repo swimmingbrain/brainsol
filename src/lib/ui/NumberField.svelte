@@ -167,7 +167,7 @@
     padding: 3px 6px;
     font-size: 11.5px;
     line-height: 16px;
-    color: var(--accent);
+    color: var(--accent-ink);
     background: var(--bg-elevated);
     border: 1px solid transparent;
     border-bottom-color: var(--border);
@@ -179,11 +179,11 @@
 
   .number:hover:not(.disabled),
   .number.dragging {
-    border-bottom-color: var(--accent);
+    border-bottom-color: var(--accent-ink);
   }
 
   .number:focus-visible {
-    border-color: var(--accent);
+    border-color: var(--accent-ink);
   }
 
   .number.disabled {
@@ -194,7 +194,7 @@
   .number-input {
     cursor: text;
     color: var(--text-primary);
-    border-color: var(--accent);
+    border-color: var(--accent-ink);
   }
 
   @media (pointer: coarse) {

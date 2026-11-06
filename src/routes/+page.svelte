@@ -227,7 +227,7 @@
   }
 
   .footer-links a:hover {
-    color: var(--accent);
+    color: var(--accent-ink);
   }
 
   .footer-credit {
@@ -236,11 +236,11 @@
   }
 
   .footer-credit a {
-    color: var(--accent);
+    color: var(--accent-ink);
   }
 
   .footer-credit a:hover {
-    color: var(--accent-hover);
+    color: var(--accent-ink-hover);
   }
 
   .heart {

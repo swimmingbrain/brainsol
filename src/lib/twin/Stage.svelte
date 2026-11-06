@@ -228,7 +228,7 @@
   }
 
   .lamp.draggable:focus-visible {
-    outline: 1px solid var(--accent);
+    outline: 1px solid var(--accent-ink);
     outline-offset: -4px;
     border-radius: 50%;
   }
@@ -308,7 +308,7 @@
   }
 
   .hint :global(svg) {
-    color: var(--accent);
+    color: var(--accent-ink);
   }
 
   .hint.view {

@@ -41,7 +41,7 @@
 
   .switch.on {
     background: var(--accent-dim);
-    border-color: var(--accent);
+    border-color: var(--accent-ink);
   }
 
   .switch:disabled {

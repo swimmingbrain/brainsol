@@ -49,11 +49,11 @@
   }
 
   .select:hover:not(:disabled) {
-    border-bottom-color: var(--accent);
+    border-bottom-color: var(--accent-ink);
   }
 
   .select:focus {
-    border-color: var(--accent);
+    border-color: var(--accent-ink);
   }
 
   .select:disabled {

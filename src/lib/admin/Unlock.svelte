@@ -193,7 +193,7 @@
   }
 
   .pin:focus {
-    border-color: var(--accent);
+    border-color: var(--accent-ink);
   }
 
   .pin.bad {

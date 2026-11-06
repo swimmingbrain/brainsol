@@ -103,7 +103,7 @@
   }
 
   .tab.active :global(svg) {
-    color: var(--accent);
+    color: var(--accent-ink);
   }
 
   .label {

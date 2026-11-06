@@ -133,12 +133,12 @@
   }
 
   p a {
-    color: var(--accent);
+    color: var(--accent-ink);
     text-decoration: none;
   }
 
   p a:hover {
-    color: var(--accent-hover);
+    color: var(--accent-ink-hover);
   }
 
   .footer {
@@ -156,7 +156,7 @@
   }
 
   .footer a:hover {
-    color: var(--accent);
+    color: var(--accent-ink);
   }
 
   @media (max-width: 480px) {

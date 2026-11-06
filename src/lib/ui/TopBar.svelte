@@ -164,7 +164,7 @@
 
   .action-btn.on {
     background: var(--accent-dim);
-    color: var(--accent);
+    color: var(--accent-ink);
   }
 
   .separator {

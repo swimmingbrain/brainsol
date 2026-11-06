@@ -141,11 +141,11 @@
   .link {
     align-self: flex-start;
     font-size: 11.5px;
-    color: var(--accent);
+    color: var(--accent-ink);
   }
 
   .link:hover {
-    color: var(--accent-hover);
+    color: var(--accent-ink-hover);
   }
 
   .kinds {
