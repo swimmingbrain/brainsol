@@ -115,7 +115,6 @@ export const coreDe: Record<keyof typeof coreEn, string> = {
   'present.exit': 'Präsentationsmodus beenden',
 
   'section.how': 'So funktioniert es',
-  'section.day': 'Ein Tag in der Sonne',
   'section.results': 'Ergebnisse der Versuche',
   'section.tiles': 'Jetzt',
   'section.balance': 'Lichtverteilung',

@@ -9,7 +9,6 @@
   import Balance from '$lib/panels/Balance.svelte';
   import Charts from '$lib/panels/Charts.svelte';
   import HowItWorks from '$lib/panels/HowItWorks.svelte';
-  import DaySim from '$lib/panels/DaySim.svelte';
   import Results from '$lib/panels/Results.svelte';
   import Unlock from '$lib/admin/Unlock.svelte';
   import { connection } from '$lib/stores/connection.svelte';
@@ -70,7 +69,6 @@
 
         <div class="below">
           <div class="band"><div class="inner"><HowItWorks /></div></div>
-          <div class="band"><div class="inner"><DaySim /></div></div>
           <div class="band"><div class="inner"><Results /></div></div>
 
           <footer class="footer">
