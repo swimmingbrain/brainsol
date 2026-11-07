@@ -1,7 +1,6 @@
 <script lang="ts">
   // how it works, for the talk: four steps from the sensors to the reason
-  // tracking pays, each with a small sketch that moves with the tracker, then
-  // two short comparisons with the other ways to point a panel
+  // tracking pays, each with a small sketch that moves with the tracker
   import Section from '$lib/ui/Section.svelte';
   import ShadeWall from './how/ShadeWall.svelte';
   import ErrorScale from './how/ErrorScale.svelte';
@@ -11,8 +10,7 @@
   import { connection } from '$lib/stores/connection.svelte';
   import { fmt, t, type Key } from '$lib/i18n';
   import { errorTangents } from '$lib/sim/controller';
-  import { fixedPanelFor, gain, simulateYear } from './solar/day';
-  import { angle, gainPercent, roughAngle, signed } from './format';
+  import { angle, roughAngle, signed } from './format';
 
   const k = $derived(connection.config?.baffle ?? 1.2);
 
@@ -45,16 +43,6 @@
     { id: 'servos', now: poseNow },
     { id: 'cosine', now: shareNow }
   ]);
-
-  // the clear sky year of the day simulator for the site of the tracker
-  const site = $derived(connection.config?.site ?? { lat: 48.21, lon: 16.37 });
-  const year = $derived(simulateYear(site, fixedPanelFor(site.lat)));
-  const place = $derived(connection.config?.site ? t('panels.how.cmp.here') : t('panels.day.city.vienna'));
-  const single = $derived(gainPercent(1 + (gain(year.total.single, year.total.fixed) ?? 0)));
-  const dual = $derived(gainPercent(1 + (gain(year.total.dual, year.total.fixed) ?? 0)));
-
-  const sensorRows = ['source', 'needs', 'clouds', 'mechanics', 'use', 'mode'];
-  const axisRows = ['parts', 'angle', 'gain', 'cost', 'space', 'use'];
 </script>
 
 <Section id="how" title={t('section.how')} lead={t('panels.how.lead')}>
@@ -73,62 +61,6 @@
       </li>
     {/each}
   </ol>
-
-  <div class="compare">
-    <div class="table">
-      <h3>{t('panels.how.cmp.sensorTitle')}</h3>
-      <table style="--cols: 2">
-        <thead>
-          <tr>
-            <th class="corner"></th>
-            <th>{t('panels.how.cmp.sensors')}</th>
-            <th>{t('panels.how.cmp.astro')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each sensorRows as row (row)}
-            <tr>
-              <th scope="row">{t(`panels.how.cmp.s.${row}` as Key)}</th>
-              <td>{t(`panels.how.cmp.s.${row}.a` as Key)}</td>
-              <td>{t(`panels.how.cmp.s.${row}.b` as Key)}</td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
-    </div>
-
-    <div class="table">
-      <h3>{t('panels.how.cmp.axisTitle')}</h3>
-      <table style="--cols: 3">
-        <thead>
-          <tr>
-            <th class="corner"></th>
-            <th>{t('panels.day.fixed')}</th>
-            <th>{t('panels.day.single')}</th>
-            <th>{t('panels.day.dual')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each axisRows as row (row)}
-            <tr>
-              {#if row === 'gain'}
-                <th scope="row">{t('panels.how.cmp.a.gain', { place })}</th>
-                <td>{t('panels.how.cmp.a.gain.a')}</td>
-                <td class="num-cell">{single} %</td>
-                <td class="num-cell">{dual} %</td>
-              {:else}
-                <th scope="row">{t(`panels.how.cmp.a.${row}` as Key)}</th>
-                <td>{t(`panels.how.cmp.a.${row}.a` as Key)}</td>
-                <td>{t(`panels.how.cmp.a.${row}.b` as Key)}</td>
-                <td>{t(`panels.how.cmp.a.${row}.c` as Key)}</td>
-              {/if}
-            </tr>
-          {/each}
-        </tbody>
-      </table>
-      <p class="foot">{t('panels.how.cmp.foot')}</p>
-    </div>
-  </div>
 </Section>
 
 <style>
@@ -191,69 +123,9 @@
     color: var(--text-muted);
   }
 
-  .compare {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
-    gap: 40px;
-    margin-top: 52px;
-  }
-
-  .table h3 {
-    margin-bottom: 12px;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-    line-height: 1.5;
-  }
-
-  thead th {
-    padding: 0 10px 8px 0;
-    font-size: 12.5px;
-    text-align: left;
-    color: var(--text-strong);
-    border-bottom: 1px solid var(--border);
-  }
-
-  tbody th {
-    width: 26%;
-    padding: 8px 10px 8px 0;
-    text-align: left;
-    vertical-align: top;
-    color: var(--text-muted);
-  }
-
-  td {
-    padding: 8px 10px 8px 0;
-    vertical-align: top;
-    color: var(--text-secondary);
-    overflow-wrap: break-word;
-  }
-
-  tbody tr {
-    border-bottom: 1px solid var(--border);
-  }
-
-  .num-cell {
-    color: var(--text-strong);
-  }
-
-  .foot {
-    margin-top: 10px;
-    font-size: 12px;
-    line-height: 1.5;
-    color: var(--text-muted);
-  }
-
   @media (max-width: 1100px) {
     .steps {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .compare {
-      grid-template-columns: minmax(0, 1fr);
     }
   }
 
@@ -261,32 +133,6 @@
     .steps {
       grid-template-columns: minmax(0, 1fr);
       gap: 28px;
-    }
-
-    /* on a phone each row gets its label on a line of its own and the
-       values side by side under it, so no column is squeezed to a few letters */
-    table {
-      font-size: 12.5px;
-    }
-
-    tr {
-      display: grid;
-      grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
-      column-gap: 10px;
-    }
-
-    .corner {
-      display: none;
-    }
-
-    tbody th {
-      grid-column: 1 / -1;
-      width: auto;
-      padding-bottom: 2px;
-    }
-
-    td {
-      padding-top: 0;
     }
   }
 </style>
