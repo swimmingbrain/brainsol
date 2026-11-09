@@ -1,6 +1,6 @@
 // the three experiments for the seminar paper: what each needs, when one is
 // running and the one figure that sums up a finished one. the curves and
-// tables are drawn by the results section, the dock only starts and follows
+// tables are drawn by the result views under results in the same tab
 
 import type { CompareResult, CosineResult, ExpKind, ExpMessage, StepResult } from '$lib/link/protocol';
 

@@ -1,7 +1,6 @@
 <script lang="ts">
-  // starts the experiments of the seminar paper and follows the running one.
-  // the curves and tables of a result are drawn in the results section below
-  // the cockpit, this tab points there
+  // starts the experiments of the seminar paper, follows the running one and
+  // draws the finished ones with their curves and a csv under results
   import Group from '../parts/Group.svelte';
   import Note from '../parts/Note.svelte';
   import Progress from '../parts/Progress.svelte';
@@ -27,6 +26,7 @@
 
   // the finished result drawn under the list, the newest until one is picked
   let picked = $state<string | null>(null);
+  let results = $state<HTMLElement | null>(null);
 
   function start(kind: ExpKind) {
     void runner.run(expCommand(kind), { key: `exp.${kind}`, feature: 'exp' });
@@ -36,9 +36,10 @@
     void runner.run(STOP, { key: 'stop' });
   }
 
-  // the results section lives on the page, outside the dock
-  function showResults() {
-    document.getElementById('results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // the result of the last experiment, further down in this tab
+  function showResults(id: string) {
+    picked = id;
+    results?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
   function why(kind: ExpKind): string | null {
@@ -67,7 +68,7 @@
       </p>
     {/if}
     {#if exp.result}
-      <button class="link" onclick={showResults}>{t('admin.exp.see')}</button>
+      <button class="link" onclick={() => showResults(exp.id)}>{t('admin.exp.see')}</button>
     {:else if exp.phase === 'error'}
       <Note>{exp.err ? t('admin.exp.earlyWhy', { why: exp.err }) : t('admin.exp.early')}</Note>
     {/if}
@@ -102,7 +103,9 @@
   {/if}
 </Group>
 
-<ResultsGroup bind:selected={picked} />
+<div bind:this={results}>
+  <ResultsGroup bind:selected={picked} />
+</div>
 
 <style>
   .now {
