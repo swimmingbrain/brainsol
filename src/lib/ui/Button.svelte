@@ -11,7 +11,6 @@
     href,
     type = 'button',
     disabled = false,
-    active = false,
     full = false,
     title,
     label,
@@ -24,8 +23,6 @@
     href?: string;
     type?: 'button' | 'submit';
     disabled?: boolean;
-    // a toggle that is on
-    active?: boolean;
     full?: boolean;
     title?: string;
     // the accessible name of a button that only shows an icon
@@ -42,7 +39,6 @@
     class="btn {variant} {size}"
     class:full
     class:only={!children}
-    class:active
     {href}
     {title}
     aria-label={label}
@@ -56,12 +52,10 @@
     class="btn {variant} {size}"
     class:full
     class:only={!children}
-    class:active
     {type}
     {disabled}
     {title}
     aria-label={label}
-    aria-pressed={active || undefined}
     {onclick}>
     {#if icon}<Icon name={icon} size={iconSize} />{/if}
     {#if children}<span>{@render children()}</span>{/if}
@@ -156,12 +150,6 @@
   .danger:hover:not(:disabled) {
     background: var(--error);
     color: var(--on-error);
-  }
-
-  .active,
-  .active:hover:not(:disabled) {
-    background: var(--accent-dim);
-    color: var(--accent-ink);
   }
 
   .btn:disabled {
