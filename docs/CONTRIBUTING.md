@@ -20,7 +20,7 @@ Open `http://localhost:5173`. Without a tracker the page runs the simulation in 
 - `src/lib/stores` holds the state: the connection, the telemetry, the chart history, preferences, toasts and page state.
 - `src/lib/i18n` is `t()` with the English and German words. Each part of the page has its own pair of files, words more than one part uses, like the modes, the states and the experiments, live in `core`.
 - `src/lib/ui` is the shared kit, one Svelte component per file. Touch sizes, focus rings and the decimal comma are handled there, not in the parts that use it.
-- `src/lib/twin` is the 3D scene, `src/lib/panels` the viewer panels and sections, `src/lib/admin` the admin tools. The admin tools load only after an unlock.
+- `src/lib/twin` is the 3D scene, `src/lib/panels` the viewer panels, how it works and the result views of the experiments, `src/lib/admin` the admin tools. The admin tools and the result views they draw load only after an unlock.
 - `static/models` holds the CAD export of brainsolpi for the 3D twin, `assembly.json` and one GLB per part. Copy a new export from `hardware/export/web/` over it, `model.test.ts` then checks that the head still clears the base at every pose.
 
 ## Style

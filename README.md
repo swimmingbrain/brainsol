@@ -28,10 +28,9 @@ Without a tracker the page runs the same physics and the same tracking loop as a
 - The four sensors and the two errors the tracking loop works with
 - Charts of the last ten minutes, filled from the tracker's history when it connects
 - How it works in four steps, with sketches that move with the tracker
-- A day simulator that compares a fixed panel with a single axis and a dual axis tracker for any place and day
-- The results of three experiments for the seminar paper, with a figure and a CSV for each
 - A built in simulation with a lamp anyone can drag, the same physics and control loop as the tracker
-- Admin tools behind a lock: modes, a joystick, tuning, calibration, a sky scan, experiments, recording and the system values
+- Admin tools behind a lock: modes, a joystick, tuning, calibration, a sky scan, recording and the system values
+- Three experiments for the seminar paper in the admin tools, each result with its figures, a chart and a CSV
 - Presentation mode for a projector, English and German, a dark and a light theme
 
 ## Connecting a tracker
