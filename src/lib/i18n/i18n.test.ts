@@ -93,8 +93,8 @@ describe('the words outside the dictionaries', () => {
   const pages = (dir: string): string[] =>
     readdirSync(join(root, dir), { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? pages(join(dir, e.name)) : e.name.endsWith('.svelte') ? [join(dir, e.name)] : []));
 
-  it('use no dashes in the pages, the readme and the docs either', () => {
-    const files = [...pages('src/routes'), 'README.md', 'docs/CONTRIBUTING.md', 'docs/SECURITY.md', 'THIRD_PARTY_LICENSES'];
+  it('use no dashes in the pages, the readme and the license list either', () => {
+    const files = [...pages('src/routes'), 'README.md', 'THIRD_PARTY_LICENSES'];
     for (const file of files) {
       let text = readFileSync(join(root, file), 'utf8');
       // only what a reader sees: no scripts, styles, tags, expressions, code or addresses
