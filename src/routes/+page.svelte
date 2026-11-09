@@ -9,7 +9,6 @@
   import Balance from '$lib/panels/Balance.svelte';
   import Charts from '$lib/panels/Charts.svelte';
   import HowItWorks from '$lib/panels/HowItWorks.svelte';
-  import Results from '$lib/panels/Results.svelte';
   import Unlock from '$lib/admin/Unlock.svelte';
   import { connection } from '$lib/stores/connection.svelte';
   import { ui } from '$lib/stores/ui.svelte';
@@ -69,7 +68,6 @@
 
         <div class="below">
           <div class="band"><div class="inner"><HowItWorks /></div></div>
-          <div class="band"><div class="inner"><Results /></div></div>
 
           <footer class="footer">
             <div class="footer-inner">
@@ -120,8 +118,8 @@
     overflow-y: auto;
   }
 
-  /* the first screen is the cockpit: stage and side column fill it, the
-     sections scroll in below. the dock sits on the right and stays in view */
+  /* the first screen is the cockpit: stage and side column fill it, how it
+     works scrolls in below. the dock sits on the right and stays in view */
   .page {
     --first: calc(100dvh - var(--topbar-h) - var(--statusbar-h) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     display: grid;

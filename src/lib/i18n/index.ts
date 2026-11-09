@@ -65,7 +65,7 @@ export function modeName(mode: Mode): string {
   return t(`mode.${mode}` as Key);
 }
 
-// the results and the dock call the experiments and their phases the same
+// every part of the dock calls the experiments and their phases the same
 export function expName(kind: ExpKind): string {
   return t(`exp.${kind}` as Key);
 }

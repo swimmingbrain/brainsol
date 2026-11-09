@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
 
-  // one of the explanatory sections below the cockpit: a heading, an optional
-  // lead sentence and the content. the page gives it the hairline and the room
+  // the explanatory section below the cockpit: a heading, an optional lead
+  // sentence and the content. the page gives it the hairline and the room
   let {
     title,
     lead,

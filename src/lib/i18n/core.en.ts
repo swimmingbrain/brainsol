@@ -116,7 +116,6 @@ export const coreEn = {
   'present.exit': 'Leave presentation mode',
 
   'section.how': 'How it works',
-  'section.results': 'Experiment results',
   'section.tiles': 'Now',
   'section.balance': 'Light balance',
   'section.charts': 'Last minutes',

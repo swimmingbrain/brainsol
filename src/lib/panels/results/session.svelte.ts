@@ -1,7 +1,7 @@
-// the experiment results this page has seen since it was opened. in the
-// simulation nothing is stored anywhere else, so this list is all there is.
-// it keeps listening after the results section goes away, presentation mode
-// hides it while an experiment may well finish
+// the experiment results this page has seen since the admin tools opened. in
+// the simulation nothing is stored anywhere else, so this list is all there
+// is. it keeps listening when the dock goes away, presentation mode hides it
+// while an experiment may well finish
 
 import { untrack } from 'svelte';
 import { telemetry } from '$lib/stores/telemetry.svelte';
