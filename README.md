@@ -30,10 +30,10 @@ Then open http://localhost:5173.
 The Pi side is [brainsolpi](https://github.com/swimmingbrain/brainsolpi). Give the page its address in `static/config.json`, the default for everyone, empty means the simulation:
 
 ```json
-{ "pi": "wss://solpi.swimmingbrain.dev" }
+{ "pi": "wss://brainsol.<tailnet>.ts.net" }
 ```
 
-Or for one visit with `?pi=` in the page address, which wins over the file: `https://sol.swimmingbrain.dev/?pi=solpi.swimmingbrain.dev`.
+Or for one visit with `?pi=` in the page address, which wins over the file: `https://sol.swimmingbrain.dev/?pi=brainsol.<tailnet>.ts.net`.
 
 A page loaded over https can only reach a `wss` address, so a plain `ws://` Pi on the local network works only from http, like `http://localhost:5173/?pi=brainsol.local`.
 
