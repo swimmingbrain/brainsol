@@ -171,6 +171,19 @@ export class Lights {
     return this.lamp.known ? this.lamp.sky : null;
   }
 
+  // a lamp on the sky that was switched off
+  get lampOff(): boolean {
+    return this.showsLamp && !this.lamp.on;
+  }
+
+  // the light the panel follows right now, the sun before the lamp, null for
+  // none or a lamp that is off
+  get source(): { kind: 'lamp' | 'sun'; sky: Sky } | null {
+    if (this.state.sun && this.sun.known) return { kind: 'sun', sky: this.sun.sky };
+    if (this.showsLamp && this.lamp.on) return { kind: 'lamp', sky: this.lamp.sky };
+    return null;
+  }
+
   position(sky: Sky): Vec3 {
     return onSphere(this.centre, this.radius, sky.az, sky.el);
   }
@@ -179,7 +192,7 @@ export class Lights {
   place(camera: Camera, size: { w: number; h: number }, panel: { centre: Vec3; normal: Vec3 }, blockers: Object3D[]): void {
     const showLamp = this.showsLamp;
     const showSun = this.state.sun && this.sun.known;
-    const lit = showSun ? this.sun.sky : showLamp && this.lamp.on ? this.lamp.sky : null;
+    const lit = this.source?.sky ?? null;
 
     this.beam.visible = Boolean(lit);
     if (lit) setSegment(this.beam, this.position(lit), panel.centre);
