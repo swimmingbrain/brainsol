@@ -79,4 +79,23 @@ describe('the lights on the sky', () => {
     expect(az).toBeLessThan(191);
     lights.dispose();
   });
+
+  it('names the light the panel follows for the key light of the scene', () => {
+    const lights = new Lights(new LineKit(), [0, -30, 106], 190);
+    expect(lights.source).toBeNull();
+    lights.intake(frame(), performance.now());
+    settled(lights);
+    expect(lights.source?.kind).toBe('lamp');
+    expect(lights.source?.sky.el).toBeCloseTo(40, 3);
+    expect(lights.lampOff).toBe(false);
+    lights.intake(frame({ sim: { az: 25, el: 40, on: false, lux: 0, amb: 60 } }), performance.now());
+    expect(lights.source).toBeNull();
+    expect(lights.lampOff).toBe(true);
+    // the sun comes before the lamp
+    lights.intake(frame({ sun: { az: 150, el: 20, caz: 150, t: 0 } }), performance.now());
+    settled(lights);
+    expect(lights.source?.kind).toBe('sun');
+    expect(lights.source?.sky.az).toBeCloseTo(150, 3);
+    lights.dispose();
+  });
 });
