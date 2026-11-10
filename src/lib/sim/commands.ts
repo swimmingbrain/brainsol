@@ -1,4 +1,4 @@
-// the cmd messages of docs/protocol.md in brainsolpi, checked field by field
+// the cmd messages of the brainsolpi service, checked field by field
 // the way commands.py on the pi checks them, only simlight is open to everyone
 // here. every command gets exactly one ack with its id: ok with
 // the data the pi sends, or ok false with admin, bad, busy, unknown or

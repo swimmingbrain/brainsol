@@ -1,6 +1,6 @@
 /*
   the simulated tracker. it plays the pi in the browser and speaks the protocol
-  of docs/protocol.md in brainsolpi, so the page cannot tell it from the real one.
+  of the brainsolpi service, so the page cannot tell it from the real one.
 
   the interface, SimEngine in $lib/link/transport.ts:
 

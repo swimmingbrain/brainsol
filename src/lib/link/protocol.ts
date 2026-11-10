@@ -1,6 +1,6 @@
 // the messages between the tracker and the page. the pi and the simulation in
 // sim/ both speak exactly this, the field names are the wire names, and
-// brainsolpi/docs/protocol.md is the reference on the pi side.
+// the python service in brainsolpi is the reference on the pi side.
 // times are unix seconds with milliseconds as decimals, angles are degrees with
 // one decimal, levels carry three. a number that is missing is null, never NaN
 
