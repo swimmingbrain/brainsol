@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { normal, type Vec3 } from '$lib/sim/kinematics';
 import { STANDIN_ASSEMBLY } from './assembly';
-import { eyeSpot, Rig, planarUv } from './rig';
+import { eyeSpot, footOf, Rig, planarUv } from './rig';
 import { standinPieces } from './standin';
 import { BufferGeometry, Float32BufferAttribute } from 'three';
 
@@ -72,5 +72,28 @@ describe('the rig', () => {
     planarUv(g, panel);
     const uv = Array.from(g.getAttribute('uv').array).map((v) => Math.round(v * 1000) / 1000);
     expect(uv).toEqual([0, 0, 1, 1, 0.5, 0.5]);
+  });
+
+  it('finds the foot the neck stands on, in the frame of its joint', () => {
+    const g = new BufferGeometry();
+    // a block from z 48 up with a wider top, the foot is its lowest two millimetres
+    g.setAttribute('position', new Float32BufferAttribute([-26, -47, 48, 26, -17, 48, 26, -47, 49, -40, -60, 90, 40, 0, 120], 3));
+    const foot = footOf([{ geometry: g, role: 'dark' }])!;
+    expect(foot.z).toBe(48);
+    expect(foot.x).toBeCloseTo(0, 9);
+    expect(foot.y).toBeCloseTo(-32, 9);
+    expect(foot.hw).toBeCloseTo(26, 9);
+    expect(foot.hd).toBeCloseTo(15, 9);
+    expect(footOf([])).toBeNull();
+  });
+
+  it('lets every part of the tracker cast and catch shadows', () => {
+    const rig = new Rig(STANDIN_ASSEMBLY, standinPieces(), null);
+    expect(rig.meshes.length).toBeGreaterThan(0);
+    for (const mesh of rig.meshes) {
+      expect(mesh.castShadow).toBe(true);
+      expect(mesh.receiveShadow).toBe(true);
+    }
+    rig.dispose();
   });
 });
