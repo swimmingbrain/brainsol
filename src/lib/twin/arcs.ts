@@ -26,7 +26,7 @@ export class Arcs {
   readonly pan: Group = new Group();
   readonly tilt: Group = new Group();
   private arcs: Arc[] = [];
-  private dotMaterial = new MeshBasicMaterial();
+  private dotMaterial = new MeshBasicMaterial({ toneMapped: false });
   private dotGeometry = new SphereGeometry(2.2, 16, 10);
 
   constructor(

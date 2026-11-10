@@ -38,6 +38,8 @@ export class LineKit {
       opacity: style.opacity ?? 1,
       depthTest: style.depthTest ?? true,
       depthWrite: false,
+      // flat colours of the page, the tone mapping of the lit parts leaves them alone
+      toneMapped: false,
       // a mirrored arc turns its quads around, they must still show
       side: DoubleSide
     });

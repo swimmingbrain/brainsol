@@ -52,9 +52,9 @@ function shadowTexture(footprint: Footprint): CanvasTexture | null {
 
 export class Ground {
   readonly object = new Group();
-  private discMaterial = new MeshBasicMaterial({ depthTest: false, depthWrite: false });
+  private discMaterial = new MeshBasicMaterial({ depthTest: false, depthWrite: false, toneMapped: false });
   private shadowMaterial: MeshBasicMaterial;
-  private markMaterial = new MeshBasicMaterial({ depthTest: false, depthWrite: false });
+  private markMaterial = new MeshBasicMaterial({ depthTest: false, depthWrite: false, toneMapped: false });
   private texture: CanvasTexture | null;
   private rim: LineSegments2;
   private ticks: LineSegments2;
@@ -72,7 +72,7 @@ export class Ground {
     this.object.add(disc);
 
     this.texture = shadowTexture(footprint);
-    this.shadowMaterial = new MeshBasicMaterial({ color: 0x000000, map: this.texture, transparent: true, depthTest: false, depthWrite: false });
+    this.shadowMaterial = new MeshBasicMaterial({ color: 0x000000, map: this.texture, transparent: true, depthTest: false, depthWrite: false, toneMapped: false });
     const shadow = new Mesh(new PlaneGeometry(footprint.w + 2 * SPREAD, footprint.d + 2 * SPREAD), this.shadowMaterial);
     shadow.position.set(footprint.x, footprint.y, 0.1);
     shadow.renderOrder = 1;
