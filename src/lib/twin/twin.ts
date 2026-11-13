@@ -6,7 +6,7 @@
 // telemetry comes in through the plain fields of the store, never through
 // runes: a frame listener only wakes the loop, the loop reads telemetry.frame
 
-import { AmbientLight, Color, DirectionalLight, HemisphereLight, PerspectiveCamera, Raycaster, Scene, SRGBColorSpace, Vector2, WebGLRenderer } from 'three';
+import { Color, CustomToneMapping, PCFShadowMap, PerspectiveCamera, Raycaster, Scene, SRGBColorSpace, Vector2, WebGLRenderer, type WebGLRenderTarget } from 'three';
 import { telemetry } from '$lib/stores/telemetry.svelte';
 import type { ScanMessage, StateFrame } from '$lib/link/protocol';
 import { clamp, dot, wrap180, type Vec3 } from '$lib/sim/kinematics';
@@ -20,6 +20,7 @@ import { Controls } from './controls';
 import { Dome } from './dome';
 import { Ground } from './ground';
 import { Lights, type Sky } from './light';
+import { firstTier, Lighting, Pacer, roomEnvironment, TIERS, useShoulder } from './lighting';
 import { LineKit } from './lines';
 import { cameraPosition, Orbit, type View } from './orbit';
 import { readPalette, type Palette } from './palette';
@@ -38,7 +39,6 @@ const JOINT_OMEGA = 22;
 // the pose before the first frame: parked, panel flat
 const PARK = { pan: 0, tilt: 90 };
 const FOV = 28;
-const MAX_PIXEL_RATIO = 2;
 const ORANGE = new Color(ROLE_COLORS.accent);
 // strength of the edge light on the charcoal parts in the dark theme
 const RIM = 0.12;
@@ -104,7 +104,11 @@ export class Twin {
   private kit = new LineKit();
   private rig: Rig | null = null;
   private assembly: Assembly = STANDIN_ASSEMBLY;
-  private lights: { hemi: HemisphereLight; key: DirectionalLight; fill: DirectionalLight; rim: DirectionalLight; ambient: AmbientLight };
+  private lighting: Lighting | null = null;
+  private room: WebGLRenderTarget | null = null;
+  // the step of TIERS the scene draws at, it only ever gets cheaper
+  private tier = 0;
+  private pacer = new Pacer();
 
   private pan = { glide: new Glide(), spring: spring(PARK.pan) };
   private tilt = { glide: new Glide(), spring: spring(PARK.tilt) };
@@ -129,26 +133,27 @@ export class Twin {
     private options: TwinOptions = {}
   ) {
     this.renderer = new WebGLRenderer({ canvas, antialias: true, alpha: false });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO));
     this.renderer.outputColorSpace = SRGBColorSpace;
+    // keeps the light grey of the base from burning out and the charcoal from
+    // sinking into black, without shifting the colours of the parts
+    useShoulder();
+    this.renderer.toneMapping = CustomToneMapping;
     this.renderer.autoClear = false;
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = PCFShadowMap;
+    // drawn again only when the light or the pose moved, see render
+    this.renderer.shadowMap.autoUpdate = false;
+    this.tier = firstTier({
+      width: window.screen?.width ?? window.innerWidth,
+      height: window.screen?.height ?? window.innerHeight,
+      coarse: window.matchMedia?.('(pointer: coarse)').matches ?? false,
+      cores: navigator.hardwareConcurrency,
+      memory: (navigator as Navigator & { deviceMemory?: number }).deviceMemory
+    });
 
     this.camera.up.set(0, 0, 1);
     this.orbit = new Orbit(this.homeView());
     this.palette = readPalette();
-
-    const hemi = new HemisphereLight(0xffffff, 0x444444, 1);
-    hemi.position.set(0, 0, 1);
-    const key = new DirectionalLight(0xffffff, 2);
-    key.position.set(-260, 420, 520);
-    const fill = new DirectionalLight(0xffffff, 0.6);
-    fill.position.set(420, 120, 160);
-    const rim = new DirectionalLight(0xffffff, 0.9);
-    rim.position.set(80, -480, 300);
-    const ambient = new AmbientLight(0xffffff, 0.2);
-    this.lights = { hemi, key, fill, rim, ambient };
-    this.front.add(hemi, key, fill, rim, ambient);
-    for (const light of [key, fill, rim]) this.front.add(light.target);
 
     this.controls = new Controls(canvas, {
       orbit: this.orbit,
@@ -164,6 +169,7 @@ export class Twin {
     });
     this.cleanups.push(() => this.controls.dispose());
 
+    this.makeRoom();
     this.applyPalette();
     this.watch();
     this.resize();
@@ -191,6 +197,7 @@ export class Twin {
     this.arcs?.dispose();
     this.light?.dispose();
     this.heat?.dispose();
+    this.lighting?.dispose();
     this.assembly = assembly;
     this.rig = new Rig(assembly, pieces, panelTexture(this.renderer, ...(assembly.panel?.size ?? [125, 85])));
     this.front.add(this.rig.root);
@@ -229,6 +236,11 @@ export class Twin {
     this.light = new Lights(this.kit, centre, DOME_RADIUS);
     this.light.bind(this.glyphs.lamp, this.glyphs.sun);
     this.front.add(this.light.object);
+    // everything that casts or catches a shadow stays inside the sky sphere
+    this.lighting = new Lighting(centre, DOME_RADIUS, this.groundRadius);
+    this.lighting.setShadow(TIERS[this.tier].shadow);
+    this.front.add(this.lighting.object);
+    this.pacer.reset();
     this.target = [centre[0], centre[1] + 10, centre[2] * 1.02];
     this.rig.setPose(this.pan.spring.x, this.tilt.spring.x);
     this.arcs.set(this.pan.spring.x, this.tilt.spring.x);
@@ -259,6 +271,13 @@ export class Twin {
     return { az: -35, el: 18, dist: radius / fit };
   }
 
+  // the room around the tracker for its fill light, see roomEnvironment
+  private makeRoom(): void {
+    this.room?.dispose();
+    this.room = roomEnvironment(this.renderer);
+    this.front.environment = this.room.texture;
+  }
+
   setPalette(): void {
     this.palette = readPalette();
     this.applyPalette();
@@ -272,15 +291,8 @@ export class Twin {
     this.arcs?.setPalette(p);
     this.light?.setPalette(p);
     this.heat?.setPalette(p);
-    const { hemi, key, fill, rim, ambient } = this.lights;
-    // a bright room asks for softer contrast, the dark page for a clearer rim
-    hemi.color.set(p.light ? 0xffffff : 0xf2efe9);
-    hemi.groundColor.set(p.light ? 0x9a9aa0 : 0x3a3836);
-    hemi.intensity = p.light ? 1.9 : 1.5;
-    key.intensity = p.light ? 2.1 : 2.3;
-    fill.intensity = p.light ? 0.7 : 0.55;
-    rim.intensity = p.light ? 0.6 : 1.1;
-    ambient.intensity = p.light ? 0.3 : 0.15;
+    this.lighting?.setPalette(p);
+    if (this.lighting) this.front.environmentIntensity = this.lighting.room;
     // the charcoal head would melt into the dark page at its edges, a bright room needs no help
     this.rig?.setRim(p.light ? new Color(0x000000) : new Color().setRGB(...p.secondary, SRGBColorSpace).multiplyScalar(RIM));
     this.dirty = true;
@@ -326,6 +338,9 @@ export class Twin {
     };
     const onRestored = () => {
       this.lost = false;
+      // the shadow map and the room went with the context
+      this.renderer.shadowMap.needsUpdate = true;
+      this.makeRoom();
       this.applyPalette();
       this.resize();
       this.options.onContext?.(false);
@@ -344,7 +359,7 @@ export class Twin {
     const h = Math.max(1, Math.round(host.clientHeight));
     if (w === this.size.w && h === this.size.h && !this.dirty) return;
     this.size = { w, h };
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, TIERS[this.tier].ratio));
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
     // the words sit on top of the stage, the picture moves down a little to make room
@@ -366,6 +381,7 @@ export class Twin {
     this.raf = 0;
     if (this.disposed || this.lost) return;
     const dt = this.last ? Math.min(0.1, Math.max(0, (now - this.last) / 1000)) : 1 / 60;
+    if (this.last && this.pacer.add(now - this.last)) this.cheaper();
     this.last = now;
     const busy = this.update(performance.now(), dt);
     if (this.dirty) this.render();
@@ -386,6 +402,7 @@ export class Twin {
     }
     if (this.rig?.setPose(this.pan.spring.x, this.tilt.spring.x)) {
       this.arcs?.set(this.pan.spring.x, this.tilt.spring.x);
+      this.renderer.shadowMap.needsUpdate = true;
       this.dirty = true;
     }
 
@@ -401,6 +418,13 @@ export class Twin {
       if (seen !== this.lightSeen) {
         this.lightSeen = seen;
         this.dirty = true;
+      }
+      // the key light of the scene stands where the lamp or the sun is
+      const source = this.light.source;
+      if (this.lighting) {
+        const seenKey = this.lighting.signature;
+        if (this.lighting.aim(source?.kind ?? (this.light.lampOff ? 'off' : 'room'), source?.sky ?? null, dt)) busy = true;
+        if (this.lighting.signature !== seenKey) this.dirty = true;
       }
     }
 
@@ -596,10 +620,25 @@ export class Twin {
     this.camera.updateMatrixWorld();
     this.front.updateMatrixWorld();
     if (this.rig && this.light) this.light.place(this.camera, this.size, { centre: this.rig.panelCentre(), normal: this.rig.panelNormal() }, this.rig.meshes);
+    if (this.lighting?.moved) {
+      this.lighting.moved = false;
+      this.renderer.shadowMap.needsUpdate = true;
+    }
     this.renderer.clear();
     this.renderer.render(this.back, this.camera);
     this.renderer.clearDepth();
     this.renderer.render(this.front, this.camera);
+  }
+
+  // frames came too slow while the scene moved: the next cheaper tier, a
+  // smaller shadow map first, fewer pixels after that, no shadow at the end
+  private cheaper(): void {
+    if (this.tier >= TIERS.length - 1) return;
+    this.tier++;
+    this.lighting?.setShadow(TIERS[this.tier].shadow);
+    this.pacer.reset();
+    this.dirty = true;
+    this.resize();
   }
 
   dispose(): void {
@@ -614,6 +653,8 @@ export class Twin {
     this.arcs?.dispose();
     this.light?.dispose();
     this.heat?.dispose();
+    this.lighting?.dispose();
+    this.room?.dispose();
     this.renderer.dispose();
     this.renderer.forceContextLoss();
   }
