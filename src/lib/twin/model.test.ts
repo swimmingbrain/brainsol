@@ -63,11 +63,12 @@ describe('the cad model in the twin', () => {
 
   it('has each sensor on the side its name says', () => {
     const { L, R, U, D, lux } = assembly.sensors;
-    const c = assembly.panel!.center;
-    expect(L![0]).toBeLessThan(c[0] - 62.5);
-    expect(R![0]).toBeGreaterThan(c[0] + 62.5);
-    expect(U![2]).toBeGreaterThan(c[2] + 42.5);
-    expect(D![2]).toBeLessThan(c[2] - 42.5);
+    const { center: c, size } = assembly.panel!;
+    expect(size).toEqual([137, 85]);
+    expect(L![0]).toBeLessThan(c[0] - size[0] / 2);
+    expect(R![0]).toBeGreaterThan(c[0] + size[0] / 2);
+    expect(U![2]).toBeGreaterThan(c[2] + size[1] / 2);
+    expect(D![2]).toBeLessThan(c[2] - size[1] / 2);
     expect(lux).toBeDefined();
   });
 });
