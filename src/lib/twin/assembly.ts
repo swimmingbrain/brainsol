@@ -156,8 +156,8 @@ export const STANDIN = {
   neck: { w: 40, d: 30, r: 6, above: 13.5 },
   tiltZ: 106,
   ear: { gap: 0.5, t: 6, hub: 9, hubH: 5, w: 26, cap: 6, capT: 1.6 },
-  head: { w: 151, h: 111, t: 13, r: 12, offset: 24 },
-  panel: { w: 125, h: 85, lip: 2, recess: 1.2 },
+  head: { w: 163, h: 111, t: 13, r: 12, offset: 24 },
+  panel: { w: 137, h: 85, lip: 2, recess: 1.2 },
   eye: { from: 5, collar: 5, hole: 3.1, high: 1.6 }
 } as const;
 
@@ -168,6 +168,8 @@ function standinAssembly(): Assembly {
   const eyeY = front + 0.05;
   const eu = s.panel.w / 2 + s.eye.from;
   const ev = s.panel.h / 2 + s.eye.from;
+  // the head is wider than the base, like on the real tracker
+  const halfW = Math.max(s.base.w, s.head.w) / 2;
   return {
     parts: [
       { id: 'base', file: null, joint: null, color: 'body' },
@@ -187,7 +189,7 @@ function standinAssembly(): Assembly {
       lux: [-eu, eyeY, s.tiltZ + 38]
     },
     panel: { center: [0, front - s.panel.recess, s.tiltZ], size: [s.panel.w, s.panel.h], normal: [0, 1, 0], up: [0, 0, 1] },
-    bounds: { min: [-s.base.w / 2, -s.base.d / 2, 0], max: [s.base.w / 2, s.base.d / 2, s.tiltZ + s.head.h / 2] }
+    bounds: { min: [-halfW, -s.base.d / 2, 0], max: [halfW, s.base.d / 2, s.tiltZ + s.head.h / 2] }
   };
 }
 
