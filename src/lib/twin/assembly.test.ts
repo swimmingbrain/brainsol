@@ -87,8 +87,8 @@ describe('assembly.json', () => {
   it('places the stand in sensors at the edge centres around the panel', () => {
     const { L, R, U, D } = STANDIN_ASSEMBLY.sensors;
     const c = STANDIN_ASSEMBLY.panel!.center;
-    expect(L![0]).toBeLessThan(-125 / 2);
-    expect(R![0]).toBeGreaterThan(125 / 2);
+    expect(L![0]).toBeLessThan(-137 / 2);
+    expect(R![0]).toBeGreaterThan(137 / 2);
     expect(U![2]).toBeGreaterThan(c[2] + 85 / 2);
     expect(D![2]).toBeLessThan(c[2] - 85 / 2);
     expect(L![2]).toBe(c[2]);
