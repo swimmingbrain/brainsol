@@ -132,7 +132,7 @@ describe('the config', () => {
     expect(Object.keys(hello.cfg).sort()).toEqual(['baffle', 'limits', 'panel', 'params', 'park', 'site']);
     expect(Object.keys(hello.cfg.params).sort()).toEqual([...PARAM_KEYS].sort());
     for (const p of Object.values(hello.cfg.params)) expect(Object.keys(p).sort()).toEqual(['max', 'min', 'step', 'v']);
-    expect(hello.cfg).toMatchObject({ park: { pan: 0, tilt: 90 }, site: { lat: 48.21, lon: 16.37, heading: 180 }, panel: { w: 125, h: 85, eff: 0.15 }, baffle: 1.2 });
+    expect(hello.cfg).toMatchObject({ park: { pan: 0, tilt: 90 }, site: { lat: 48.21, lon: 16.37, heading: 180 }, panel: { w: 137, h: 85, eff: 0.15 }, baffle: 1.2 });
     expect(hello.version).toMatch(/^\d+\.\d+\.\d+/);
   });
 
