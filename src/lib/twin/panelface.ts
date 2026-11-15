@@ -7,7 +7,7 @@ import { ROLE_COLORS } from './assembly';
 const COLUMNS = 8;
 const ROWS = 2;
 
-export function panelTexture(renderer: WebGLRenderer | null, width = 125, height = 85): CanvasTexture | null {
+export function panelTexture(renderer: WebGLRenderer | null, width = 137, height = 85): CanvasTexture | null {
   if (typeof document === 'undefined') return null;
   const w = 1024;
   const h = Math.round((w * height) / width);

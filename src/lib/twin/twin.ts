@@ -199,7 +199,7 @@ export class Twin {
     this.heat?.dispose();
     this.lighting?.dispose();
     this.assembly = assembly;
-    this.rig = new Rig(assembly, pieces, panelTexture(this.renderer, ...(assembly.panel?.size ?? [125, 85])));
+    this.rig = new Rig(assembly, pieces, panelTexture(this.renderer, ...(assembly.panel?.size ?? [137, 85])));
     this.front.add(this.rig.root);
     const centre = this.centre;
     const s = STANDIN.base;
