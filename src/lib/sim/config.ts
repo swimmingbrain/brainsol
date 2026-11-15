@@ -16,8 +16,8 @@ export function defaultConfig(): Config {
     park: { pan: 0, tilt: 90 },
     // vienna, the front of the device facing south
     site: { lat: 48.21, lon: 16.37, heading: 180 },
-    // the kit panel is not documented, this is the working estimate in millimetres
-    panel: { w: 125, h: 85, eff: 0.15 },
+    // the delivered kit panel in millimetres, its label says 137 x 85
+    panel: { w: 137, h: 85, eff: 0.15 },
     baffle: K,
     params
   };
