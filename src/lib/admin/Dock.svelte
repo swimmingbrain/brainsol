@@ -6,6 +6,7 @@
   import DockTabs, { type DockTab } from './parts/DockTabs.svelte';
   import ActivityBar from './parts/ActivityBar.svelte';
   import ControlTab from './tabs/ControlTab.svelte';
+  import FarmTab from './tabs/FarmTab.svelte';
   import TuningTab from './tabs/TuningTab.svelte';
   import CalibrateTab from './tabs/CalibrateTab.svelte';
   import ScanTab from './tabs/ScanTab.svelte';
@@ -19,6 +20,7 @@
 
   const tabs = $derived<DockTab<TabId>[]>([
     { id: 'control', label: t('admin.tab.control'), icon: 'move' },
+    { id: 'farm', label: t('admin.tab.farm'), icon: 'leaf' },
     { id: 'tuning', label: t('admin.tab.tuning'), icon: 'sliders' },
     { id: 'calib', label: t('admin.tab.calib'), icon: 'target' },
     { id: 'scan', label: t('admin.tab.scan'), icon: 'scan' },
@@ -46,6 +48,8 @@
   <div class="panel" id="admin-panel-{session.tab}" role="tabpanel" aria-labelledby="admin-tab-{session.tab}">
     {#if session.tab === 'control'}
       <ControlTab />
+    {:else if session.tab === 'farm'}
+      <FarmTab />
     {:else if session.tab === 'tuning'}
       <TuningTab />
     {:else if session.tab === 'calib'}
