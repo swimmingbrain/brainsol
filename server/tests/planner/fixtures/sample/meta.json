@@ -1,0 +1,410 @@
+{
+  "generator": "brainsolsynth generate.py",
+  "version": "1.1.0",
+  "created_utc": "2026-11-20T19:06:45+00:00",
+  "args": {
+    "start": "2025-06-01",
+    "end": "2025-06-07",
+    "step_min": "5",
+    "plan_min": "60",
+    "offsets": "[0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0]",
+    "lat": "48.21",
+    "lon": "16.37",
+    "heading": "180.0",
+    "tz": "Europe/Vienna",
+    "gcr": "0.35",
+    "bzn": "AT",
+    "flat_price": "None",
+    "crop_prices": "None",
+    "inr_per_eur": "89.3",
+    "no_forecast": "False",
+    "seed": "0"
+  },
+  "days": 7,
+  "step_min": 5,
+  "plan_min": 60,
+  "offsets_deg": [
+    0.0,
+    10.0,
+    20.0,
+    30.0,
+    40.0,
+    50.0,
+    60.0,
+    70.0,
+    80.0,
+    90.0
+  ],
+  "scene": {
+    "lat": 48.21,
+    "lon": 16.37,
+    "heading": 180.0,
+    "tz": "Europe/Vienna",
+    "gcr": 0.35,
+    "panel_w_mm": 125.0,
+    "panel_h_mm": 85.0,
+    "panel_eff": 0.15,
+    "pan_limits": [
+      -88.0,
+      88.0
+    ],
+    "tilt_limits": [
+      4.0,
+      176.0
+    ],
+    "park": [
+      0.0,
+      90.0
+    ]
+  },
+  "wm2_per_mw": 0.03294117647058823,
+  "recipes": [
+    {
+      "name": "tomato",
+      "dli_target": 25.0,
+      "max_ppfd": 1800.0,
+      "tmax_c": 33.0,
+      "power_hours": [],
+      "yield_g_mol": 1.5,
+      "crop": "Tomato"
+    },
+    {
+      "name": "potato",
+      "dli_target": 30.0,
+      "max_ppfd": 2000.0,
+      "tmax_c": 30.0,
+      "power_hours": [
+        [
+          18.0,
+          22.0
+        ]
+      ],
+      "yield_g_mol": 1.2,
+      "crop": "Potato"
+    },
+    {
+      "name": "onion",
+      "dli_target": 25.0,
+      "max_ppfd": 2000.0,
+      "tmax_c": 32.0,
+      "power_hours": [],
+      "yield_g_mol": 1.0,
+      "crop": "Onion"
+    },
+    {
+      "name": "chilli",
+      "dli_target": 25.0,
+      "max_ppfd": 1500.0,
+      "tmax_c": 32.0,
+      "power_hours": [
+        [
+          17.0,
+          21.0
+        ]
+      ],
+      "yield_g_mol": 0.4,
+      "crop": "Green Chilli"
+    }
+  ],
+  "scoring": {
+    "dli_weight": 2.0,
+    "stress_weight_per_h": 0.05,
+    "stress_yield_loss_per_h": 0.05
+  },
+  "sources": {
+    "weather": "https://archive-api.open-meteo.com/v1/archive",
+    "forecast": "https://previous-runs-api.open-meteo.com/v1/forecast",
+    "prices": "https://api.energy-charts.info/price?bzn=AT",
+    "crop_prices": "https://www.kaggle.com/api/v1/datasets/download/ksamiksha19/vegetable-prices",
+    "inr_per_eur": 89.3,
+    "attribution": "Weather data by Open-Meteo.com, CC BY 4.0. Prices by Energy-Charts.info (Fraunhofer ISE) from Bundesnetzagentur | SMARD.de, CC BY 4.0. Vegetable prices by K_samiksha19 on Kaggle (ksamiksha19/vegetable-prices) from agmarknet.gov.in"
+  },
+  "assumptions": [
+    "Sun position from astral, the code brainSOL's sun mode uses. Weather is hourly Open-Meteo history, read linearly between hours, so clouds shorter than an hour do not show.",
+    "Forecasts are the Open-Meteo forecast issued one day before, so a planner sees realistic forecast errors.",
+    "Panel light and power follow the brainSOL simulation model: 1 W/m² counts as 110 lx, diffuse light counts the same at every panel angle, no heat or wiring losses.",
+    "The crop stands under an array with the given ground coverage ratio. Panels intercept direct light by their projected area and hide that share of the sky, crop light is ground average, no row geometry or reflection.",
+    "Light becomes PPFD at 2.02 µmol/m²/s per W/m². Stress is light above the recipe's max_ppfd, or a leaf warmer than tmax_c, the leaf taken as air temperature plus 3 °C per 1000 µmol/m²/s (no wind or humidity).",
+    "Turning away moves the panel normal from the sun towards the zenith and over the top, so power falls with cos(offset) until a servo limit is reached.",
+    "Electricity is sold at the bidding zone's day-ahead price (Energy-Charts, from SMARD/ENTSO-E), with no fees, grid charges or feed-in tariff, unless --flat-price sets one. The kit panel is scaled to one m² of ground by the ground coverage ratio.",
+    "Crop value: each mol/m² of light up to the daily target grows yield_g_mol of fresh harvest, every stressed hour costs 5 % of the day's growth. It sells at the day's price from the Kaggle vegetable price table (Indian wholesale markets, agmarknet.gov.in, 2023), converted at inr_per_eur and matched by calendar day, so the crop prices are Indian wholesale levels, well below Austrian ones. yield_g_mol in recipes.json is a rough typical value, replace it with your own."
+  ],
+  "files": {
+    "steps.csv": {
+      "description": "One row per time step: sun, weather, forecast, and the tracker in sun mode (offset 0).",
+      "columns": {
+        "time_utc": {
+          "unit": "ISO 8601",
+          "description": "start of the step, UTC"
+        },
+        "time_local": {
+          "unit": "ISO 8601",
+          "description": "the same moment in the site's time zone"
+        },
+        "date_local": {
+          "unit": "YYYY-MM-DD",
+          "description": "local day the step belongs to, days and DLI are counted by it"
+        },
+        "sun_az": {
+          "unit": "°",
+          "description": "sun azimuth on the compass, north 0, east 90"
+        },
+        "sun_el": {
+          "unit": "°",
+          "description": "sun elevation, below 0 at night"
+        },
+        "sun_rel_az": {
+          "unit": "°",
+          "description": "sun azimuth seen from the device, clockwise from its front"
+        },
+        "temp_c": {
+          "unit": "°C",
+          "description": "air temperature at 2 m, measured"
+        },
+        "cloud_pct": {
+          "unit": "%",
+          "description": "cloud cover, measured"
+        },
+        "dni_wm2": {
+          "unit": "W/m²",
+          "description": "direct normal irradiance, measured"
+        },
+        "dhi_wm2": {
+          "unit": "W/m²",
+          "description": "diffuse horizontal irradiance, measured"
+        },
+        "ghi_wm2": {
+          "unit": "W/m²",
+          "description": "global horizontal irradiance, dni * sin(el) + dhi"
+        },
+        "fc_temp_c": {
+          "unit": "°C",
+          "description": "day-ahead forecast of temp_c, empty without forecast"
+        },
+        "fc_cloud_pct": {
+          "unit": "%",
+          "description": "day-ahead forecast of cloud_pct"
+        },
+        "fc_dni_wm2": {
+          "unit": "W/m²",
+          "description": "day-ahead forecast of dni_wm2"
+        },
+        "fc_dhi_wm2": {
+          "unit": "W/m²",
+          "description": "day-ahead forecast of dhi_wm2"
+        },
+        "price_eur_mwh": {
+          "unit": "€/MWh",
+          "description": "day-ahead electricity price of the bidding zone, known the day before, can be below 0"
+        },
+        "pan": {
+          "unit": "°",
+          "description": "pan of the tracker in sun mode"
+        },
+        "tilt": {
+          "unit": "°",
+          "description": "tilt of the tracker in sun mode, 90 is flat"
+        },
+        "incidence_deg": {
+          "unit": "°",
+          "description": "angle between panel normal and sun, empty at night"
+        },
+        "panel_lux": {
+          "unit": "lx",
+          "description": "light on the panel plane, what the BH1750 on the panel reads"
+        },
+        "power_mw": {
+          "unit": "mW",
+          "description": "panel power in sun mode"
+        },
+        "power_wm2": {
+          "unit": "W/m²",
+          "description": "power_mw scaled to one m² of ground under the array, see wm2_per_mw"
+        },
+        "fixed_mw": {
+          "unit": "mW",
+          "description": "power of the same panel parked flat, the no-tracking baseline"
+        },
+        "ppfd": {
+          "unit": "µmol/m²/s",
+          "description": "light reaching the crop under the array in sun mode"
+        },
+        "fixed_ppfd": {
+          "unit": "µmol/m²/s",
+          "description": "light reaching the crop under flat panels"
+        },
+        "open_ppfd": {
+          "unit": "µmol/m²/s",
+          "description": "light on open ground without panels"
+        },
+        "plant_lux": {
+          "unit": "lx",
+          "description": "ppfd as the plant light sensor reads it"
+        },
+        "leaf_temp_c": {
+          "unit": "°C",
+          "description": "estimated leaf temperature in sun mode, air plus 3 °C per 1000 µmol/m²/s"
+        },
+        "panel_lux_meas": {
+          "unit": "lx",
+          "description": "panel_lux with the BH1750's 1 % noise"
+        },
+        "plant_lux_meas": {
+          "unit": "lx",
+          "description": "plant_lux with the same sensor noise"
+        }
+      }
+    },
+    "alternatives.csv": {
+      "description": "Every action at every step: what turning the panel offset_deg away from the sun gives. The action table for learning the power and light trade-off and for RL.",
+      "columns": {
+        "time_utc": {
+          "unit": "ISO 8601",
+          "description": "joins steps.csv"
+        },
+        "date_local": {
+          "unit": "YYYY-MM-DD",
+          "description": "local day"
+        },
+        "offset_deg": {
+          "unit": "°",
+          "description": "how far the panel turns away from the sun, 0 is sun mode, 90 edge on"
+        },
+        "pan": {
+          "unit": "°",
+          "description": "pan of that pose, inside the servo limits"
+        },
+        "tilt": {
+          "unit": "°",
+          "description": "tilt of that pose"
+        },
+        "incidence_deg": {
+          "unit": "°",
+          "description": "angle between panel normal and sun"
+        },
+        "power_mw": {
+          "unit": "mW",
+          "description": "panel power"
+        },
+        "ppfd": {
+          "unit": "µmol/m²/s",
+          "description": "light reaching the crop"
+        },
+        "ppfd_direct": {
+          "unit": "µmol/m²/s",
+          "description": "the direct sun part of ppfd"
+        }
+      }
+    },
+    "plans.csv": {
+      "description": "The best plans per recipe, made with the day's weather and prices known in advance, one action per plan_min: the bar a planner is compared with. objective target meets the light target with the most energy, objective profit earns the most money.",
+      "columns": {
+        "time_utc": {
+          "unit": "ISO 8601",
+          "description": "joins steps.csv"
+        },
+        "date_local": {
+          "unit": "YYYY-MM-DD",
+          "description": "local day"
+        },
+        "recipe": {
+          "unit": "",
+          "description": "recipe name from meta.json"
+        },
+        "objective": {
+          "unit": "",
+          "description": "target or profit"
+        },
+        "offset_deg": {
+          "unit": "°",
+          "description": "action chosen"
+        },
+        "pan": {
+          "unit": "°",
+          "description": "pose of that action"
+        },
+        "tilt": {
+          "unit": "°",
+          "description": "pose of that action"
+        },
+        "power_mw": {
+          "unit": "mW",
+          "description": "panel power"
+        },
+        "ppfd": {
+          "unit": "µmol/m²/s",
+          "description": "light reaching the crop"
+        },
+        "stress": {
+          "unit": "0/1",
+          "description": "the crop is stressed in this step"
+        },
+        "power_hour": {
+          "unit": "0/1",
+          "description": "the recipe puts power first in this step"
+        }
+      }
+    },
+    "days.csv": {
+      "description": "Per local day, recipe and strategy: what the report says. tracking is sun mode, offset_N holds one offset all day, flat parks the panel, oracle is the best plan for the light target, profit the best plan for money. Money is per m² of ground under the array.",
+      "columns": {
+        "date_local": {
+          "unit": "YYYY-MM-DD",
+          "description": "local day"
+        },
+        "recipe": {
+          "unit": "",
+          "description": "recipe name"
+        },
+        "strategy": {
+          "unit": "",
+          "description": "tracking, offset_N, flat, oracle or profit"
+        },
+        "energy_wh": {
+          "unit": "Wh",
+          "description": "panel energy over the day"
+        },
+        "energy_pct": {
+          "unit": "%",
+          "description": "of the most energy the day could give"
+        },
+        "dli": {
+          "unit": "mol/m²/day",
+          "description": "daily light integral at the crop"
+        },
+        "dli_pct": {
+          "unit": "%",
+          "description": "of the recipe's dli_target"
+        },
+        "stress_h": {
+          "unit": "h",
+          "description": "hours the crop is stressed"
+        },
+        "score": {
+          "unit": "",
+          "description": "energy share - dli_weight * missing share of the light target - stress_weight * stress_h, weights in scoring, higher is better, the RL reward sums to it"
+        },
+        "elec_eur": {
+          "unit": "€/m²",
+          "description": "electricity sold at the day-ahead price"
+        },
+        "crop_kg": {
+          "unit": "kg/m²",
+          "description": "fresh harvest grown that day: yield_g_mol per mol up to the target, less stress losses"
+        },
+        "crop_price_eur_kg": {
+          "unit": "€/kg",
+          "description": "the day's market price of the recipe's crop from the vegetable price table"
+        },
+        "crop_eur": {
+          "unit": "€/m²",
+          "description": "crop_kg at crop_price_eur_kg"
+        },
+        "profit_eur": {
+          "unit": "€/m²",
+          "description": "elec_eur + crop_eur, revenue before costs, the RL profit reward sums to it"
+        }
+      }
+    }
+  }
+}
