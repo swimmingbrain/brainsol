@@ -41,6 +41,42 @@ A page loaded over https can only reach a `wss` address, so a plain `ws://` Pi o
 
 Click the lock icon in the top bar. The simulation needs no PIN, a real tracker asks for the one you set on the Pi with `brainsolpi setpin`.
 
+## Plant recipe
+
+The Plant tab in the admin tools turns a farmer's words into a recipe for the tracker, for example "Tomaten, vertragen keine pralle Mittagssonne. Ab 17 Uhr brauche ich Strom." A language model only reads the words: which plant, when it should get no full sun, when power comes first. The plant's light target and highest temperature come from a table of the 10 vegetables in the [vegetable price dataset](https://www.kaggle.com/datasets/ksamiksha19/vegetable-prices), so a recipe can be priced later. A plant that is not in the table is asked back, never guessed. Nothing here moves the tracker yet.
+
+The language model runs behind a small recipe server in [`server/`](server/README.md). To try it on a laptop:
+
+1. Start a local model with Ollama:
+
+   ```bash
+   docker run -d --name ollama --device /dev/dri -e OLLAMA_IGPU_ENABLE=1 \
+     -p 11434:11434 -v ollama:/root/.ollama ollama/ollama
+   docker exec ollama ollama pull gemma3:4b
+   ```
+
+   After a reboot `docker start ollama` brings it back.
+
+2. Start the recipe server:
+
+   ```bash
+   cd server
+   uv sync
+   LLM_BASE_URL=http://localhost:11434/v1 LLM_MODEL=gemma3:4b uv run uvicorn brain.app:app --port 8000
+   ```
+
+3. Start the page and tell it where the recipe server is:
+
+   ```bash
+   pnpm dev
+   ```
+
+   Open http://localhost:5173/?brain=http://localhost:8000, unlock the admin tools and open the Plant tab.
+
+`?brain=` works like `?pi=`. For everyone, put the address into `static/config.json` as `"brain"`. Empty means no recipe server, then the tab says so. The public page is served over https, so it only reaches a recipe server over https.
+
+The same server also talks to vLLM on a GPU server or to Hugging Face, only `LLM_BASE_URL` and `LLM_MODEL` change. [`server/README.md`](server/README.md) has those setups, the API, the plant table and how to compare models with the test sentences.
+
 ## Deploy
 
 Push to `main`, `.github/workflows/deploy.yml` checks, tests and builds the page and puts it on GitHub Pages. The custom domain is in `static/CNAME`.
@@ -51,6 +87,13 @@ Push to `main`, `.github/workflows/deploy.yml` checks, tests and builds the page
 pnpm check   # type checks, 0 errors
 pnpm test    # unit tests
 pnpm build   # static site in build/
+```
+
+The recipe server has its own tests:
+
+```bash
+cd server
+uv run pytest
 ```
 
 ## License
