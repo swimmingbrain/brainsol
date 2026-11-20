@@ -1,0 +1,121 @@
+# brainSOL recipe server
+
+A farmer writes a few words, for example "Tomaten, vertragen keine pralle Mittagssonne. Ab 17 Uhr brauche ich Strom." The work is split in two:
+
+- **The language model only understands the words.** It extracts the plant as the farmer named it and the hours: `avoid_sun` (no full sun for the plant) and `power_first` (power wins). It never writes numbers about the plant and never drives the motors.
+- **The plant table supplies the facts.** `brain/plants.json` holds `light_target` (daily light integral, mol/m²/day) and `max_temp` (°C) for 10 vegetables, with German and English names, plural forms and other words (Melanzani, Erdäpfel, Pfefferoni). The lookup is exact, without fuzzy matching.
+
+### The plants follow the price dataset
+
+The recipe is executed later against the vegetable prices in [ksamiksha19/vegetable-prices](https://www.kaggle.com/datasets/ksamiksha19/vegetable-prices) on Kaggle. Its `prices.csv` is wide: one row per date (`Price Dates`, DD-MM-YYYY, from 01-01-2023), one column per vegetable. So the table has exactly those 10 vegetables, and each row's `name` is the **exact column header**:
+
+`Bhindi (Ladies finger)`, `Tomato`, `Onion`, `Potato`, `Brinjal`, `Garlic`, `Peas`, `Methi`, `Green Chilli`, `Elephant Yam (Suran)`
+
+The recipe's `plant` is that name, so the planner can read the price as `prices[recipe.plant]`. `tests/test_plants.py` fails if the table and the headers drift apart. The dataset states no currency or unit. Its source is agmarknet.gov.in, so the prices are most likely in INR per kg, but that is an inference. Its license is not specified, so the CSV is not in this repo.
+
+That is the answer to "why not a form?": the farmer can say it in their own words, and the numbers still come from a table that can be checked.
+
+A known plant gives the recipe:
+
+```json
+{
+  "v": 3,
+  "plant": "Tomato",
+  "names": { "en": "Tomato", "de": "Tomate" },
+  "light_target": 25,
+  "max_temp": 32,
+  "avoid_sun": [{ "from": "11:00", "to": "15:00" }],
+  "power_first": [{ "from": "17:00", "to": "21:00" }],
+  "source": "unchecked, from memory: ..."
+}
+```
+
+An unknown plant, or no plant at all, is **asked back instead of guessed**: `{"ask": {"plant": "Basilikum", "known": [{"name": "Tomato", "names": {...}}, ...]}}`. The page shows the known plants as chips. A picked chip sends the same words again with `"plant": "<name>"`.
+
+**The table values are not checked yet.** They are typical figures recalled from memory, and every row says so in `source`. Check them against a horticulture source (for example a published DLI table for greenhouse crops) and update `source` once a row is checked.
+
+Times are local wall clock. For a named part of the day the model writes only the name (`{"period": "midday"}`), and `PERIODS` in `brain/recipe.py` fixes the hours: morning 06:00 to 10:00, midday 11:00 to 15:00, afternoon 12:00 to 18:00, evening 17:00 to 21:00. An open end ("ab 17 Uhr") lasts until `DAY_END`, 21:00. A small model mixes up those hours when it has to work them out itself. The shapes live in `brain/recipe.py` (`Spoken` as the model writes it, `Extraction`, `Recipe`), and the page mirrors the recipe in `src/lib/farm/recipe.ts`.
+
+## Run
+
+```bash
+cd server
+uv sync
+LLM_BASE_URL=... LLM_MODEL=... uv run uvicorn brain.app:app --port 8000
+```
+
+Then open the page with `?brain=http://localhost:8000` (or set `"brain"` in `static/config.json`), unlock the tools and open the Plant tab.
+
+### Language model
+
+Any OpenAI compatible `/chat/completions` endpoint works.
+
+**Ollama on a laptop, for testing**
+
+```bash
+docker run -d --name ollama --device /dev/dri -e OLLAMA_IGPU_ENABLE=1 \
+  -p 11434:11434 -v ollama:/root/.ollama ollama/ollama
+docker exec ollama ollama pull gemma3:4b
+export LLM_BASE_URL=http://localhost:11434/v1 LLM_MODEL=gemma3:4b
+```
+
+`--device /dev/dri` and `OLLAMA_IGPU_ENABLE=1` let Ollama use an integrated AMD GPU through Vulkan; without them it runs on the CPU only. `docker exec ollama ollama ps` shows which one it uses.
+
+**vLLM on the GPU server**
+
+```bash
+vllm serve Qwen/Qwen2.5-7B-Instruct --port 8001
+export LLM_BASE_URL=http://gpu:8001/v1 LLM_MODEL=Qwen/Qwen2.5-7B-Instruct
+```
+
+**Hugging Face, when the GPU server is not available**
+
+```bash
+export LLM_BASE_URL=https://router.huggingface.co/v1
+export LLM_API_KEY=hf_...            # token with the Inference Providers permission
+export LLM_MODEL=Qwen/Qwen2.5-72B-Instruct
+export LLM_JSON_SCHEMA=0             # if the provider refuses response_format
+```
+
+The token stays on this server. The page never talks to the language model directly.
+
+| variable          | default                                            | meaning                                                                   |
+| ----------------- | -------------------------------------------------- | ------------------------------------------------------------------------- |
+| `LLM_BASE_URL`    | (none)                                             | base address ending in `/v1`                                              |
+| `LLM_MODEL`       | (none)                                             | model name as the endpoint knows it                                       |
+| `LLM_API_KEY`     | (none)                                             | sent as a bearer token when set                                           |
+| `LLM_JSON_SCHEMA` | `1`                                                | `1` uses guided decoding, `0` puts the schema into the prompt             |
+| `LLM_TIMEOUT`     | `60`                                               | seconds per request to the model                                          |
+| `DATA_DIR`        | `data`                                             | where the last recipe is kept (`recipe.json`)                             |
+| `ALLOWED_ORIGINS` | `https://sol.swimmingbrain.dev,http://localhost:5173,http://127.0.0.1:5173` | pages that may call this server                                           |
+
+The public page is served over https, so the browser only reaches this server over https too. Put a reverse proxy or a tunnel in front of it.
+
+## API
+
+- `POST /recipe` with `{"prompt": "...", "lang": "en" | "de", "plant"?: "<table name>"}` returns `{"recipe": {...}}` and keeps it, or `{"ask": {...}}` when the plant is not in the table.
+- `GET /recipe` returns the last recipe, or 404 `{"err": "none"}`.
+- `GET /plants` returns the plant table.
+- `GET /health` returns `{"ok": true, "model": "..."}`.
+
+Errors are `{"err": "bad" | "llm" | "timeout", "msg": "...", "detail": [...]}`. If the model's answer does not fit the extraction, the server asks once more with the problems before it gives up.
+
+## Test
+
+```bash
+uv run pytest
+```
+
+## Compare models
+
+`eval/cases.json` holds 19 test sentences with the table's vegetables with the expected plant and hours, including traps (an unknown plant, no plant, a negation, an instruction hidden in the words). `brain/evaluate.py` sends them to whatever model the environment points to and scores plant, `avoid_sun` and `power_first` per sentence. A report lands in `eval/results/`, which git ignores.
+
+```bash
+LLM_BASE_URL=http://localhost:11434/v1 LLM_MODEL=gemma3:4b uv run python -m brain.evaluate --repeat 3
+```
+
+| model | where | right | per request |
+| --- | --- | --- | --- |
+| `gemma3:4b` | Framework 16, Radeon 780M through Vulkan | 54/57 | 1.8 s |
+
+Its only miss is `okra_noon_clock`: in "Shade from noon to 3pm" it reads "noon" as the midday period and adds a made up 15:00 to 17:00 window, in all three runs. When it still had to write the hours itself, it got that sentence right but stretched "no harsh midday sun ... power from 5 pm" (the example on the page) to 11:00 to 18:00; naming the period fixed that. 19 sentences are not enough to call a model reliable. The worked examples in `brain/llm.py` (`EXAMPLES`) are kept unlike the test sentences, so the score is not tuned to them.
