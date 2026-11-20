@@ -1,0 +1,161 @@
+{
+  "about": "the plants a recipe can be made for. name is the exact column header of prices.csv in https://www.kaggle.com/datasets/ksamiksha19/vegetable-prices, so a recipe can be priced later by its plant",
+  "plants": [
+    {
+      "name": "Bhindi (Ladies finger)",
+      "names": {
+        "en": "Okra",
+        "de": "Okra"
+      },
+      "aliases": [
+        "bhindi",
+        "ladies finger",
+        "lady finger",
+        "okra",
+        "okras"
+      ],
+      "light_target": 20,
+      "max_temp": 35,
+      "source": "unchecked, from memory: typical daily light integral and upper comfortable temperature, verify against a horticulture source"
+    },
+    {
+      "name": "Tomato",
+      "names": {
+        "en": "Tomato",
+        "de": "Tomate"
+      },
+      "aliases": [
+        "tomatoes",
+        "tomaten",
+        "paradeiser"
+      ],
+      "light_target": 25,
+      "max_temp": 32,
+      "source": "unchecked, from memory: typical daily light integral and upper comfortable temperature, verify against a horticulture source"
+    },
+    {
+      "name": "Onion",
+      "names": {
+        "en": "Onion",
+        "de": "Zwiebel"
+      },
+      "aliases": [
+        "onions",
+        "zwiebeln"
+      ],
+      "light_target": 17,
+      "max_temp": 30,
+      "source": "unchecked, from memory: typical daily light integral and upper comfortable temperature, verify against a horticulture source"
+    },
+    {
+      "name": "Potato",
+      "names": {
+        "en": "Potato",
+        "de": "Kartoffel"
+      },
+      "aliases": [
+        "potatoes",
+        "kartoffeln",
+        "erdäpfel",
+        "erdapfel",
+        "erdäpfeln"
+      ],
+      "light_target": 17,
+      "max_temp": 27,
+      "source": "unchecked, from memory: typical daily light integral and upper comfortable temperature, verify against a horticulture source"
+    },
+    {
+      "name": "Brinjal",
+      "names": {
+        "en": "Eggplant",
+        "de": "Aubergine"
+      },
+      "aliases": [
+        "brinjals",
+        "aubergines",
+        "auberginen",
+        "eggplants",
+        "melanzani",
+        "melanzane"
+      ],
+      "light_target": 20,
+      "max_temp": 32,
+      "source": "unchecked, from memory: typical daily light integral and upper comfortable temperature, verify against a horticulture source"
+    },
+    {
+      "name": "Garlic",
+      "names": {
+        "en": "Garlic",
+        "de": "Knoblauch"
+      },
+      "aliases": [],
+      "light_target": 15,
+      "max_temp": 28,
+      "source": "unchecked, from memory: typical daily light integral and upper comfortable temperature, verify against a horticulture source"
+    },
+    {
+      "name": "Peas",
+      "names": {
+        "en": "Peas",
+        "de": "Erbsen"
+      },
+      "aliases": [
+        "pea",
+        "erbse"
+      ],
+      "light_target": 15,
+      "max_temp": 25,
+      "source": "unchecked, from memory: typical daily light integral and upper comfortable temperature, verify against a horticulture source"
+    },
+    {
+      "name": "Methi",
+      "names": {
+        "en": "Fenugreek",
+        "de": "Bockshornklee"
+      },
+      "aliases": [
+        "fenugreek"
+      ],
+      "light_target": 12,
+      "max_temp": 30,
+      "source": "unchecked, from memory: typical daily light integral and upper comfortable temperature, verify against a horticulture source"
+    },
+    {
+      "name": "Green Chilli",
+      "names": {
+        "en": "Green chilli",
+        "de": "Grüne Chili"
+      },
+      "aliases": [
+        "chilli",
+        "chili",
+        "chillies",
+        "chilies",
+        "chilis",
+        "green chili",
+        "grüne chilis",
+        "peperoni",
+        "pfefferoni"
+      ],
+      "light_target": 20,
+      "max_temp": 32,
+      "source": "unchecked, from memory: typical daily light integral and upper comfortable temperature, verify against a horticulture source"
+    },
+    {
+      "name": "Elephant Yam (Suran)",
+      "names": {
+        "en": "Elephant foot yam",
+        "de": "Elefantenfuß Yams"
+      },
+      "aliases": [
+        "suran",
+        "elephant yam",
+        "elephant foot yam",
+        "yams"
+      ],
+      "light_target": 15,
+      "max_temp": 35,
+      "source": "unchecked, from memory: typical daily light integral and upper comfortable temperature, verify against a horticulture source"
+    }
+  ]
+}

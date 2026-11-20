@@ -22,7 +22,7 @@ export interface StepResult {
   detail?: string;
 }
 
-export type TabId = 'control' | 'tuning' | 'calib' | 'scan' | 'exp' | 'system' | 'link';
+export type TabId = 'control' | 'farm' | 'tuning' | 'calib' | 'scan' | 'exp' | 'system' | 'link';
 
 // today as the date field writes it, in local time
 function today(): string {
