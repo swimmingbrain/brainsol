@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import os
+from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Literal
 
@@ -21,6 +22,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, ValidationError
+from starlette.concurrency import run_in_threadpool
 
 from .llm import Llm, LlmError, Settings
 from .plants import Table, table as default_table
@@ -55,15 +57,35 @@ def create_app(
     data_dir: Path | None = None,
     origins: list[str] | None = None,
     plants: Table | None = None,
+    planner=None,
 ) -> FastAPI:
+    """planner: a sonnenteiler Host, False for none, None to set it up from SONNENTEILER_DATA"""
     llm = llm or Llm(Settings.from_env())
     plants = plants or default_table()
     data_dir = data_dir or Path(os.environ.get("DATA_DIR", "data"))
     if origins is None:
         origins = [o.strip() for o in os.environ.get("ALLOWED_ORIGINS", DEFAULT_ORIGINS).split(",") if o.strip()]
     store = data_dir / "recipe.json"
+    host = None
+    if planner is None and os.environ.get("SONNENTEILER_DATA"):
+        from sonnenteiler.boot import Host
 
-    app = FastAPI(title="brainSOL recipe server", version="0.1.0")
+        host = Host.from_env()
+    elif planner:
+        host = planner
+    if host is not None:
+        host.link.on, host.link.ok, host.link.model = True, llm.ready, llm.settings.model or None
+
+    @asynccontextmanager
+    async def lifespan(_: FastAPI):
+        # the planner starts in its own thread, the app answers at once
+        if host is not None:
+            host.start()
+        yield
+        if host is not None:
+            host.stop()
+
+    app = FastAPI(title="brainSOL brain server", version="0.2.0", lifespan=lifespan)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=origins,
@@ -110,6 +132,17 @@ def create_app(
         tmp.replace(store)
         return "recipe", wire
 
+    async def with_plan(body: dict, recipe: dict | None = None) -> dict:
+        # the plan in short next to the recipe, null while the planner starts, missing without a planner
+        if host is None:
+            return body
+        if not host.ready:
+            return {**body, "plan": None}
+        runner = host.runner
+        if recipe is not None:
+            await run_in_threadpool(runner.take_recipe, recipe, "tab")
+        return {**body, "plan": await run_in_threadpool(runner.summary)}
+
     @app.get("/health")
     async def health() -> dict:
         return {"ok": llm.ready, "model": llm.settings.model or None}
@@ -124,7 +157,7 @@ def create_app(
             recipe = Recipe.model_validate(json.loads(store.read_text("utf-8")))
         except (OSError, ValueError, ValidationError):
             return error(404, "none", "no recipe yet")
-        return {"recipe": recipe.wire()}
+        return await with_plan({"recipe": recipe.wire()})
 
     @app.post("/recipe", response_model=None)
     async def make_recipe(body: RecipeRequest) -> dict | JSONResponse:
@@ -134,7 +167,7 @@ def create_app(
             return error(e.status, e.code, e.msg, e.detail)
         if kind == "ask":
             return {"ask": got}
-        return {"recipe": got}
+        return await with_plan({"recipe": got}, got)
 
     return app
 
