@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sonnenteiler</title>
+<link rel="icon" href="data:,">
+<link rel="preload" href="fonts/GeistSerif-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+      <circle cx="13" cy="4.5" r="2.6" fill="var(--text-strong)"/>
+      <line x1="2.5" y1="12.5" x2="11.5" y2="8.5" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round"/>
+      <line x1="7" y1="10.5" x2="7" y2="16" stroke="var(--text-muted)" stroke-width="1.2"/>
+    </svg>
+    <h1 class="brand-name">Sonnenteiler</h1>
+  </div>
+  <div class="when">
+    <span class="clock" id="clock" aria-live="off"></span>
+    <span class="date" id="date"></span>
+  </div>
+  <span class="mode" id="mode"></span>
+  <label class="daypick" id="dayPick" hidden>
+    <span class="vh">Tag aus dem Datensatz</span>
+    <select id="daySel" title="Einen Tag aus dem Datensatz wählen"></select>
+  </label>
+  <div class="controls" id="simControls" hidden>
+    <div class="seg" role="group" aria-label="Tempo der Simulation">
+      <button type="button" data-speed="60" aria-pressed="false">60×</button>
+      <button type="button" data-speed="360" aria-pressed="false">360×</button>
+      <button type="button" data-speed="1800" aria-pressed="false">1800×</button>
+    </div>
+    <button type="button" id="pause" aria-pressed="false">Pause</button>
+    <button type="button" id="cloud" title="Für 90 Minuten nur 15 % Direktlicht">Wolke</button>
+    <button type="button" id="reset" title="Den Tag von vorne beginnen, ohne Wolken">Tag neu</button>
+  </div>
+  <span class="touched" id="touched" hidden title="Durch die Wolke ist das Wetter anders als im Datensatz">Tag durch Wolke verändert, kein Vergleich mit der Referenz</span>
+  <span class="spacer"></span>
+  <span class="msg" id="msg" role="status"></span>
+  <span class="net" id="net" hidden>keine Verbindung</span>
+  <button type="button" id="theme">Hell</button>
+</header>
+
+<main class="grid">
+
+  <section class="scene panel" aria-label="Szene">
+    <div class="phead">
+      <h2 id="sceneTitle">Blick quer zur Sonne</h2>
+      <div class="keys">
+        <span class="key"><i style="--c: var(--accent)"></i>Licht auf die Module</span>
+        <span class="key"><i style="--c: var(--secondary)"></i>Licht auf die Pflanzen</span>
+      </div>
+      <button type="button" class="push" id="preview" title="Den Rest des Blocks in 6 Sekunden abspielen" disabled>Vorschau</button>
+    </div>
+    <div class="view" id="view">
+      <div class="stage" id="stage">
+        <canvas id="sceneCv" role="img" aria-label="Seitenansicht mit Sonne, Modulen, Schatten und Pflanzen"></canvas>
+        <div class="night" id="night" hidden>Nacht, die Module stehen flach<small id="nightSub"></small></div>
+        <div class="night" id="wait">Warte auf Daten vom Dienst</div>
+      </div>
+      <div class="corners">
+        <div class="corner c-tl">
+          <span class="v" id="cTurn"></span>
+          <span class="why" id="cWhy"></span>
+        </div>
+        <div class="corner c-tr"><span class="k">Sonnenhöhe</span><span class="v small" id="cSun"></span></div>
+      </div>
+    </div>
+    <div class="readout" id="readout">
+      <div class="ro"><span class="k">Strom</span><span class="v" id="rPower"></span><span class="s" id="rPowerM2"></span></div>
+      <div class="ro"><span class="k">Licht an der Pflanze</span><span class="v" id="rPpfd"></span><span class="s" id="rOpen"></span></div>
+      <div class="ro"><span class="k">Schatten</span><span class="v" id="rShade"></span><span class="s" id="rInc"></span></div>
+      <div class="ro"><span class="k">Strompreis</span><span class="v" id="rPrice"></span><span class="s" id="rPriceSub"></span></div>
+      <div class="ro"><span class="k">Blatt</span><span class="v" id="rLeaf"></span><span class="s" id="rAir"></span></div>
+      <div class="ro"><span class="k">Stress</span><span class="v" id="rStress"></span><span class="s" id="rStressSub"></span></div>
+    </div>
+  </section>
+
+  <section class="charts panel" id="charts" aria-label="Verlauf über den Tag">
+    <div class="chart chart-plan">
+      <div class="phead">
+        <h2>Plan</h2>
+        <span class="sub" id="planSub"></span>
+        <div class="keys push" id="keysPlan"></div>
+      </div>
+      <div class="cv" id="cvPlan" tabindex="0"><canvas role="img" aria-label="Wegdrehwinkel über den Tag mit Grund und Strompreis"></canvas></div>
+      <div class="whykeys" id="whyKeys"></div>
+    </div>
+    <div class="chart chart-sky">
+      <div class="phead">
+        <h2>Vorhersage</h2>
+        <div class="seg small" id="skySeg" role="group" aria-label="Direktlicht oder Streulicht">
+          <button type="button" data-sky="dni" aria-pressed="true" title="Direktlicht, senkrecht zur Sonne gemessen">Direkt</button>
+          <button type="button" data-sky="dhi" aria-pressed="false" title="Streulicht vom Himmel auf eine flache Fläche">Diffus</button>
+        </div>
+        <div class="keys push">
+          <span class="key"><i style="--c: var(--text-strong)"></i>gemessen</span>
+          <span class="key"><i class="thin dash" style="--c: var(--text-muted)"></i>Wetterdienst</span>
+          <span class="key"><i style="--c: var(--sky)"></i>Kurzfristvorhersage</span>
+          <span class="key"><i class="band" style="--c: var(--sky)"></i>Spanne</span>
+        </div>
+      </div>
+      <div class="cv" id="cvSky" tabindex="0"><canvas role="img" aria-label="Direktlicht über den Tag, gemessen und vorhergesagt"></canvas></div>
+      <p class="chartnote" id="skyNote"></p>
+    </div>
+    <div class="tip" id="tip" hidden></div>
+  </section>
+
+  <section class="strip now panel" aria-label="Heute">
+    <div class="tile" id="tAccount">
+      <h3>Licht für die Pflanze<span class="duty" title="Das Lichtziel ist eine Pflicht, kein Preis">Pflicht</span><span class="aside" id="accShare"></span></h3>
+      <div class="meter" id="accMeter">
+        <div class="track"></div>
+        <div class="fill" id="accFill"></div>
+        <div class="range" id="accRange"></div>
+        <div class="mid" id="accMid"></div>
+        <div class="goal" id="accGoal"></div>
+      </div>
+      <div class="scale"><span id="accNow"></span><span id="accTarget"></span></div>
+      <p class="say" id="accSay"></p>
+      <p class="fine" id="accStress"></p>
+    </div>
+    <div class="tile" id="tMoney">
+      <h3>Erlös heute<span class="aside">Strom, € pro Hektar</span></h3>
+      <div id="moneyBody"></div>
+    </div>
+    <div class="tile" id="tReplay">
+      <h3>Rückblick<span class="aside" id="repBlock"></span></h3>
+      <div id="repBody"></div>
+    </div>
+  </section>
+
+  <section class="strip more panel" aria-label="Tagesbilanz und Auswertung">
+    <div class="tile" id="tDays">
+      <h3>Tagesbilanz<span class="aside">fertige Tage, € pro Hektar</span></h3>
+      <div id="daysBody"></div>
+    </div>
+    <div class="tile" id="tEval">
+      <h3>Auswertung<span class="aside" id="evalAside"></span></h3>
+      <div id="evalBody"></div>
+    </div>
+  </section>
+
+  <section class="strip side panel" aria-label="Rezept und Protokoll">
+    <div class="tile" id="tRecipe">
+      <h3>Rezept<span class="aside" id="recName"></span></h3>
+      <div class="wish" id="wish">
+        <div class="pastehead">
+          <label for="aPrompt">Wunsch des Bauern</label>
+          <span class="cbstat" id="cbStat"></span>
+        </div>
+        <textarea id="aPrompt" rows="3" maxlength="1000" spellcheck="true" placeholder="Tomaten, vertragen keine pralle Mittagssonne. Ab 17 Uhr brauche ich Strom."></textarea>
+        <div class="acts">
+          <button type="button" class="primary" id="aSend" disabled>Rezept erstellen</button>
+          <span class="fine" id="aNote">Strg Enter schickt ab. Ein Sprachmodell liest die Worte, die Zahlen der Pflanze kommen aus einer Tabelle.</span>
+        </div>
+        <div class="answer" id="aAnswer" role="status" aria-live="polite"></div>
+      </div>
+      <p class="grp">Aktives Rezept</p>
+      <dl class="rec" id="recList"></dl>
+      <form class="form" id="recForm" autocomplete="off">
+        <label class="wide">Pflanze<select id="fCrop"></select></label>
+        <label>Lichtziel mol/m²<input type="text" inputmode="decimal" id="fDli"></label>
+        <label>Licht bis µmol/m²/s<input type="text" inputmode="decimal" id="fPpfd"></label>
+        <label>Blatt bis °C<input type="text" inputmode="decimal" id="fTmax"></label>
+        <label>Stromstunden<input type="text" id="fHours" placeholder="z. B. 17-21"></label>
+        <label>Schattenstunden<input type="text" id="fShade" placeholder="z. B. 11-15"></label>
+        <label>Fester Strompreis €/MWh<input type="text" inputmode="decimal" id="fElecPrice" placeholder="Marktpreis"></label>
+        <div class="acts">
+          <button type="button" id="fWhatif">Was würde das bringen</button>
+          <button type="button" class="primary" id="fApply">Übernehmen</button>
+          <button type="button" id="fUndo" title="Die Felder wieder auf das aktive Rezept setzen">Zurücksetzen</button>
+        </div>
+      </form>
+      <div class="answer" id="fAnswer" role="status"></div>
+      <div class="paste">
+        <div class="pastehead">
+          <label for="fPaste">Rezept als JSON von Hand ausprobieren</label>
+          <span class="open">jede Form</span>
+        </div>
+        <p class="fine">Die Form des Chatbots (Version 3) ist bekannt, der Dienst liest aber absichtlich auch andere Schreibweisen. Hier geht jedes Rezept JSON zum Ausprobieren.</p>
+        <textarea id="fPaste" rows="4" spellcheck="false" placeholder='{"plant": "Tomato", "light_target": 25, "max_temp": 32, "avoid_sun": [{"from": "11:00", "to": "15:00"}], "power_first": [{"from": "17:00", "to": "21:00"}]}'></textarea>
+        <div class="acts">
+          <button type="button" id="pWhatif">Was würde das bringen</button>
+          <button type="button" id="pApply">Übernehmen</button>
+        </div>
+        <div class="answer" id="pAnswer" role="status"></div>
+      </div>
+    </div>
+    <div class="tile logtile" id="tLog">
+      <h3>Protokoll</h3>
+      <ul class="log" id="logList"></ul>
+    </div>
+  </section>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
