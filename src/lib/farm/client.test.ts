@@ -103,6 +103,23 @@ describe('loadRecipe', () => {
   });
 });
 
+describe('through the pi', () => {
+  it('sends the admin token with a post and keeps it out of the body', async () => {
+    const fetch = answer(200, { recipe: RECIPE });
+    await askRecipe('http://brainsol.local:8080/brain', 'basil', 'en', { fetch, token: 't/k' });
+    const [url, init] = fetch.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe('http://brainsol.local:8080/brain/recipe?token=t%2Fk');
+    expect(JSON.parse(init.body as string)).toEqual({ prompt: 'basil', lang: 'en' });
+  });
+
+  it('reads the errors of the pi', async () => {
+    const offline = await askRecipe('http://pi/brain', 'x', 'en', { fetch: answer(502, { err: 'offline', msg: 'the brain does not answer' }) });
+    expect(offline).toEqual({ ok: false, err: 'offline', msg: 'the brain does not answer' });
+    expect(await askRecipe('http://pi/brain', 'x', 'en', { fetch: answer(504, { err: 'timeout' }) })).toMatchObject({ err: 'timeout' });
+    expect(await askRecipe('http://pi/brain', 'x', 'en', { fetch: answer(403, { err: 'admin' }) })).toMatchObject({ err: 'admin' });
+  });
+});
+
 describe('brainBase', () => {
   it('adds a scheme and drops trailing slashes', () => {
     expect(brainBase('')).toBe('');
