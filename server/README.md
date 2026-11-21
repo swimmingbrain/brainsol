@@ -224,6 +224,8 @@ docker compose -f deploy/compose.yaml up -d --build
 uv run pytest
 ```
 
+This runs both suites: the chatbot's in `tests/` and the planner's in `tests/planner/`, with a small slice of the dataset in `tests/planner/fixtures/`. `tests/test_together.py` checks the seams: the chatbot alone, the planner while it starts, a recipe from the tab and from the planner's page. No test needs the network or a language model.
+
 ## Compare models
 
 `eval/cases.json` holds 19 test sentences with the table's vegetables with the expected plant and hours, including traps (an unknown plant, no plant, a negation, an instruction hidden in the words). `brain/evaluate.py` sends them to whatever model the environment points to and scores plant, `avoid_sun` and `power_first` per sentence. A report lands in `eval/results/`, which git ignores.
