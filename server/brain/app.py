@@ -93,7 +93,7 @@ def create_app(
             return error(400, "bad", "the prompt is empty")
         chosen = None
         if body.plant is not None:
-            chosen = plants.by_name.get(body.plant)
+            chosen = plants.pick(body.plant)
             if chosen is None:
                 return error(400, "bad", f"{body.plant!r} is not in the plant table")
         try:

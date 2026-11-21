@@ -182,7 +182,7 @@ class Recipe(BaseModel):
     model_config = ConfigDict(populate_by_name=True, extra="ignore")
 
     v: int = RECIPE_VERSION
-    plant: str = Field(min_length=1, description="exact column header in the price dataset")
+    plant: str = Field(min_length=1, description="the plant's name in the plant table")
     names: Names
     light_target: float = Field(ge=LIGHT_MIN, le=LIGHT_MAX, description="daily light integral, mol/m²/day")
     max_temp: float | None = Field(default=None, ge=TEMP_MIN, le=TEMP_MAX, description="°C")

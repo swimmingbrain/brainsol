@@ -1,8 +1,8 @@
 {
-  "about": "the plants a recipe can be made for. name is the exact column header of prices.csv in https://www.kaggle.com/datasets/ksamiksha19/vegetable-prices, so a recipe can be priced later by its plant",
+  "about": "the plants a recipe can be made for: the facts behind a recipe, looked up by name. former holds names a plant had before, they are still found and still accepted as a pick",
   "plants": [
     {
-      "name": "Bhindi (Ladies finger)",
+      "name": "Okra",
       "names": {
         "en": "Okra",
         "de": "Okra"
@@ -13,6 +13,9 @@
         "lady finger",
         "okra",
         "okras"
+      ],
+      "former": [
+        "Bhindi (Ladies finger)"
       ],
       "light_target": 20,
       "max_temp": 35,
@@ -65,7 +68,7 @@
       "source": "unchecked, from memory: typical daily light integral and upper comfortable temperature, verify against a horticulture source"
     },
     {
-      "name": "Brinjal",
+      "name": "Aubergine",
       "names": {
         "en": "Eggplant",
         "de": "Aubergine"
@@ -77,6 +80,9 @@
         "eggplants",
         "melanzani",
         "melanzane"
+      ],
+      "former": [
+        "Brinjal"
       ],
       "light_target": 20,
       "max_temp": 32,
@@ -108,7 +114,7 @@
       "source": "unchecked, from memory: typical daily light integral and upper comfortable temperature, verify against a horticulture source"
     },
     {
-      "name": "Methi",
+      "name": "Fenugreek",
       "names": {
         "en": "Fenugreek",
         "de": "Bockshornklee"
@@ -116,12 +122,15 @@
       "aliases": [
         "fenugreek"
       ],
+      "former": [
+        "Methi"
+      ],
       "light_target": 12,
       "max_temp": 30,
       "source": "unchecked, from memory: typical daily light integral and upper comfortable temperature, verify against a horticulture source"
     },
     {
-      "name": "Green Chilli",
+      "name": "Green chilli",
       "names": {
         "en": "Green chilli",
         "de": "Grüne Chili"
@@ -137,12 +146,15 @@
         "peperoni",
         "pfefferoni"
       ],
+      "former": [
+        "Green Chilli"
+      ],
       "light_target": 20,
       "max_temp": 32,
       "source": "unchecked, from memory: typical daily light integral and upper comfortable temperature, verify against a horticulture source"
     },
     {
-      "name": "Elephant Yam (Suran)",
+      "name": "Elephant foot yam",
       "names": {
         "en": "Elephant foot yam",
         "de": "Elefantenfuß Yams"
@@ -152,6 +164,9 @@
         "elephant yam",
         "elephant foot yam",
         "yams"
+      ],
+      "former": [
+        "Elephant Yam (Suran)"
       ],
       "light_target": 15,
       "max_temp": 35,
