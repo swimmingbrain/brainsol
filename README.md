@@ -73,7 +73,9 @@ The language model runs behind a small recipe server in [`server/`](server/READM
 
    Open http://localhost:5173/?brain=http://localhost:8000, unlock the admin tools and open the Plant tab.
 
-`?brain=` works like `?pi=`. For everyone, put the address into `static/config.json` as `"brain"`. Empty means no recipe server, then the tab says so. The public page is served over https, so it only reaches a recipe server over https.
+`?brain=` works like `?pi=`. For everyone, put the address into `static/config.json` as `"brain"`. When both are empty the tab asks the Pi it is connected to: a Pi that knows a brain server (`brainsolpi setbrain`, its `/api/info` says `"brain": true`) passes everything under `/brain/` on to it, then the tab talks only to the Pi and sends the admin token with its posts. Without any of the three the tab says there is no recipe server. The public page is served over https, so it only reaches a recipe server over https, the way through the Pi works wherever the Pi does.
+
+On such a Pi the mode switch in the Control tab also offers Plan: the tracker then does what the simulation of the planner does, with the simulated day and time shown under the switch.
 
 The same server also talks to vLLM on a GPU server or to Hugging Face, only `LLM_BASE_URL` and `LLM_MODEL` change. [`server/README.md`](server/README.md) has those setups, the API, the plant table and how to compare models with the test sentences.
 
