@@ -37,6 +37,12 @@ class RecipeRequest(BaseModel):
     plant: str | None = Field(default=None, max_length=60)
 
 
+class Refused(Exception):
+    def __init__(self, status: int, code: str, msg: str, detail: list[str] | None = None):
+        super().__init__(msg)
+        self.status, self.code, self.msg, self.detail = status, code, msg, detail
+
+
 def error(status: int, code: str, msg: str, detail: list[str] | None = None) -> JSONResponse:
     body: dict = {"err": code, "msg": msg}
     if detail:
@@ -70,6 +76,40 @@ def create_app(
         detail = [f"{'.'.join(str(p) for p in e['loc'][1:]) or 'body'}: {e['msg']}" for e in exc.errors()]
         return error(400, "bad", "the request does not fit", detail)
 
+    async def make(prompt: str, lang: str, pick: str | None) -> tuple[str, dict]:
+        # the farmer's words to ("recipe", recipe) or ("ask", question), else Refused. the recipe is kept
+        prompt = prompt.strip()
+        if not prompt:
+            raise Refused(400, "bad", "the prompt is empty")
+        chosen = None
+        if pick is not None:
+            chosen = plants.pick(pick)
+            if chosen is None:
+                raise Refused(400, "bad", f"{pick!r} is not in the plant table")
+        try:
+            said = await llm.extract(prompt, lang)
+        except LlmError as e:
+            raise Refused(504 if e.code == "timeout" else 502, e.code, e.msg, e.detail) from e
+        plant = chosen or plants.find(said.plant)
+        if plant is None:
+            # not in the table: ask back, a guess would put made up numbers into the plan
+            return "ask", {"plant": said.plant, "known": plants.known()}
+        recipe = Recipe(
+            plant=plant.name,
+            names=plant.names,
+            light_target=plant.light_target,
+            max_temp=plant.max_temp,
+            avoid_sun=said.avoid_sun,
+            power_first=said.power_first,
+            source=plant.source,
+        )
+        wire = recipe.wire()
+        data_dir.mkdir(parents=True, exist_ok=True)
+        tmp = store.with_suffix(".tmp")
+        tmp.write_text(json.dumps({**wire, "prompt": prompt}, ensure_ascii=False, indent=2), "utf-8")
+        tmp.replace(store)
+        return "recipe", wire
+
     @app.get("/health")
     async def health() -> dict:
         return {"ok": llm.ready, "model": llm.settings.model or None}
@@ -88,37 +128,13 @@ def create_app(
 
     @app.post("/recipe", response_model=None)
     async def make_recipe(body: RecipeRequest) -> dict | JSONResponse:
-        prompt = body.prompt.strip()
-        if not prompt:
-            return error(400, "bad", "the prompt is empty")
-        chosen = None
-        if body.plant is not None:
-            chosen = plants.pick(body.plant)
-            if chosen is None:
-                return error(400, "bad", f"{body.plant!r} is not in the plant table")
         try:
-            said = await llm.extract(prompt, body.lang)
-        except LlmError as e:
-            return error(504 if e.code == "timeout" else 502, e.code, e.msg, e.detail)
-        plant = chosen or plants.find(said.plant)
-        if plant is None:
-            # not in the table: ask back, a guess would put made up numbers into the plan
-            return {"ask": {"plant": said.plant, "known": plants.known()}}
-        recipe = Recipe(
-            plant=plant.name,
-            names=plant.names,
-            light_target=plant.light_target,
-            max_temp=plant.max_temp,
-            avoid_sun=said.avoid_sun,
-            power_first=said.power_first,
-            source=plant.source,
-        )
-        wire = recipe.wire()
-        data_dir.mkdir(parents=True, exist_ok=True)
-        tmp = store.with_suffix(".tmp")
-        tmp.write_text(json.dumps({**wire, "prompt": prompt}, ensure_ascii=False, indent=2), "utf-8")
-        tmp.replace(store)
-        return {"recipe": wire}
+            kind, got = await make(body.prompt, body.lang, body.plant)
+        except Refused as e:
+            return error(e.status, e.code, e.msg, e.detail)
+        if kind == "ask":
+            return {"ask": got}
+        return {"recipe": got}
 
     return app
 
