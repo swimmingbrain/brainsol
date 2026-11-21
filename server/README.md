@@ -252,3 +252,7 @@ On the big dataset, 196 training days and 49 test days, mean per test day, elect
 | chilli | 182.9 | 139.6 | 146.2 | 149.2 | 49, 49, 49 | 36.7 | 6.7 |
 
 The forecast's mean error of the direct light is 32, 53, 79 and 89 W/m² at 30, 60, 120 and 180 minutes ahead, against 44, 73, 98 and 108 W/m² for the weather service forecast plus its latest error, and about 112 W/m² for the weather service forecast alone.
+
+## Credits
+
+Weather data by [Open Meteo](https://open-meteo.com/), CC BY 4.0. Electricity prices by [Energy Charts](https://www.energy-charts.info/) (Fraunhofer ISE) from Bundesnetzagentur and SMARD.de, CC BY 4.0. The dataset comes from [brainsolsynth](https://github.com/NeYoNmoos/brainsolsynth).
