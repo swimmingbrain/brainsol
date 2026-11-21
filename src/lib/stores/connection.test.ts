@@ -64,11 +64,12 @@ const settle = async () => {
   for (let i = 0; i < 10; i++) await Promise.resolve();
 };
 
-function make(href: string, config: unknown = { pi: '' }) {
+function make(href: string, config: unknown = { pi: '' }, info: unknown = null) {
   const url = new URL(href);
   const fetchMock = vi.fn(async (input: string) => {
     if (input === '/config.json') return new Response(JSON.stringify(config));
     if (input.includes('/api/history')) return new Response(JSON.stringify({ t0: 0, dt: 1, cols: ['pan'], rows: [] }));
+    if (info && input.endsWith('/api/info')) return new Response(JSON.stringify(info));
     return new Response('nope', { status: 404 });
   });
   const connection = new Connection({
@@ -320,6 +321,39 @@ describe('the connection', () => {
     last().receive(HELLO);
     last().receive({ t: 's', ts: 1, mode: 'auto', st: 'locked', pan: 12.5, tilt: 40, vp: 0, vt: 0, ldr: [1, 1, 1, 1], raw: [1, 1, 1, 1], ex: 0, ey: 0, lvl: 1, lux: 900, pmw: 13, pv: null, gain: 1.4, off: 0.5, tgt: null, sun: null, sim: null });
     expect(telemetry.frame?.pan).toBe(12.5);
+    connection.stop();
+  });
+
+  it('learns from /api/info whether the pi has a brain server and passes the plan it follows on', async () => {
+    const info = { name: 'brainsol', version: '0.1.0', proto: 1, driver: 'bridge', brain: true };
+    const { connection, fetchMock } = make('http://brainsol.local:8080/', { pi: 'self' }, info);
+    await connection.init();
+    expect(connection.brain).toBe(false);
+    last().open();
+    last().receive(HELLO);
+    await settle();
+    expect(fetchMock).toHaveBeenCalledWith('http://brainsol.local:8080/api/info', { cache: 'no-store' });
+    expect(connection.brain).toBe(true);
+    // a page loaded from the pi reaches the brain under its own origin
+    expect(connection.api).toBe('http://brainsol.local:8080');
+    const plan = { ok: true, lost: false, up: true, date: '2025-06-04', time: '09:20', offset: 20, why: 'light', speed: 60, paused: false };
+    last().receive({ t: 's', ts: 1, mode: 'plan', st: 'moving', pan: 30, tilt: 50, vp: 0, vt: 0, ldr: [1, 1, 1, 1], raw: [1, 1, 1, 1], ex: 0, ey: 0, lvl: 1, lux: null, pmw: null, pv: null, gain: null, off: null, tgt: { pan: 30, tilt: 50 }, sun: null, sim: null, plan });
+    vi.advanceTimersByTime(200);
+    expect(telemetry.mode).toBe('plan');
+    expect(telemetry.plan).toEqual(plan);
+    connection.useSim();
+    expect(connection.brain).toBe(false);
+    expect(telemetry.plan).toBeNull();
+    connection.stop();
+  });
+
+  it('offers no brain for an older pi that does not say', async () => {
+    const { connection } = make('http://brainsol.local:8080/', { pi: 'self' }, { name: 'brainsol' });
+    await connection.init();
+    last().open();
+    last().receive(HELLO);
+    await settle();
+    expect(connection.brain).toBe(false);
     connection.stop();
   });
 });
