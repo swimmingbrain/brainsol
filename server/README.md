@@ -87,10 +87,40 @@ The first start reads it, keeps a compact copy, trains the forecast, runs the ev
 ```bash
 cd server
 uv sync
+```
+
+The chatbot alone:
+
+```bash
 LLM_BASE_URL=... LLM_MODEL=... uv run uvicorn brain.app:app --port 8000
 ```
 
-Then open the page with `?brain=http://localhost:8000` (or set `"brain"` in `static/config.json`), unlock the tools and open the Plant tab.
+With the planner, the same command with the dataset folder:
+
+```bash
+SONNENTEILER_DATA=/path/to/dataset SONNENTEILER_WORK=/path/to/work \
+LLM_BASE_URL=... LLM_MODEL=... uv run uvicorn brain.app:app --port 8000
+```
+
+or through the planner's command line, which starts the same app:
+
+```bash
+uv run python -m sonnenteiler serve --data /path/to/dataset --work /path/to/work --port 8000
+```
+
+The app answers at once. The planner starts in the background and is ready after the first training, until then its routes answer 503 with a sentence. Its page is at http://localhost:8000/plan/.
+
+The planner's other commands work without the server:
+
+```bash
+uv run python -m sonnenteiler check --data /path/to/dataset       # what the dataset has
+uv run python -m sonnenteiler train --data ... --work ...         # train, compare the light quantiles, evaluate
+uv run python -m sonnenteiler evaluate --data ... --work ...      # the tables again
+uv run python -m sonnenteiler sim --date 2025-06-01 --days 3 --data ... --work ...
+uv run python -m sonnenteiler plan --date 2025-06-04 --time 09:00 --data ... --work ...
+```
+
+Then open the tracker's page with `?brain=http://localhost:8000` (or set `"brain"` in `static/config.json`), unlock the tools and open the Plant tab.
 
 ### Language model
 
