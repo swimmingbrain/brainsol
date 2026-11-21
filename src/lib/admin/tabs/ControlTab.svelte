@@ -8,8 +8,9 @@
   import { connection } from '$lib/stores/connection.svelte';
   import { telemetry } from '$lib/stores/telemetry.svelte';
   import { MODES, PLAN_MODE, type AnyMode } from '$lib/link/protocol';
-  import { modeName, t, type Key } from '$lib/i18n';
+  import { fmt, modeName, t, type Key } from '$lib/i18n';
   import { modeCommand } from '../commands';
+  import { followText } from '../follow';
   import { runner } from '../session.svelte';
 
   // the mode asked for, until the telemetry shows it or the ack says no
@@ -20,6 +21,7 @@
   // plan only where the pi says it has a brain server to follow
   const modes = $derived<AnyMode[]>(connection.source === 'live' && connection.brain ? [...MODES, PLAN_MODE] : MODES);
   const missing = $derived(modes.filter((mode) => runner.unsupported(`mode.${mode}`)));
+  const follow = $derived(current === PLAN_MODE ? followText(telemetry.plan, t, (n) => fmt(n, 0) ?? '') : []);
 
   $effect(() => {
     if (wanted !== null && current === wanted) wanted = null;
@@ -44,6 +46,9 @@
   <p class="about" aria-live="polite">
     {current ? t(`admin.mode.about.${current}` as Key) : t('admin.mode.waiting')}
   </p>
+  {#if follow.length > 0}
+    <p class="about follow">{follow.join(' ')}</p>
+  {/if}
   {#if missing.length > 0}
     <Note tone="warn">{t('admin.mode.missing', { modes: missing.map(modeName).join(', ') })}</Note>
   {/if}
@@ -62,5 +67,10 @@
     font-size: 12.5px;
     line-height: 1.45;
     color: var(--text-secondary);
+  }
+
+  .follow {
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
   }
 </style>
