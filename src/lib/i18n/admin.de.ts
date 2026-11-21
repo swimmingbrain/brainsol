@@ -346,6 +346,7 @@ export const adminDe: Record<keyof typeof adminEn, string> = {
   'admin.farm.err.offline': 'Der Rezeptserver antwortet nicht. Prüf, ob er läuft und ob die Adresse stimmt.',
   'admin.farm.err.none': 'Der Rezeptserver hat noch kein Rezept.',
   'admin.farm.err.invalid': 'Der Rezeptserver hat ein Rezept geschickt, das diese Seite nicht lesen kann.',
+  'admin.farm.err.admin': 'Der Tracker gibt ein Rezept nur für einen entsperrten Admin weiter. Entsperr ihn neu und schick es noch einmal.',
   'admin.plan.why.sun': 'zur Sonne für den meisten Strom',
   'admin.plan.why.light': 'die Pflanze braucht Licht',
   'admin.plan.why.price': 'der Strompreis liegt unter null',

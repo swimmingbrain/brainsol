@@ -347,6 +347,7 @@ export const adminEn = {
   'admin.farm.err.offline': 'The recipe server does not answer. Check that it runs and its address.',
   'admin.farm.err.none': 'The recipe server has no recipe yet.',
   'admin.farm.err.invalid': 'The recipe server sent a recipe this page cannot read.',
+  'admin.farm.err.admin': 'The tracker passes a recipe on only for an unlocked admin. Unlock it again and send once more.',
   'admin.plan.why.sun': 'facing the sun for the most power',
   'admin.plan.why.light': 'the plant needs light',
   'admin.plan.why.price': 'the power price is below zero',

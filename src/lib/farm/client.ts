@@ -1,14 +1,16 @@
 // talks to the recipe server (server/ in this repo, on the gpu server or
-// anywhere with a hugging face token). never throws: every answer is either a
-// checked recipe or a short error code the tab turns into a sentence
+// anywhere with a hugging face token), straight or through the pi the page is
+// connected to. never throws: every answer is either a checked recipe or a
+// short error code the tab turns into a sentence
 
 import { parseAsk, parseRecipe, type Ask, type Recipe } from './recipe';
 import { parsePlan, type DayPlan } from './plan';
 import type { Lang } from '$lib/stores/preferences.svelte';
 
 // bad: the server refused the words, llm: the model failed, timeout: too slow,
-// offline: nothing answered, none: no recipe kept yet, invalid: an answer the page cannot read
-export type RecipeError = 'bad' | 'llm' | 'timeout' | 'offline' | 'none' | 'invalid';
+// offline: nothing answered, none: no recipe kept yet, invalid: an answer the page cannot read,
+// admin: the pi wants the admin token for a post
+export type RecipeError = 'bad' | 'llm' | 'timeout' | 'offline' | 'none' | 'invalid' | 'admin';
 
 // a recipe with the plan of the planner when it runs, or a question back when
 // the plant is not in the server's table
@@ -25,7 +27,9 @@ export interface ClientOptions {
 
 export const PROMPT_MAX = 1000;
 const TIMEOUT_MS = 70_000;
-const KNOWN: RecipeError[] = ['bad', 'llm', 'timeout', 'none'];
+// the pi waits 150 s for the brain, the page a little longer so the pi's own timeout answer arrives
+export const VIA_PI_TIMEOUT_MS = 155_000;
+const KNOWN: RecipeError[] = ['bad', 'llm', 'timeout', 'none', 'offline', 'admin'];
 
 // the base address as typed, with a scheme and without a trailing slash
 export function brainBase(address: string): string {
@@ -72,16 +76,18 @@ async function call(url: string, init: RequestInit, options: ClientOptions): Pro
 }
 
 // asks the server to make a recipe out of the farmer's words. plant is the table
-// name the farmer picked after a question back, it wins over the name in the words
+// name the farmer picked after a question back, it wins over the name in the words.
+// token is the admin token of the pi when the request goes through it
 export function askRecipe(
   base: string,
   prompt: string,
   lang: Lang,
-  options: ClientOptions & { plant?: string } = {}
+  options: ClientOptions & { plant?: string; token?: string | null } = {}
 ): Promise<RecipeResult> {
-  const { plant, ...rest } = options;
+  const { plant, token, ...rest } = options;
   const body = { prompt: prompt.slice(0, PROMPT_MAX), lang, ...(plant ? { plant } : {}) };
-  return call(`${base}/recipe`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }, rest);
+  const url = `${base}/recipe${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+  return call(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }, rest);
 }
 
 // the last recipe the server kept
