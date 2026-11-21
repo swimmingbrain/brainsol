@@ -87,6 +87,20 @@ describe('loadRecipe', () => {
   it('knows when there is no recipe yet', async () => {
     expect(await loadRecipe('http://b', { fetch: answer(404, { err: 'none', msg: 'no recipe yet' }) })).toMatchObject({ ok: false, err: 'none' });
   });
+
+  it('brings the plan of the planner along with the recipe', async () => {
+    const plan = { date: '2025-06-04', now: '09:20', reachable: false, hours: [{ from: '09:00', to: '10:00', offset: 15, why: 'stress' }] };
+    const result = await loadRecipe('http://b', { fetch: answer(200, { recipe: RECIPE, plan }) });
+    expect(result.ok && result.plan?.reachable).toBe(false);
+    expect(result.ok && result.plan?.hours[0]).toEqual({ from: '09:00', to: '10:00', offset: 15, why: 'stress', price: null });
+    // the planner is not ready: the recipe alone
+    expect(await loadRecipe('http://b', { fetch: answer(200, { recipe: RECIPE, plan: null }) })).toEqual({ ok: true, recipe: RECIPE });
+  });
+
+  it('reads a recipe with keys it does not know', async () => {
+    const result = await loadRecipe('http://b', { fetch: answer(200, { recipe: { ...RECIPE, block_h: 3, prompt: 'x' }, extra: 1 }) });
+    expect(result).toEqual({ ok: true, recipe: RECIPE });
+  });
 });
 
 describe('brainBase', () => {
