@@ -1,0 +1,185 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1400" viewBox="0 0 1500 1400" font-family="Helvetica, Arial, sans-serif" role="img">
+<title>Das große Bild: wer redet mit wem</title>
+<defs>
+<marker id="a1a5fb4" viewBox="0 0 10 10" refX="9.5" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.8 L10,5 L0,9.2 z" fill="#1a5fb4"/></marker>
+<marker id="sa1a5fb4" viewBox="0 0 10 10" refX="9.5" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0.8 L10,5 L0,9.2 z" fill="#1a5fb4"/></marker>
+<marker id="a1f2328" viewBox="0 0 10 10" refX="9.5" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.8 L10,5 L0,9.2 z" fill="#1f2328"/></marker>
+<marker id="sa1f2328" viewBox="0 0 10 10" refX="9.5" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0.8 L10,5 L0,9.2 z" fill="#1f2328"/></marker>
+</defs>
+<rect width="1500" height="1400" fill="#ffffff"/>
+<rect x="540" y="80" width="645" height="620" rx="10" fill="#fdeeec" stroke="#b42318" stroke-width="1.8"/>
+<text x="552.0" y="103.0" font-size="15" fill="#1f2328" text-anchor="start" xml:space="preserve"><tspan font-weight="bold">Jetson</tspan>, nur im Tailscale Netz erreichbar</text>
+<rect x="560" y="265" width="605" height="420" rx="10" fill="#ffffff" stroke="#1e7b34" stroke-width="1.8"/>
+<text x="572.0" y="288.0" font-size="15" fill="#1f2328" text-anchor="start" xml:space="preserve"><tspan font-weight="bold">Ein Server, Port 8000</tspan> (brain)</text>
+<text x="572.0" y="306.2" font-size="14" fill="#1f2328" text-anchor="start" xml:space="preserve">Chatbot und Planer in einem Prozess</text>
+<rect x="560" y="790" width="340" height="200" rx="10" fill="#fdeeec" stroke="#b42318" stroke-width="1.8"/>
+<text x="572.0" y="813.0" font-size="15" fill="#1f2328" text-anchor="start" xml:space="preserve"><tspan font-weight="bold">Raspberry Pi</tspan></text>
+<rect x="30" y="1030" width="1440" height="300" rx="10" fill="#fdeeec" stroke="#b42318" stroke-width="1.8"/>
+<text x="42.0" y="1053.0" font-size="15" fill="#1f2328" text-anchor="start" xml:space="preserve"><tspan font-weight="bold">Nachführer brainSOL</tspan></text>
+<polyline points="230.0,170.0 255.0,170.0 255.0,185.0 280.0,185.0" fill="none" stroke="#1a5fb4" stroke-width="1.6" marker-end="url(#a1a5fb4)"/>
+<polyline points="230.0,270.0 255.0,270.0 255.0,220.0 280.0,220.0" fill="none" stroke="#1a5fb4" stroke-width="1.6" marker-end="url(#a1a5fb4)"/>
+<polyline points="375.0,250.0 375.0,330.0" fill="none" stroke="#1a5fb4" stroke-width="1.6" marker-end="url(#a1a5fb4)"/>
+<polyline points="280.0,395.0 230.0,395.0" fill="none" stroke="#1a5fb4" stroke-width="1.6" marker-end="url(#a1a5fb4)"/>
+<polyline points="470.0,400.0 580.0,400.0" fill="none" stroke="#1a5fb4" stroke-width="1.6" marker-end="url(#a1a5fb4)"/>
+<polyline points="790.0,175.0 880.0,175.0 880.0,380.0 930.0,380.0" fill="none" stroke="#1a5fb4" stroke-width="1.6" marker-end="url(#a1a5fb4)"/>
+<polyline points="1040.0,220.0 1040.0,340.0" fill="none" stroke="#1a5fb4" stroke-width="1.6" marker-end="url(#a1a5fb4)" marker-start="url(#sa1a5fb4)"/>
+<polyline points="790.0,420.0 930.0,420.0" fill="none" stroke="#1a5fb4" stroke-width="1.6" marker-end="url(#a1a5fb4)"/>
+<polyline points="930.0,460.0 790.0,460.0" fill="none" stroke="#1a5fb4" stroke-width="1.6" marker-end="url(#a1a5fb4)"/>
+<polyline points="790.0,580.0 1250.0,580.0" fill="none" stroke="#1a5fb4" stroke-width="1.6" marker-end="url(#a1a5fb4)"/>
+<polyline points="1250.0,625.0 790.0,625.0" fill="none" stroke="#1a5fb4" stroke-width="1.6" marker-end="url(#a1a5fb4)"/>
+<polyline points="1355.0,460.0 1355.0,540.0" fill="none" stroke="#1f2328" stroke-width="1.6" marker-end="url(#a1f2328)"/>
+<polyline points="1460.0,420.0 1482.0,420.0 1482.0,905.0 1220.0,905.0" fill="none" stroke="#1f2328" stroke-width="1.6" marker-end="url(#a1f2328)"/>
+<polyline points="1000.0,880.0 875.0,880.0" fill="none" stroke="#1a5fb4" stroke-width="1.6" marker-end="url(#a1a5fb4)" marker-start="url(#sa1a5fb4)"/>
+<polyline points="1000.0,945.0 875.0,945.0" fill="none" stroke="#1a5fb4" stroke-width="1.6" marker-end="url(#a1a5fb4)"/>
+<polyline points="780.0,835.0 780.0,650.0" fill="none" stroke="#1a5fb4" stroke-width="1.6" marker-end="url(#a1a5fb4)" marker-start="url(#sa1a5fb4)"/>
+<polyline points="840.0,980.0 840.0,1090.0" fill="none" stroke="#1a5fb4" stroke-width="1.6" marker-end="url(#a1a5fb4)" marker-start="url(#sa1a5fb4)"/>
+<polyline points="750.0,1140.0 670.0,1140.0" fill="none" stroke="#1f2328" stroke-width="1.6" marker-end="url(#a1f2328)"/>
+<polyline points="520.0,1140.0 450.0,1140.0" fill="none" stroke="#1f2328" stroke-width="1.6" marker-end="url(#a1f2328)"/>
+<polyline points="270.0,1140.0 200.0,1140.0" fill="none" stroke="#1f2328" stroke-width="1.6" marker-end="url(#a1f2328)"/>
+<polyline points="1010.0,1140.0 930.0,1140.0" fill="none" stroke="#1a5fb4" stroke-width="1.6" marker-end="url(#a1a5fb4)"/>
+<polyline points="270.0,1270.0 840.0,1270.0 840.0,1190.0" fill="none" stroke="#1a5fb4" stroke-width="1.6" stroke-dasharray="7 5" marker-end="url(#a1a5fb4)"/>
+<text x="30.0" y="42.6" font-size="21" fill="#1f2328" text-anchor="start" xml:space="preserve"><tspan font-weight="bold">Das große Bild: wer redet mit wem</tspan></text>
+<rect x="30" y="130" width="200" height="80" rx="8" fill="#eaf2fb" stroke="#1a5fb4" stroke-width="1.8"/>
+<text x="130.0" y="157.5" font-size="15" fill="#1f2328" text-anchor="middle" xml:space="preserve"><tspan font-weight="bold">Open Meteo</tspan></text>
+<text x="130.0" y="175.7" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">Wetter gemessen und</text>
+<text x="130.0" y="193.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">Vorhersage vom Vortag</text>
+<rect x="30" y="230" width="200" height="80" rx="8" fill="#eaf2fb" stroke="#1a5fb4" stroke-width="1.8"/>
+<text x="130.0" y="257.5" font-size="15" fill="#1f2328" text-anchor="middle" xml:space="preserve"><tspan font-weight="bold">Energy Charts</tspan></text>
+<text x="130.0" y="275.7" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">Strompreis Österreich,</text>
+<text x="130.0" y="293.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">Börse vom Vortag</text>
+<rect x="280" y="150" width="190" height="100" rx="8" fill="#e9f6ec" stroke="#1e7b34" stroke-width="1.8"/>
+<text x="375.0" y="187.5" font-size="15" fill="#1f2328" text-anchor="middle" xml:space="preserve"><tspan font-weight="bold">Generator</tspan></text>
+<text x="375.0" y="205.7" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">generate.py, Repo</text>
+<text x="375.0" y="223.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">brainsolsynth</text>
+<rect x="280" y="330" width="190" height="100" rx="8" fill="#eaf2fb" stroke="#1a5fb4" stroke-width="1.8"/>
+<text x="375.0" y="367.5" font-size="15" fill="#1f2328" text-anchor="middle" xml:space="preserve"><tspan font-weight="bold">Datensatz</tspan></text>
+<text x="375.0" y="385.7" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">Dornbirn, 245 Tage,</text>
+<text x="375.0" y="403.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">alle 5 Minuten</text>
+<rect x="30" y="350" width="200" height="90" rx="8" fill="#ffffff" stroke="#1f2328" stroke-width="1.8"/>
+<text x="130.0" y="382.5" font-size="15" fill="#1f2328" text-anchor="middle" xml:space="preserve"><tspan font-weight="bold">Dashboard</tspan></text>
+<text x="130.0" y="400.7" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">des Datensatzes</text>
+<text x="130.0" y="418.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">web/, Port 5174</text>
+<rect x="575" y="130" width="215" height="90" rx="8" fill="#eaf2fb" stroke="#1a5fb4" stroke-width="1.8"/>
+<text x="682.5" y="162.5" font-size="15" fill="#1f2328" text-anchor="middle" xml:space="preserve"><tspan font-weight="bold">Pflanzentabelle</tspan></text>
+<text x="682.5" y="180.7" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">plants.json, 10 Gemüse,</text>
+<text x="682.5" y="198.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">Werte sind Annahmen</text>
+<rect x="930" y="130" width="220" height="90" rx="8" fill="#e9f6ec" stroke="#1e7b34" stroke-width="1.8"/>
+<text x="1040.0" y="162.5" font-size="15" fill="#1f2328" text-anchor="middle" xml:space="preserve"><tspan font-weight="bold">Sprachmodell</tspan></text>
+<text x="1040.0" y="180.7" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">gemma 3 4B in Ollama,</text>
+<text x="1040.0" y="198.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">auf der Grafikeinheit</text>
+<rect x="580" y="340" width="210" height="310" rx="8" fill="#e9f6ec" stroke="#1e7b34" stroke-width="1.8"/>
+<text x="685.0" y="455.6" font-size="15" fill="#1f2328" text-anchor="middle" xml:space="preserve"><tspan font-weight="bold">Planer</tspan></text>
+<text x="685.0" y="473.8" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">(Sonnenteiler)</text>
+<text x="685.0" y="491.7" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">Kurzfristvorhersage,</text>
+<text x="685.0" y="509.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">Plan alle 3 Stunden,</text>
+<text x="685.0" y="527.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">Simulation,</text>
+<text x="685.0" y="545.5" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">Seite unter /plan/</text>
+<rect x="930" y="340" width="220" height="150" rx="8" fill="#e9f6ec" stroke="#1e7b34" stroke-width="1.8"/>
+<text x="1040.0" y="393.5" font-size="15" fill="#1f2328" text-anchor="middle" xml:space="preserve"><tspan font-weight="bold">Chatbot</tspan></text>
+<text x="1040.0" y="411.7" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">macht aus den Worten</text>
+<text x="1040.0" y="429.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">ein Rezept, Routen</text>
+<text x="1040.0" y="447.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">/recipe, /plants, /health</text>
+<rect x="1250" y="380" width="210" height="80" rx="8" fill="#ffffff" stroke="#1f2328" stroke-width="1.8"/>
+<text x="1355.0" y="407.5" font-size="15" fill="#1f2328" text-anchor="middle" xml:space="preserve"><tspan font-weight="bold">Bauer</tspan></text>
+<text x="1355.0" y="425.7" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">sagt in eigenen Worten,</text>
+<text x="1355.0" y="443.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">was die Pflanze braucht</text>
+<rect x="1250" y="540" width="210" height="120" rx="8" fill="#ffffff" stroke="#1f2328" stroke-width="1.8"/>
+<text x="1355.0" y="578.5" font-size="15" fill="#1f2328" text-anchor="middle" xml:space="preserve"><tspan font-weight="bold">Seite des Planers</tspan></text>
+<text x="1355.0" y="596.7" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">im Browser: Plan, Licht,</text>
+<text x="1355.0" y="614.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">Erlös, Feld Wunsch</text>
+<text x="1355.0" y="632.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">des Bauern</text>
+<rect x="585" y="835" width="290" height="145" rx="8" fill="#e9f6ec" stroke="#1e7b34" stroke-width="1.8"/>
+<text x="730.0" y="877.1" font-size="15" fill="#1f2328" text-anchor="middle" xml:space="preserve"><tspan font-weight="bold">Dienst auf dem Pi</tspan></text>
+<text x="730.0" y="895.3" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">brainsolpi, Port 8080:</text>
+<text x="730.0" y="913.2" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">Seite, WebSocket,</text>
+<text x="730.0" y="931.1" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">Regelschleife, Sonnenstand</text>
+<text x="730.0" y="949.0" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">neu: /brain/, Modus Plan</text>
+<rect x="1000" y="850" width="220" height="120" rx="8" fill="#ffffff" stroke="#1f2328" stroke-width="1.8"/>
+<text x="1110.0" y="888.5" font-size="15" fill="#1f2328" text-anchor="middle" xml:space="preserve"><tspan font-weight="bold">Seite des Nachführers</tspan></text>
+<text x="1110.0" y="906.7" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">im Browser: 3D Zwilling,</text>
+<text x="1110.0" y="924.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">Reiter Pflanze mit</text>
+<text x="1110.0" y="942.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">Wunsch, Rezept und Plan</text>
+<rect x="40" y="1090" width="160" height="100" rx="8" fill="#fdeeec" stroke="#b42318" stroke-width="1.8"/>
+<text x="120.0" y="1127.5" font-size="15" fill="#1f2328" text-anchor="middle" xml:space="preserve"><tspan font-weight="bold">Deckel als Beet</tspan></text>
+<text x="120.0" y="1145.7" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">Erde, kleine Pflanzen</text>
+<text x="120.0" y="1163.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">(Mechanik)</text>
+<rect x="270" y="1090" width="180" height="100" rx="8" fill="#fdeeec" stroke="#b42318" stroke-width="1.8"/>
+<text x="360.0" y="1118.5" font-size="15" fill="#1f2328" text-anchor="middle" xml:space="preserve"><tspan font-weight="bold">Modul</tspan></text>
+<text x="360.0" y="1136.7" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">Solarzelle, Leistung</text>
+<text x="360.0" y="1154.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">aus dem Licht</text>
+<text x="360.0" y="1172.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">gerechnet</text>
+<rect x="520" y="1090" width="150" height="100" rx="8" fill="#fdeeec" stroke="#b42318" stroke-width="1.8"/>
+<text x="595.0" y="1127.5" font-size="15" fill="#1f2328" text-anchor="middle" xml:space="preserve"><tspan font-weight="bold">Zwei Servos</tspan></text>
+<text x="595.0" y="1145.7" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">Drehen (Pin 9),</text>
+<text x="595.0" y="1163.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">Neigen (Pin 10)</text>
+<rect x="750" y="1090" width="180" height="100" rx="8" fill="#fdeeec" stroke="#b42318" stroke-width="1.8"/>
+<text x="840.0" y="1118.5" font-size="15" fill="#1f2328" text-anchor="middle" xml:space="preserve"><tspan font-weight="bold">Arduino UNO</tspan></text>
+<text x="840.0" y="1136.7" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">Bridge Firmware:</text>
+<text x="840.0" y="1154.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">liest Sensoren,</text>
+<text x="840.0" y="1172.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">stellt Servos</text>
+<rect x="1010" y="1090" width="220" height="100" rx="8" fill="#fdeeec" stroke="#b42318" stroke-width="1.8"/>
+<text x="1120.0" y="1127.5" font-size="15" fill="#1f2328" text-anchor="middle" xml:space="preserve"><tspan font-weight="bold">Sensoren des Bausatzes</tspan></text>
+<text x="1120.0" y="1145.7" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">vier Fotowiderstände,</text>
+<text x="1120.0" y="1163.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">BH1750 in Lux</text>
+<rect x="40" y="1225" width="230" height="90" rx="8" fill="#fdeeec" stroke="#b42318" stroke-width="1.8" stroke-dasharray="7 5"/>
+<text x="155.0" y="1248.5" font-size="15" fill="#1f2328" text-anchor="middle" xml:space="preserve"><tspan font-weight="bold">Vier Lichtmodule</tspan></text>
+<text x="155.0" y="1266.7" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">im Beet, eins je Ecke,</text>
+<text x="155.0" y="1284.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">messen das Licht an</text>
+<text x="155.0" y="1302.6" font-size="14" fill="#1f2328" text-anchor="middle" xml:space="preserve">den Pflanzen (kommt dazu)</text>
+<rect x="30" y="1359" width="28" height="18" rx="3" fill="#eaf2fb" stroke="#1a5fb4" stroke-width="1.4"/>
+<text x="66.0" y="1372.7" font-size="13" fill="#1f2328" text-anchor="start" xml:space="preserve">Daten</text>
+<rect x="142" y="1359" width="28" height="18" rx="3" fill="#e9f6ec" stroke="#1e7b34" stroke-width="1.4"/>
+<text x="178.0" y="1372.7" font-size="13" fill="#1f2328" text-anchor="start" xml:space="preserve">Logik</text>
+<rect x="249" y="1359" width="28" height="18" rx="3" fill="#ffffff" stroke="#1f2328" stroke-width="1.4"/>
+<text x="285.0" y="1372.7" font-size="13" fill="#1f2328" text-anchor="start" xml:space="preserve">Oberfläche und Mensch</text>
+<rect x="471" y="1359" width="28" height="18" rx="3" fill="#fdeeec" stroke="#b42318" stroke-width="1.4"/>
+<text x="507.0" y="1372.7" font-size="13" fill="#1f2328" text-anchor="start" xml:space="preserve">Hardware</text>
+<line x1="603" y1="1368.0" x2="643" y2="1368.0" stroke="#1f2328" stroke-width="1.6"/>
+<text x="651.0" y="1372.7" font-size="13" fill="#1f2328" text-anchor="start" xml:space="preserve">läuft heute</text>
+<line x1="757" y1="1368.0" x2="797" y2="1368.0" stroke="#1f2328" stroke-width="1.6" stroke-dasharray="7 5"/>
+<text x="805.0" y="1372.7" font-size="13" fill="#1f2328" text-anchor="start" xml:space="preserve">gebaut, läuft noch nicht</text>
+<rect x="381.6" y="279.7" width="54.9" height="20.6" fill="#ffffff" fill-opacity="0.92"/>
+<text x="409.0" y="294.7" font-size="13" fill="#1f2328" text-anchor="middle">schreibt</text>
+<rect x="239.1" y="371.7" width="31.8" height="20.6" fill="#ffffff" fill-opacity="0.92"/>
+<text x="255.0" y="386.7" font-size="13" fill="#1f2328" text-anchor="middle">liest</text>
+<rect x="475.9" y="376.7" width="54.1" height="20.6" fill="#ffffff" fill-opacity="0.92"/>
+<text x="503.0" y="391.7" font-size="13" fill="#1f2328" text-anchor="middle">Dateien</text>
+<rect x="801.4" y="197.5" width="77.2" height="37.3" fill="#ffffff" fill-opacity="0.92"/>
+<text x="840.0" y="212.5" font-size="13" fill="#1f2328" text-anchor="middle">Lichtziel,</text>
+<text x="840.0" y="229.1" font-size="13" fill="#1f2328" text-anchor="middle">Temperatur</text>
+<rect x="923.0" y="273.4" width="110.0" height="37.3" fill="#ffffff" fill-opacity="0.92"/>
+<text x="978.0" y="288.4" font-size="13" fill="#1f2328" text-anchor="middle">Worte, zurück:</text>
+<text x="978.0" y="305.0" font-size="13" fill="#1f2328" text-anchor="middle">Pflanze, Stunden</text>
+<rect x="831.8" y="396.7" width="56.4" height="20.6" fill="#ffffff" fill-opacity="0.92"/>
+<text x="860.0" y="411.7" font-size="13" fill="#1f2328" text-anchor="middle">Wunsch</text>
+<rect x="834.8" y="462.7" width="50.4" height="20.6" fill="#ffffff" fill-opacity="0.92"/>
+<text x="860.0" y="477.7" font-size="13" fill="#1f2328" text-anchor="middle">Rezept</text>
+<rect x="816.3" y="556.7" width="113.0" height="20.6" fill="#ffffff" fill-opacity="0.92"/>
+<text x="872.8" y="571.7" font-size="13" fill="#1f2328" text-anchor="middle">Zustand und Plan</text>
+<rect x="808.5" y="627.7" width="128.6" height="20.6" fill="#ffffff" fill-opacity="0.92"/>
+<text x="872.8" y="642.7" font-size="13" fill="#1f2328" text-anchor="middle">Wunsch des Bauern</text>
+<rect x="1367.3" y="481.4" width="59.4" height="37.3" fill="#ffffff" fill-opacity="0.92"/>
+<text x="1397.0" y="496.4" font-size="13" fill="#1f2328" text-anchor="middle">tippt den</text>
+<text x="1397.0" y="513.0" font-size="13" fill="#1f2328" text-anchor="middle">Wunsch</text>
+<rect x="1304.7" y="881.7" width="92.1" height="20.6" fill="#ffffff" fill-opacity="0.92"/>
+<text x="1350.7" y="896.7" font-size="13" fill="#1f2328" text-anchor="middle">Reiter Pflanze</text>
+<rect x="920.5" y="856.7" width="76.5" height="20.6" fill="#ffffff" fill-opacity="0.92"/>
+<text x="958.8" y="871.7" font-size="13" fill="#1f2328" text-anchor="middle">WebSocket</text>
+<rect x="914.9" y="947.7" width="45.2" height="20.6" fill="#ffffff" fill-opacity="0.92"/>
+<text x="937.5" y="962.7" font-size="13" fill="#1f2328" text-anchor="middle">/brain/</text>
+<rect x="665.2" y="723.9" width="105.5" height="37.3" fill="#ffffff" fill-opacity="0.92"/>
+<text x="718.0" y="738.9" font-size="13" fill="#1f2328" text-anchor="middle">/brain/ und Pose</text>
+<text x="718.0" y="755.5" font-size="13" fill="#1f2328" text-anchor="middle">der Simulation</text>
+<rect x="848.9" y="1002.7" width="74.2" height="20.6" fill="#ffffff" fill-opacity="0.92"/>
+<text x="886.0" y="1017.7" font-size="13" fill="#1f2328" text-anchor="middle">USB seriell</text>
+<rect x="692.2" y="1116.7" width="35.5" height="20.6" fill="#ffffff" fill-opacity="0.92"/>
+<text x="710.0" y="1131.7" font-size="13" fill="#1f2328" text-anchor="middle">stellt</text>
+<rect x="453.8" y="1116.7" width="62.3" height="20.6" fill="#ffffff" fill-opacity="0.92"/>
+<text x="485.0" y="1131.7" font-size="13" fill="#1f2328" text-anchor="middle">bewegen</text>
+<rect x="204.6" y="1116.7" width="60.9" height="20.6" fill="#ffffff" fill-opacity="0.92"/>
+<text x="235.0" y="1131.7" font-size="13" fill="#1f2328" text-anchor="middle">Schatten</text>
+<rect x="933.6" y="1142.7" width="72.7" height="20.6" fill="#ffffff" fill-opacity="0.92"/>
+<text x="970.0" y="1157.7" font-size="13" fill="#1f2328" text-anchor="middle">Messwerte</text>
+<rect x="486.3" y="1246.7" width="152.4" height="20.6" fill="#ffffff" fill-opacity="0.92"/>
+<text x="562.5" y="1261.7" font-size="13" fill="#1f2328" text-anchor="middle">I2C am Arduino, geplant</text>
+</svg>
