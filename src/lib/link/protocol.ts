@@ -127,6 +127,22 @@ export interface SunPosition {
   t: number;
 }
 
+// what a pi in plan mode says about the plan it follows. ok: the brain server
+// answers, lost: it did not for 10 s and the head parks. date and time are the
+// simulated moment of the planner in its local time, offset the angle away from
+// the sun in degrees and why the planner's reason for it. any of them may be null
+export interface PlanFollow {
+  ok: boolean;
+  lost: boolean;
+  up: boolean | null;
+  date: string | null;
+  time: string | null;
+  offset: number | null;
+  why: string | null;
+  speed: number | null;
+  paused: boolean | null;
+}
+
 // server to page
 
 export interface HelloMessage {
@@ -167,6 +183,8 @@ export interface StateFrame {
   tgt: Pose | null;
   sun: SunPosition | null;
   sim: SimLight | null;
+  // only a pi sends it, null outside the plan mode
+  plan?: PlanFollow | null;
 }
 
 export type Activity = 'scan' | 'exp' | 'calib';

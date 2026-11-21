@@ -4,7 +4,7 @@
 // second, and each one only changes when its value did, so a 20 Hz stream
 // redraws a number here and there and never the page
 
-import type { AnyMode, EvtMessage, ExpMessage, NoQuad, Pose, Quad, ScanMessage, ServerMessage, SimLight, St, StateFrame, SunPosition, SysFrame } from '$lib/link/protocol';
+import type { AnyMode, EvtMessage, ExpMessage, NoQuad, PlanFollow, Pose, Quad, ScanMessage, ServerMessage, SimLight, St, StateFrame, SunPosition, SysFrame } from '$lib/link/protocol';
 
 // how often the runes may change, in milliseconds
 export const PUBLISH_EVERY = 100;
@@ -61,6 +61,8 @@ class Telemetry {
   tgt = $state.raw<Pose | null>(null);
   sun = $state.raw<SunPosition | null>(null);
   sim = $state.raw<SimLight | null>(null);
+  // the plan a pi follows in plan mode, null otherwise
+  plan = $state.raw<PlanFollow | null>(null);
 
   // the slower messages are rare enough to go straight into runes
   sys = $state.raw<SysFrame | null>(null);
@@ -124,6 +126,7 @@ class Telemetry {
     this.lux = this.pmw = this.gain = this.off = null;
     this.ldr = this.raw = null;
     this.pv = this.tgt = this.sun = this.sim = null;
+    this.plan = null;
     this.sys = null;
     this.scan = null;
     this.exp = null;
@@ -188,6 +191,8 @@ class Telemetry {
     if (!sameFlat(this.tgt, f.tgt)) this.tgt = f.tgt;
     if (!sameFlat(this.sun, f.sun)) this.sun = f.sun;
     if (!sameFlat(this.sim, f.sim)) this.sim = f.sim;
+    const plan = f.plan ?? null;
+    if (!sameFlat(this.plan, plan)) this.plan = plan;
   }
 }
 
