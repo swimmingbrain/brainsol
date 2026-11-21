@@ -63,7 +63,7 @@ def test_an_unknown_plant_is_asked_back_and_nothing_is_kept(tmp_path):
     assert r.status_code == 200
     ask = r.json()["ask"]
     assert ask["plant"] == "Safran"
-    assert {"name": "Brinjal", "names": {"en": "Eggplant", "de": "Aubergine"}} in ask["known"]
+    assert {"name": "Aubergine", "names": {"en": "Eggplant", "de": "Aubergine"}} in ask["known"]
     assert not (tmp_path / "recipe.json").exists()
 
 
@@ -75,10 +75,13 @@ def test_words_without_a_plant_are_asked_back(tmp_path):
 
 def test_a_picked_plant_wins_over_the_words(tmp_path):
     c, _ = client(tmp_path, said("Safran"))
-    r = c.post("/recipe", json={"prompt": "Safran, ab 17 Uhr Strom", "plant": "Bhindi (Ladies finger)"})
+    r = c.post("/recipe", json={"prompt": "Safran, ab 17 Uhr Strom", "plant": "Okra"})
     recipe = r.json()["recipe"]
-    assert recipe["plant"] == "Bhindi (Ladies finger)"
+    assert recipe["plant"] == "Okra"
     assert recipe["power_first"] == [{"from": "17:00", "to": "21:00"}]
+    # a former name is still a pick, the recipe carries the plain name
+    r = c.post("/recipe", json={"prompt": "Safran", "plant": "Bhindi (Ladies finger)"})
+    assert r.json()["recipe"]["plant"] == "Okra"
 
 
 def test_a_picked_plant_must_be_in_the_table(tmp_path):
