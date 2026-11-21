@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { createEngine } from './engine';
 import { hasBadNumber, START_MS } from './harness';
 import { mulberry32 } from './physics';
-import { MODES, STATES, type AckMessage, type ClientMessage, type ServerMessage } from '$lib/link/protocol';
+import { MODES, STATES, type AckMessage, type AnyMode, type ClientMessage, type ServerMessage } from '$lib/link/protocol';
 
 describe('a long run', () => {
   it('takes a simulated hour of random commands, reconnects and odd timing without one error', () => {
@@ -25,7 +25,8 @@ describe('a long run', () => {
       if (m.t !== 's') return;
       frames++;
       const ok =
-        MODES.includes(m.mode) &&
+        // the simulation only ever runs its own six, plan is a pi's
+        (MODES as AnyMode[]).includes(m.mode) &&
         STATES.includes(m.st) &&
         m.pan >= -90 && m.pan <= 90 &&
         m.tilt >= 0 && m.tilt <= 180 &&
