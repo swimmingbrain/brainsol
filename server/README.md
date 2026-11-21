@@ -172,12 +172,36 @@ The public page is served over https, so the browser only reaches this server ov
 
 ## API
 
+The chatbot:
+
 - `POST /recipe` with `{"prompt": "...", "lang": "en" | "de", "plant"?: "<table name>"}` returns `{"recipe": {...}}` and keeps it, or `{"ask": {...}}` when the plant is not in the table.
 - `GET /recipe` returns the last recipe, or 404 `{"err": "none"}`.
 - `GET /plants` returns the plant table.
 - `GET /health` returns `{"ok": true, "model": "..."}`.
 
 Errors are `{"err": "bad" | "llm" | "timeout", "msg": "...", "detail": [...]}`. If the model's answer does not fit the extraction, the server asks once more with the problems before it gives up.
+
+With the planner, `POST /recipe` hands the recipe to the planner, and both `POST /recipe` and `GET /recipe` carry the plan in short next to the recipe. `plan` is null while the planner starts and missing without a planner.
+
+```json
+{"recipe": {"v": 3, "plant": "Tomato", "...": "..."},
+ "plan": {"date": "2025-06-04", "now": "09:20", "reachable": true,
+          "light": {"dli": 4.1, "dli_target": 25.0, "dli_end": [22.0, 25.4, 28.1]},
+          "revenue": {"elec_end_eur_ha": [180.0, 210.0, 240.0], "plant_cost_eur_ha": 12.0, "plant_cost_share": 0.05},
+          "hours": [{"from": "09:00", "to": "10:00", "offset": 0, "why": "sun", "price": 87.3},
+                    {"from": "10:00", "to": "11:00", "offset": 60, "why": "light", "price": 12.0}],
+          "block": {"from": "09:00", "to": "12:00"}}}
+```
+
+`hours` covers the rest of the day, one entry per hour with the sun up, local time. `offset` is the angle away from the sun in degrees (0 faces the sun, 90 is edge on). `why` is `sun`, `light` (turned away for the plant's light), `price` (turned away because the price is below zero), `stress`, `shade` or `power_hour`. `block` is the binding 3 hours. `elec_end_eur_ha` is the electricity revenue of the day for a poor, a middle and a good sky in € per hectare, `plant_cost_eur_ha` what the plant's light costs today.
+
+The planner, under `/plan`:
+
+- `GET /plan/` is the planner's page (in German). All its requests are relative, so it works under any prefix a proxy puts in front.
+- `/plan/api/state`, `plan`, `recipe`, `recipe/schema`, `days`, `health` (GET) and `recipe`, `whatif`, `ask`, `day`, `cloud`, `speed`, `reset` (POST) are the routes of the planner. Errors are `{"ok": false, "error": "German sentence"}`.
+- `POST /plan/api/ask` takes the farmer's words like `POST /recipe` (`{"prompt": "...", "lang"?: "de", "plant"?: "..."}`, German by default) and goes the same way. It answers `{"ok": true, "recipe", "report", "plan", "chatbot"}`, or `{"ok": true, "ask": {...}}`, or `{"ok": false, "error", "code"}` with `code` `bad` or `off` (400, `off` when no language model is set), `llm` (502) or `timeout` (504).
+- `state.chatbot` says `on`, `ok` (a language model is set), `model`, and the last recipe that came from the chatbot (`last` with `t`, `plant` and `via`: `ask` for the field on the planner's page, `tab` for `POST /recipe`).
+- While the planner starts every `/plan/api/...` route answers 503 with a sentence. Without `SONNENTEILER_DATA` every `/plan/...` path answers 503 and says that no planner is set up.
 
 ## Test
 
