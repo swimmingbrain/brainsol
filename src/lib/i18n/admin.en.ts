@@ -322,7 +322,7 @@ export const adminEn = {
   'admin.farm.make': 'Make recipe',
   'admin.farm.thinking': 'Thinking',
   'admin.farm.keys': 'Ctrl Enter sends',
-  'admin.farm.noServer': 'No recipe server is set. Put its address into "brain" in config.json or add ?brain= to the page address.',
+  'admin.farm.noServer': 'No recipe server is set. Give the Pi one with brainsolpi setbrain, put its address into "brain" in config.json or add ?brain= to the page address.',
   'admin.farm.recipe': 'Recipe',
   'admin.farm.none': 'No recipe yet. Describe your plant above.',
   'admin.farm.plant': 'Plant',

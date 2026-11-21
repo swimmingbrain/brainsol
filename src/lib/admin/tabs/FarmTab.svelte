@@ -19,6 +19,11 @@
 
   onMount(() => void farm.init());
 
+  // a pi that goes live later may bring the recipe server along
+  $effect(() => {
+    if (farm.base) void farm.refresh();
+  });
+
   const recipe = $derived(farm.recipe);
   const ready = $derived(!!farm.base && farm.prompt.trim() !== '' && !farm.pending);
 

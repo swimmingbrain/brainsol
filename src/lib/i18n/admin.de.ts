@@ -321,7 +321,7 @@ export const adminDe: Record<keyof typeof adminEn, string> = {
   'admin.farm.make': 'Rezept erstellen',
   'admin.farm.thinking': 'Denkt nach',
   'admin.farm.keys': 'Strg Enter schickt ab',
-  'admin.farm.noServer': 'Kein Rezeptserver eingestellt. Trag seine Adresse unter "brain" in config.json ein oder häng ?brain= an die Seitenadresse.',
+  'admin.farm.noServer': 'Kein Rezeptserver eingestellt. Gib dem Pi einen mit brainsolpi setbrain, trag seine Adresse unter "brain" in config.json ein oder häng ?brain= an die Seitenadresse.',
   'admin.farm.recipe': 'Rezept',
   'admin.farm.none': 'Noch kein Rezept. Beschreib oben deine Pflanze.',
   'admin.farm.plant': 'Pflanze',
