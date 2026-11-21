@@ -5,24 +5,24 @@ import pytest
 from brain.plants import TABLE, Plant, Table, load, normal, table
 from brain.recipe import LIGHT_MAX, LIGHT_MIN
 
-# the column headers of prices.csv in https://www.kaggle.com/datasets/ksamiksha19/vegetable-prices
-# (version 3, 2024-01-11), copied exactly. the planner prices a recipe by these names
-DATASET_COLUMNS = {
-    "Bhindi (Ladies finger)",
-    "Tomato",
-    "Onion",
-    "Potato",
-    "Brinjal",
-    "Garlic",
-    "Peas",
-    "Methi",
-    "Green Chilli",
-    "Elephant Yam (Suran)",
-}
+# the ten plants by their plain english names, and the names four of them had before
+NAMES = {"Okra", "Tomato", "Onion", "Potato", "Aubergine", "Garlic", "Peas", "Fenugreek", "Green chilli",
+         "Elephant foot yam"}
+FORMER = {"Bhindi (Ladies finger)": "Okra", "Brinjal": "Aubergine", "Methi": "Fenugreek",
+          "Green Chilli": "Green chilli", "Elephant Yam (Suran)": "Elephant foot yam"}
 
 
-def test_the_table_has_exactly_the_plants_of_the_price_dataset():
-    assert {p.name for p in load().plants} == DATASET_COLUMNS
+def test_the_table_has_the_ten_plants():
+    assert {p.name for p in load().plants} == NAMES
+
+
+def test_former_names_are_still_found_and_still_a_pick():
+    for old, new in FORMER.items():
+        assert table().find(old).name == new
+        assert table().pick(old).name == new
+    assert table().pick("Okra").name == "Okra"
+    # a pick is an exact name, not a display name or alias
+    assert table().pick("tomato") is None and table().pick("Tomate") is None
 
 
 def test_the_numbers_are_in_range():
@@ -42,17 +42,18 @@ def test_every_row_says_where_its_numbers_come_from():
     [
         ("Tomaten", "Tomato"),
         ("Paradeiser", "Tomato"),
-        ("Okra", "Bhindi (Ladies finger)"),
-        ("ladies finger", "Bhindi (Ladies finger)"),
-        ("Bhindi (Ladies finger)", "Bhindi (Ladies finger)"),
-        ("Auberginen", "Brinjal"),
-        ("Melanzani", "Brinjal"),
+        ("Okra", "Okra"),
+        ("ladies finger", "Okra"),
+        ("Bhindi (Ladies finger)", "Okra"),
+        ("Auberginen", "Aubergine"),
+        ("Melanzani", "Aubergine"),
+        ("Eggplant", "Aubergine"),
         ("Erdäpfel", "Potato"),
         (" KARTOFFELN ", "Potato"),
-        ("Bockshornklee", "Methi"),
-        ("Chili.", "Green Chilli"),
-        ("Pfefferoni", "Green Chilli"),
-        ("Suran", "Elephant Yam (Suran)"),
+        ("Bockshornklee", "Fenugreek"),
+        ("Chili.", "Green chilli"),
+        ("Pfefferoni", "Green chilli"),
+        ("Suran", "Elephant foot yam"),
         ("Zwiebeln", "Onion"),
         ("Erbsen", "Peas"),
         ("garlic", "Garlic"),
