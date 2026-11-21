@@ -1,4 +1,5 @@
 import json
+import re
 
 import pytest
 
@@ -32,9 +33,15 @@ def test_the_numbers_are_in_range():
 
 
 def test_every_row_says_where_its_numbers_come_from():
-    # the values are not checked against a source yet, the table must not pretend otherwise
+    # the temperature is read from the fao ecocrop sheet of the plant, the light is not checked yet
+    # and the table must not pretend otherwise
     rows = json.loads(TABLE.read_text("utf-8"))["plants"]
-    assert all("unchecked" in row["source"] for row in rows)
+    for row in rows:
+        assert "light_target: unchecked" in row["source"]
+        assert "FAO ECOCROP, https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=" in row["source"]
+    # one sheet per plant, two plants never share a sheet
+    sheets = [re.search(r"dataSheet\?id=(\d+)", row["source"]).group(1) for row in rows]
+    assert len(set(sheets)) == len(rows)
 
 
 @pytest.mark.parametrize(

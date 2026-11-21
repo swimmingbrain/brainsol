@@ -47,9 +47,9 @@ def test_a_known_plant_gets_its_numbers_from_the_table_and_is_kept(tmp_path):
     recipe = r.json()["recipe"]
     assert recipe["plant"] == "Tomato"
     assert recipe["names"]["de"] == "Tomate"
-    assert (recipe["light_target"], recipe["max_temp"]) == (25, 32)
+    assert (recipe["light_target"], recipe["max_temp"]) == (25, 35)
     assert recipe["power_first"] == [{"from": "17:00", "to": "21:00"}]
-    assert "unchecked" in recipe["source"]
+    assert "unchecked" in recipe["source"] and "ECOCROP" in recipe["source"]
     assert stub.asked == [("Tomaten, ab 17 Uhr Strom", "de")]
     again = c.get("/recipe")
     assert again.status_code == 200 and again.json()["recipe"]["plant"] == "Tomato"

@@ -25,16 +25,16 @@ A known plant gives the recipe:
   "plant": "Tomato",
   "names": { "en": "Tomato", "de": "Tomate" },
   "light_target": 25,
-  "max_temp": 32,
+  "max_temp": 35,
   "avoid_sun": [{ "from": "11:00", "to": "15:00" }],
   "power_first": [{ "from": "17:00", "to": "21:00" }],
-  "source": "unchecked, from memory: ..."
+  "source": "max_temp: absolute maximum air temperature for Lycopersicon esculentum in FAO ECOCROP, ... light_target: unchecked, from memory, ..."
 }
 ```
 
 An unknown plant, or no plant at all, is **asked back instead of guessed**: `{"ask": {"plant": "Basilikum", "known": [{"name": "Tomato", "names": {...}}, ...]}}`. The page shows the known plants as chips. A picked chip sends the same words again with `"plant": "<name>"`.
 
-**The table values are not checked yet.** They are typical figures recalled from memory, and every row says so in `source`. Check them against a horticulture source (for example a published DLI table for greenhouse crops) and update `source` once a row is checked.
+**Only the temperatures are checked.** `max_temp` is the absolute maximum air temperature of the plant's data sheet in [FAO ECOCROP](https://ecocrop.apps.fao.org/ecocrop/srv/en/home), read on 21 November 2026, and `source` links the sheet. The absolute maximum and not the optimal one, because the planner compares it with the leaf, which it models as the air plus 3 °C per 1000 µmol/m²/s (`sonnenteiler/scene.py`), so in full sun the leaf is about 6 °C warmer than the air. `light_target` is still a typical daily light integral recalled from memory and every row says so. ECOCROP gives the light only as a category (for example "clear skies"), not as a number. Check the light against a horticulture source (for example a published DLI table for greenhouse crops) and update `source` once a row is checked.
 
 Times are local wall clock. For a named part of the day the model writes only the name (`{"period": "midday"}`), and `PERIODS` in `brain/recipe.py` fixes the hours: morning 06:00 to 10:00, midday 11:00 to 15:00, afternoon 12:00 to 18:00, evening 17:00 to 21:00. An open end ("ab 17 Uhr") lasts until `DAY_END`, 21:00. A small model mixes up those hours when it has to work them out itself. The shapes live in `brain/recipe.py` (`Spoken` as the model writes it, `Extraction`, `Recipe`), and the page mirrors the recipe in `src/lib/farm/recipe.ts`.
 
