@@ -203,6 +203,21 @@ The planner, under `/plan`:
 - `state.chatbot` says `on`, `ok` (a language model is set), `model`, and the last recipe that came from the chatbot (`last` with `t`, `plant` and `via`: `ask` for the field on the planner's page, `tab` for `POST /recipe`).
 - While the planner starts every `/plan/api/...` route answers 503 with a sentence. Without `SONNENTEILER_DATA` every `/plan/...` path answers 503 and says that no planner is set up.
 
+## Deploy with docker compose
+
+`deploy/compose.yaml` runs the whole brain server as one service, built from this folder:
+
+```bash
+SONNENTEILER_DATASET=/mnt/ssd/sonnenteiler-data LLM_MODEL=brainsol-gemma4b \
+docker compose -f deploy/compose.yaml up -d --build
+```
+
+- The image is `python:3.12-slim` with the dependencies of `pyproject.toml`, and `brain`, `sonnenteiler` and `eval`.
+- The service runs in the host's network (`network_mode: host`), because the language model runs in Ollama on the host and the host's firewall does not let containers reach it otherwise. It listens on `BRAIN_PORT` (default 8000) and reaches Ollama at `127.0.0.1:11434`.
+- `LLM_MODEL` names the model in Ollama (default `brainsol-gemma4b`), `BRAIN_ORIGINS` the pages that may call the server.
+- The dataset comes read only from `SONNENTEILER_DATASET` (default `/mnt/ssd/sonnenteiler-data`) to `/dataset`. The last recipe lives in `/data/recipe`, the planner's cache, model and evaluation in `/data/planner`, both in the named volume `brain_data`.
+- The service may use at most 768 MB. The planner needs about 60 MB in operation.
+
 ## Test
 
 ```bash
