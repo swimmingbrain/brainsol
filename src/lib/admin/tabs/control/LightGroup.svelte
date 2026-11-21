@@ -21,9 +21,10 @@
   let draft = $state<Partial<SimLight>>({});
   const light = $derived<SimLight | null>(telemetry.sim ? { ...telemetry.sim, ...draft } : null);
 
-  // the sun moves the light in sun mode, the tracker would answer busy
+  // the sun moves the light in sun mode and the sun of the plan in plan mode, the tracker would answer busy
   const sunMode = $derived(telemetry.mode === 'sun');
-  const off = $derived(!light || sunMode || runner.unsupported('simlight'));
+  const planMode = $derived(telemetry.mode === 'plan');
+  const off = $derived(!light || sunMode || planMode || runner.unsupported('simlight'));
 
   const send = throttle((next: SimLight) => {
     void runner.run(simlightCommand(next), { key: 'simlight' });
@@ -118,6 +119,8 @@
     </div>
     {#if sunMode}
       <Note>{t('admin.light.sunMode')}</Note>
+    {:else if planMode}
+      <Note>{t('admin.light.planMode')}</Note>
     {:else if runner.unsupported('simlight')}
       <Note tone="warn">{t('admin.light.unsupported')}</Note>
     {/if}

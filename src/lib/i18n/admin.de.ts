@@ -82,6 +82,7 @@ export const adminDe: Record<keyof typeof adminEn, string> = {
   'admin.light.sun': 'Sonne',
   'admin.light.sunTitle': 'Tageslicht, 80000 lx direkt und 9000 lx vom Himmel',
   'admin.light.sunMode': 'Im Sonnenmodus bewegt die berechnete Sonne das Licht. Wähl einen anderen Modus, um es selbst zu bewegen.',
+  'admin.light.planMode': 'Im Planmodus bewegt die Sonne des simulierten Tages das Licht. Wähl einen anderen Modus, um es selbst zu bewegen.',
   'admin.light.unsupported': 'Dieser Tracker kann sein Licht noch nicht bewegen.',
   'admin.light.waiting': 'Warte auf das Licht der Simulation.',
 

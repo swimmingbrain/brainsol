@@ -83,6 +83,7 @@ export const adminEn = {
   'admin.light.sun': 'Sun',
   'admin.light.sunTitle': 'Daylight, 80000 lx direct and 9000 lx from the sky',
   'admin.light.sunMode': 'In sun mode the computed sun moves the light. Pick another mode to move it by hand.',
+  'admin.light.planMode': 'In plan mode the sun of the simulated day moves the light. Pick another mode to move it by hand.',
   'admin.light.unsupported': 'This tracker cannot move its light yet.',
   'admin.light.waiting': 'Waiting for the light of the simulation.',
 
