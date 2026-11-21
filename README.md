@@ -79,6 +79,8 @@ On such a Pi the mode switch in the Control tab also offers Plan: the tracker th
 
 The same server also talks to vLLM on a GPU server or to Hugging Face, only `LLM_BASE_URL` and `LLM_MODEL` change. [`server/README.md`](server/README.md) has those setups, the API, the plant table and how to compare models with the test sentences.
 
+How the planner, the chatbot, the Pi and the page fit together is explained in German in [docs/sonnenteiler/ueberblick.md](docs/sonnenteiler/ueberblick.md).
+
 ## Deploy
 
 Push to `main`, `.github/workflows/deploy.yml` checks, tests and builds the page and puts it on GitHub Pages. The custom domain is in `static/CNAME`.
