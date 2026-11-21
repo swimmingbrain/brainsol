@@ -8,7 +8,7 @@ import { twinEn } from './twin.en';
 import { panelsEn } from './panels.en';
 import { adminEn } from './admin.en';
 import { simEn } from './sim.en';
-import { EXP_PHASES, STATES, MODES } from '$lib/link/protocol';
+import { EXP_PHASES, STATES, MODES, PLAN_MODE } from '$lib/link/protocol';
 
 const placeholders = (text: string) => [...text.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();
 
@@ -45,7 +45,10 @@ describe('the dictionaries', () => {
       expect(en).toHaveProperty(`st.${st}`);
       expect(en).toHaveProperty(`say.${st}`);
     }
-    for (const mode of MODES) expect(en).toHaveProperty(`mode.${mode}`);
+    for (const mode of [...MODES, PLAN_MODE]) {
+      expect(en).toHaveProperty(`mode.${mode}`);
+      expect(en).toHaveProperty(`admin.mode.about.${mode}`);
+    }
   });
 
   it('have a name and a sentence for every experiment and a word for every phase', () => {
