@@ -38,6 +38,7 @@ export const adminDe: Record<keyof typeof adminEn, string> = {
   'admin.mode.about.hold': 'Bleibt genau dort stehen, wo er gerade ist.',
   'admin.mode.about.park': 'Legt das Modul flach hin und ruht.',
   'admin.mode.about.demo': 'Spielt eine langsame, ruhige Choreografie für die Ausstellung.',
+  'admin.mode.about.plan': 'Macht, was die Simulation des Planers macht, das Gerät folgt dem Plan des simulierten Tages zu seiner simulierten Uhrzeit.',
 
   'admin.group.move': 'Von Hand bewegen',
   'admin.move.hint': 'Jede Bewegung schaltet den Tracker auf manuell.',

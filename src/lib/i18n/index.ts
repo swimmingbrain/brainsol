@@ -14,7 +14,7 @@ import { simEn } from './sim.en';
 import { twinDe } from './twin.de';
 import { twinEn } from './twin.en';
 import { preferences, type Lang } from '$lib/stores/preferences.svelte';
-import { EXP_PHASES, type ExpKind, type Mode, type St } from '$lib/link/protocol';
+import { EXP_PHASES, type AnyMode, type ExpKind, type St } from '$lib/link/protocol';
 
 export const en = { ...coreEn, ...twinEn, ...panelsEn, ...adminEn, ...simEn };
 export type Key = keyof typeof en;
@@ -61,7 +61,7 @@ export function stateSentence(st: St | null): string {
   return st ? t(`say.${st}` as Key) : t('say.waiting');
 }
 
-export function modeName(mode: Mode): string {
+export function modeName(mode: AnyMode): string {
   return t(`mode.${mode}` as Key);
 }
 

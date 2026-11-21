@@ -7,17 +7,19 @@
   import SunGroup from './control/SunGroup.svelte';
   import { connection } from '$lib/stores/connection.svelte';
   import { telemetry } from '$lib/stores/telemetry.svelte';
-  import { MODES, type Mode } from '$lib/link/protocol';
+  import { MODES, PLAN_MODE, type AnyMode } from '$lib/link/protocol';
   import { modeName, t, type Key } from '$lib/i18n';
   import { modeCommand } from '../commands';
   import { runner } from '../session.svelte';
 
   // the mode asked for, until the telemetry shows it or the ack says no
-  let wanted = $state<Mode | null>(null);
+  let wanted = $state<AnyMode | null>(null);
   let giveUp: ReturnType<typeof setTimeout> | null = null;
 
   const current = $derived(telemetry.mode);
-  const missing = $derived(MODES.filter((mode) => runner.unsupported(`mode.${mode}`)));
+  // plan only where the pi says it has a brain server to follow
+  const modes = $derived<AnyMode[]>(connection.source === 'live' && connection.brain ? [...MODES, PLAN_MODE] : MODES);
+  const missing = $derived(modes.filter((mode) => runner.unsupported(`mode.${mode}`)));
 
   $effect(() => {
     if (wanted !== null && current === wanted) wanted = null;
@@ -27,7 +29,7 @@
     if (giveUp) clearTimeout(giveUp);
   });
 
-  async function pick(mode: Mode) {
+  async function pick(mode: AnyMode) {
     wanted = mode;
     if (giveUp) clearTimeout(giveUp);
     // an activity can keep the mode from showing, the pulse must not run forever
@@ -38,7 +40,7 @@
 </script>
 
 <Group title={t('admin.group.mode')}>
-  <ModeSwitch {current} {wanted} unsupported={(mode) => runner.unsupported(`mode.${mode}`)} onpick={pick} />
+  <ModeSwitch {modes} {current} {wanted} unsupported={(mode) => runner.unsupported(`mode.${mode}`)} onpick={pick} />
   <p class="about" aria-live="polite">
     {current ? t(`admin.mode.about.${current}` as Key) : t('admin.mode.waiting')}
   </p>

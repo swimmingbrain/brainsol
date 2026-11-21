@@ -39,6 +39,7 @@ export const adminEn = {
   'admin.mode.about.hold': 'Stays exactly where it is.',
   'admin.mode.about.park': 'Lays the panel flat and rests.',
   'admin.mode.about.demo': 'Plays a slow, calm choreography for an idle exhibit.',
+  'admin.mode.about.plan': 'Does what the simulation of the planner does, the device follows the plan of the simulated day at its simulated time.',
 
   'admin.group.move': 'Move by hand',
   'admin.move.hint': 'Every move switches the tracker to manual.',

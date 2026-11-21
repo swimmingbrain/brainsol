@@ -4,7 +4,7 @@
 // second, and each one only changes when its value did, so a 20 Hz stream
 // redraws a number here and there and never the page
 
-import type { EvtMessage, ExpMessage, Mode, NoQuad, Pose, Quad, ScanMessage, ServerMessage, SimLight, St, StateFrame, SunPosition, SysFrame } from '$lib/link/protocol';
+import type { AnyMode, EvtMessage, ExpMessage, NoQuad, Pose, Quad, ScanMessage, ServerMessage, SimLight, St, StateFrame, SunPosition, SysFrame } from '$lib/link/protocol';
 
 // how often the runes may change, in milliseconds
 export const PUBLISH_EVERY = 100;
@@ -42,7 +42,7 @@ class Telemetry {
   prev: StateFrame | null = null;
   prevAt = 0;
 
-  mode = $state<Mode | null>(null);
+  mode = $state<AnyMode | null>(null);
   st = $state<St | null>(null);
   pan = $state<number | null>(null);
   tilt = $state<number | null>(null);

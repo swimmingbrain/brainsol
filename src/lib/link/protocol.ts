@@ -16,6 +16,11 @@ export type NoQuad = [null, null, null, null];
 export type Mode = 'auto' | 'manual' | 'sun' | 'hold' | 'park' | 'demo';
 export const MODES: Mode[] = ['auto', 'manual', 'sun', 'hold', 'park', 'demo'];
 
+// a pi with a brain server has one mode more: in plan the device does what the
+// simulation of the planner does. the simulation in this tab never has it
+export type AnyMode = Mode | 'plan';
+export const PLAN_MODE: AnyMode = 'plan';
+
 export type St =
   | 'tracking'
   | 'locked'
@@ -139,7 +144,7 @@ export interface HelloMessage {
 export interface StateFrame {
   t: 's';
   ts: number;
-  mode: Mode;
+  mode: AnyMode;
   st: St;
   pan: number;
   tilt: number;
@@ -376,7 +381,7 @@ export type SysAction = 'restart' | 'reboot' | 'shutdown';
 // a command without the envelope, the connection adds t and id
 export type Command =
   | { op: 'ping' }
-  | { op: 'mode'; mode: Mode }
+  | { op: 'mode'; mode: AnyMode }
   | { op: 'target'; pan: number; tilt: number }
   // joystick rates -1 to 1 per axis, they run out after 400 ms without a refresh
   | { op: 'rate'; pan: number; tilt: number }

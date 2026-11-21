@@ -64,6 +64,7 @@ export const coreDe: Record<keyof typeof coreEn, string> = {
   'mode.hold': 'Halten',
   'mode.park': 'Parken',
   'mode.demo': 'Demo',
+  'mode.plan': 'Plan',
   'exp.cosine': 'Kosinusgesetz',
   'exp.compare': 'Nachgeführt gegen fest',
   'exp.step': 'Sprungantwort',

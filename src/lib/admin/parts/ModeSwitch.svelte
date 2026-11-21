@@ -1,27 +1,29 @@
 <script lang="ts">
-  import { MODES, type Mode } from '$lib/link/protocol';
+  import { MODES, type AnyMode } from '$lib/link/protocol';
   import { modeName, t, type Key } from '$lib/i18n';
 
-  // six modes as a grid of large buttons. the lit one is always the mode the
-  // tracker reports, never the one asked for. the asked one pulses until the
-  // telemetry agrees or the ack says no
+  // the modes as a grid of large buttons, six and plan on a pi with a brain
+  // server. the lit one is always the mode the tracker reports, never the one
+  // asked for. the asked one pulses until the telemetry agrees or the ack says no
   let {
+    modes = MODES,
     current,
     wanted,
     unsupported,
     disabled = false,
     onpick
   }: {
-    current: Mode | null;
-    wanted: Mode | null;
-    unsupported: (mode: Mode) => boolean;
+    modes?: AnyMode[];
+    current: AnyMode | null;
+    wanted: AnyMode | null;
+    unsupported: (mode: AnyMode) => boolean;
     disabled?: boolean;
-    onpick: (mode: Mode) => void;
+    onpick: (mode: AnyMode) => void;
   } = $props();
 </script>
 
-<div class="modes" role="group" aria-label={t('admin.mode.label')}>
-  {#each MODES as mode (mode)}
+<div class="modes" role="group" aria-label={t('admin.mode.label')} style:--wide={modes.length}>
+  {#each modes as mode (mode)}
     {@const off = unsupported(mode)}
     <button
       class="mode"
@@ -82,7 +84,7 @@
 
   @container dock (min-width: 640px) {
     .modes {
-      grid-template-columns: repeat(6, minmax(0, 1fr));
+      grid-template-columns: repeat(var(--wide, 6), minmax(0, 1fr));
     }
   }
 

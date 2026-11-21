@@ -65,6 +65,7 @@ export const coreEn = {
   'mode.hold': 'Hold',
   'mode.park': 'Park',
   'mode.demo': 'Demo',
+  'mode.plan': 'Plan',
   'exp.cosine': 'Cosine law',
   'exp.compare': 'Tracked against fixed',
   'exp.step': 'Step response',

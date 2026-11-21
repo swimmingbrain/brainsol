@@ -3,11 +3,11 @@
 // rounded the way the wire carries them, angles with one decimal
 
 import type {
+  AnyMode,
   CalibStep,
   Command,
   Config,
   ExpKind,
-  Mode,
   ParamKey,
   Pose,
   SimLight,
@@ -33,7 +33,7 @@ export function wrap180(deg: number): number {
 // the mechanical range of the two axes when no config has come in yet
 export const FALLBACK_LIMITS: Limits = { pan: [-90, 90], tilt: [0, 180] };
 
-export function modeCommand(mode: Mode): Command {
+export function modeCommand(mode: AnyMode): Command {
   return { op: 'mode', mode };
 }
 
