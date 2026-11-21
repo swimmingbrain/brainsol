@@ -239,3 +239,16 @@ LLM_BASE_URL=http://localhost:11434/v1 LLM_MODEL=gemma3:4b uv run python -m brai
 | `gemma3:4b` | Framework 16, Radeon 780M through Vulkan | 54/57 | 1.8 s |
 
 Its only miss is `okra_noon_clock`: in "Shade from noon to 3pm" it reads "noon" as the midday period and adds a made up 15:00 to 17:00 window, in all three runs. When it still had to write the hours itself, it got that sentence right but stretched "no harsh midday sun ... power from 5 pm" (the example on the page) to 11:00 to 18:00; naming the period fixed that. 19 sentences are not enough to call a model reliable. The worked examples in `brain/llm.py` (`EXAMPLES`) are kept unlike the test sentences, so the score is not tuned to them.
+
+## The planner in numbers
+
+On the big dataset, 196 training days and 49 test days, mean per test day, electricity revenue in € per hectare:
+
+| crop | tracking | blind | plan | best | days with the light duty met (blind, plan, best) | cost of the plant's light | gain from the price |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| tomato | 182.9 | 131.1 | 139.0 | 142.3 | 49, 48, 49 | 43.9 | 7.9 |
+| potato | 182.9 | 115.9 | 119.9 | 124.5 | 49, 48, 49 | 63.0 | 4.0 |
+| onion | 182.9 | 130.9 | 138.6 | 141.9 | 49, 49, 49 | 44.3 | 7.7 |
+| chilli | 182.9 | 139.6 | 146.2 | 149.2 | 49, 49, 49 | 36.7 | 6.7 |
+
+The forecast's mean error of the direct light is 32, 53, 79 and 89 W/m² at 30, 60, 120 and 180 minutes ahead, against 44, 73, 98 and 108 W/m² for the weather service forecast plus its latest error, and about 112 W/m² for the weather service forecast alone.
