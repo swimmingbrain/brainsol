@@ -1,19 +1,21 @@
-# brainSOL recipe server
+# brainSOL brain server
 
-A farmer writes a few words, for example "Tomaten, vertragen keine pralle Mittagssonne. Ab 17 Uhr brauche ich Strom." The work is split in two:
+One process, one port, two parts:
+
+- **The recipe chatbot** (`brain/`). A farmer writes a few words, for example "Tomaten, vertragen keine pralle Mittagssonne. Ab 17 Uhr brauche ich Strom.", and gets a recipe: the plant, its light target, its highest temperature, and the hours without full sun and the hours where power comes first.
+- **The planner** (`sonnenteiler/`). It forecasts the sky for the rest of the day, plans every 3 hours how the panel turns in the next 3 hour block, replays days of a real dataset as a simulation and shows it on its own page. A recipe from the chatbot goes straight to it.
+
+The chatbot runs alone when no dataset is set up for the planner.
+
+## The chatbot
+
+The work is split in two:
 
 - **The language model only understands the words.** It extracts the plant as the farmer named it and the hours: `avoid_sun` (no full sun for the plant) and `power_first` (power wins). It never writes numbers about the plant and never drives the motors.
 - **The plant table supplies the facts.** `brain/plants.json` holds `light_target` (daily light integral, mol/m²/day) and `max_temp` (°C) for 10 vegetables, with German and English names, plural forms and other words (Melanzani, Erdäpfel, Pfefferoni). The lookup is exact, without fuzzy matching.
 
-### The plants follow the price dataset
-
-The recipe is executed later against the vegetable prices in [ksamiksha19/vegetable-prices](https://www.kaggle.com/datasets/ksamiksha19/vegetable-prices) on Kaggle. Its `prices.csv` is wide: one row per date (`Price Dates`, DD-MM-YYYY, from 01-01-2023), one column per vegetable. So the table has exactly those 10 vegetables, and each row's `name` is the **exact column header**:
-
-`Bhindi (Ladies finger)`, `Tomato`, `Onion`, `Potato`, `Brinjal`, `Garlic`, `Peas`, `Methi`, `Green Chilli`, `Elephant Yam (Suran)`
-
-The recipe's `plant` is that name, so the planner can read the price as `prices[recipe.plant]`. `tests/test_plants.py` fails if the table and the headers drift apart. The dataset states no currency or unit. Its source is agmarknet.gov.in, so the prices are most likely in INR per kg, but that is an inference. Its license is not specified, so the CSV is not in this repo.
-
-That is the answer to "why not a form?": the farmer can say it in their own words, and the numbers still come from a table that can be checked.
+The ten plants are `Okra`, `Tomato`, `Onion`, `Potato`, `Aubergine`, `Garlic`, `Peas`, `Fenugreek`, `Green chilli` and `Elephant foot yam`.
+Five of them had other names before (`Bhindi (Ladies finger)`, `Brinjal`, `Methi`, `Green Chilli`, `Elephant Yam (Suran)`). They are kept under `former` in the table: they are still found in the farmer's words and still accepted as a pick, a recipe always carries the new name.
 
 A known plant gives the recipe:
 
