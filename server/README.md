@@ -38,6 +38,50 @@ An unknown plant, or no plant at all, is **asked back instead of guessed**: `{"a
 
 Times are local wall clock. For a named part of the day the model writes only the name (`{"period": "midday"}`), and `PERIODS` in `brain/recipe.py` fixes the hours: morning 06:00 to 10:00, midday 11:00 to 15:00, afternoon 12:00 to 18:00, evening 17:00 to 21:00. An open end ("ab 17 Uhr") lasts until `DAY_END`, 21:00. A small model mixes up those hours when it has to work them out itself. The shapes live in `brain/recipe.py` (`Spoken` as the model writes it, `Extraction`, `Recipe`), and the page mirrors the recipe in `src/lib/farm/recipe.ts`.
 
+## The planner
+
+### How it reads a recipe
+
+The planner reads every recipe through one tolerant function, `intake` in `sonnenteiler/recipe.py`. If the recipe of the chatbot changes, that file is the one place to change. A recipe is never refused because it looks different, unknown keys come back under `extra`, and every answer carries a `report` that says what was understood, what was filled in and what was ignored.
+
+| chatbot | becomes |
+|---|---|
+| `plant` | `crop` and `name` |
+| `light_target` | `dli_target` in mol/m²/day |
+| `max_temp` | `tmax_c`, `null` keeps the value of the crop |
+| `power_first` | `power_hours` |
+| `avoid_sun` | `shade_hours` |
+| `names`, `source`, `v` | kept under `extra` |
+
+`max_ppfd` (the light above which the plant is stressed) is not in the chatbot's recipe. It comes from the dataset recipe of the same crop where there is one (tomato, potato, onion and chilli, matched by name), else from the general default.
+
+### The six rules of a plan
+
+For every hour of the day (a hold block, the panel keeps one action that long), in this order:
+
+1. **Power hour** of the recipe: the action with the most power. The farmer needs electricity.
+2. **Shade hour** of the recipe: the action with the least light on the plant. That is usually the one that follows the sun, because a panel facing the sun casts the biggest shadow.
+3. **Protection:** only actions that do not stress the plant (light above `max_ppfd`, a leaf warmer than `tmax_c`), or the one with the least light when every action stresses.
+4. **Light duty:** over the day the plant gets its light target. Of all plans that reach it, the one with the most electricity revenue is taken: the light is given in the hours where a mol costs the least revenue. Hours with a price below zero come first, there turning away even earns money.
+5. **Everything else is electricity:** once the target is covered, the panel takes the action with the most revenue, facing the sun at a positive price, turned away at a negative one.
+6. **A day that cannot reach the target:** the plant comes first all day, every hour takes the allowed action with the most light.
+
+The plant's light is a duty, not a priced good. Money is only the electricity sold at the day ahead price.
+
+The forecast is a small neural network in plain numpy. It predicts direct and diffuse light (as quantiles) and the temperature for every later step of the day, from the weather service forecast and how far the service has been off today. The plan uses the middle sky for the revenue and a careful one (quantile 0.35, `planner.light_quantile`) for the plant's light, so the duty is met as often as it can be.
+
+The planner compares itself in the same weather with `tracking` (always facing the sun, the most electricity, the plant does not count), `blind` (the light target with the most energy, everything known in advance, without looking at the price) and `best` (the six rules with everything known in advance). Two numbers tell the story: what the plant's light costs (tracking minus planner) and what looking at the price brings (planner minus blind).
+
+### The dataset
+
+The planner learns from and replays a dataset written by `generate.py` of the data teammate's repository [brainsolsynth](https://github.com/NeYoNmoos/brainsolsynth): real weather and day ahead weather forecasts from Open Meteo, real sun positions, Austrian day ahead electricity prices from Energy Charts and the brainSOL model of the panel and the light under it. The big dataset for Dornbirn (245 days from March to October 2025, every 5 minutes) was made like this:
+
+```bash
+python generate.py --start 2025-03-01 --end 2025-10-31 --lat 47.41 --lon 9.74 --out <folder>
+```
+
+The first start reads it, keeps a compact copy, trains the forecast, runs the evaluation on the test days and checks its formulas against `alternatives.csv`. On a laptop that takes about half a minute, later starts take about a second. All of it lands in the work folder (`SONNENTEILER_WORK`).
+
 ## Run
 
 ```bash
