@@ -1,0 +1,38 @@
+{
+  "data": null,
+  "work": null,
+  "columns": {},
+  "site_name": null,
+  "block_h": 3,
+  "hold_min": null,
+  "recipe": null,
+  "planner": {
+    "light_quantile": 0.35
+  },
+  "elec_price_default_eur_mwh": 80.0,
+  "nowcast": {
+    "hidden": [32, 32],
+    "steps": 3000,
+    "batch": 512,
+    "lr": 0.003,
+    "issues_per_day": 24,
+    "targets_per_issue": 48,
+    "seed": 1
+  },
+  "sim": {
+    "days": "test",
+    "start": null,
+    "speed": 360,
+    "skip_night": true,
+    "tick_hz": 10
+  },
+  "cloud": {
+    "minutes": 90,
+    "factor": 0.15,
+    "dhi_factor": 0.7
+  },
+  "server": {
+    "host": "0.0.0.0",
+    "port": 8000
+  }
+}
