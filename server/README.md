@@ -155,15 +155,18 @@ export LLM_JSON_SCHEMA=0             # if the provider refuses response_format
 
 The token stays on this server. The page never talks to the language model directly.
 
-| variable          | default                                            | meaning                                                                   |
-| ----------------- | -------------------------------------------------- | ------------------------------------------------------------------------- |
-| `LLM_BASE_URL`    | (none)                                             | base address ending in `/v1`                                              |
-| `LLM_MODEL`       | (none)                                             | model name as the endpoint knows it                                       |
-| `LLM_API_KEY`     | (none)                                             | sent as a bearer token when set                                           |
-| `LLM_JSON_SCHEMA` | `1`                                                | `1` uses guided decoding, `0` puts the schema into the prompt             |
-| `LLM_TIMEOUT`     | `60`                                               | seconds per request to the model                                          |
-| `DATA_DIR`        | `data`                                             | where the last recipe is kept (`recipe.json`)                             |
-| `ALLOWED_ORIGINS` | `https://sol.swimmingbrain.dev,http://localhost:5173,http://127.0.0.1:5173` | pages that may call this server                                           |
+| variable | default | meaning |
+| --- | --- | --- |
+| `LLM_BASE_URL` | (none) | base address ending in `/v1` |
+| `LLM_MODEL` | (none) | model name as the endpoint knows it |
+| `LLM_API_KEY` | (none) | sent as a bearer token when set |
+| `LLM_JSON_SCHEMA` | `1` | `1` uses guided decoding, `0` puts the schema into the prompt |
+| `LLM_TIMEOUT` | `60` | seconds per request to the model |
+| `DATA_DIR` | `data` | where the last recipe is kept (`recipe.json`) |
+| `ALLOWED_ORIGINS` | `https://sol.swimmingbrain.dev,http://localhost:5173,http://127.0.0.1:5173` | pages that may call this server |
+| `SONNENTEILER_DATA` | (none) | the dataset folder, turns the planner on |
+| `SONNENTEILER_WORK` | the folder `sonnenteiler` in the temp folder | the planner's cache, model and evaluation |
+| `SONNENTEILER_CONFIG` | (none) | a json file with settings of the planner, see `sonnenteiler/config.example.json` |
 
 The public page is served over https, so the browser only reaches this server over https too. Put a reverse proxy or a tunnel in front of it.
 
