@@ -408,6 +408,8 @@ export interface InfoResponse {
   caps: Caps;
   viewers: number;
   uptime: number;
+  // a brain server is set, the pi passes /brain/* on to it and offers the plan mode
+  brain?: boolean;
 }
 
 // rows are one per dt seconds from t0, in the order of cols

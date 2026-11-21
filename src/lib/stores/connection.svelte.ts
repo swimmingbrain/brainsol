@@ -7,7 +7,7 @@ import { hostOf, isSim, pickAddress, resolveAddress, type AddressOrigin, type Ad
 import { SimTransport } from '$lib/link/sim';
 import { SocketTransport, type SocketLike } from '$lib/link/socket';
 import type { LinkStatus, SimEngine, Source, Transport } from '$lib/link/transport';
-import type { AckMessage, AuthMessage, Caps, CmdMessage, Command, Config, HelloMessage, HistoryResponse, ServerMessage } from '$lib/link/protocol';
+import type { AckMessage, AuthMessage, Caps, CmdMessage, Command, Config, HelloMessage, HistoryResponse, InfoResponse, ServerMessage } from '$lib/link/protocol';
 import { pinRefusal } from '$lib/link/protocol';
 import { createEngine } from '$lib/sim/engine';
 import { t } from '$lib/i18n';
@@ -74,6 +74,8 @@ export class Connection {
   defaultAddress = $state<string | undefined>(undefined);
   // the http base of the live tracker for /api/*, null in the simulation
   api: string | null = null;
+  // the live tracker has a brain server: it passes /brain/* on and offers the plan mode
+  brain = $state(false);
 
   private live: SocketTransport | null = null;
   private sim: SimTransport | null = null;
@@ -311,6 +313,7 @@ export class Connection {
     this.lockedUntil = 0;
     this.hello = null;
     this.config = null;
+    this.brain = false;
     telemetry.reset();
     history.clear();
   }
@@ -328,6 +331,7 @@ export class Connection {
         this.problem = null;
         if (fromSim) toast(t('link.found'), 'success', 4000);
         void this.prefill(live);
+        void this.readInfo(live);
       }
     }
     if (this.active === live) this.handle(message);
@@ -347,6 +351,11 @@ export class Connection {
   private async prefill(live: SocketTransport): Promise<void> {
     const data = await this.fetchApi<HistoryResponse>(`/api/history?span=${HISTORY_SECONDS}`);
     if (data && this.active === live) history.prefill(data);
+  }
+
+  private async readInfo(live: SocketTransport): Promise<void> {
+    const info = await this.fetchApi<InfoResponse>('/api/info');
+    if (this.active === live) this.brain = info?.brain === true;
   }
 
   private handle(message: ServerMessage): void {
