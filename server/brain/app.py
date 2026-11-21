@@ -1,4 +1,4 @@
-"""the http face of the recipe server.
+"""the http face of the brain server: the recipe chatbot, and the planner when one is set up.
 
 the page posts the farmer's words to /recipe. the language model extracts the
 plant's name and the hours, the plant table adds the numbers. a known plant
@@ -7,6 +7,11 @@ planner of a later step. an unknown or missing plant gives {"ask": ...}: the
 page asks the farmer back instead of guessing, and may send the same words
 again with the plant's table name. errors look like the tracker's acks:
 {"err": "bad" | "llm" | "timeout", "msg": ...}.
+
+with SONNENTEILER_DATA set, the planner (the sonnenteiler package) starts in
+the background of the same process. a recipe from /recipe goes straight to it
+and the answer carries the plan in short under "plan". its own page and api
+live under /plan/. without SONNENTEILER_DATA the chatbot runs alone as before.
 """
 
 from __future__ import annotations
@@ -168,6 +173,20 @@ def create_app(
         if kind == "ask":
             return {"ask": got}
         return await with_plan({"recipe": got}, got)
+
+    if planner is not False:
+        from sonnenteiler.api import attach
+
+        async def ask(prompt: str, lang: str, pick: str | None) -> tuple[str, dict]:
+            # the field on the planner's page goes the same way as POST /recipe
+            if not llm.ready:
+                return "error", {"code": "off"}
+            try:
+                return await make(prompt, lang, pick)
+            except Refused as e:
+                return "error", {"code": e.code, "msg": e.msg}
+
+        attach(app, host, ask)
 
     return app
 
