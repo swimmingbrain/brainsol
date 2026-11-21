@@ -1,7 +1,7 @@
 [project]
 name = "brainsol-brain"
-version = "0.1.0"
-description = "the recipe server of brainSOL: turns a farmer's words into a few numbers for the tracker"
+version = "0.2.0"
+description = "the brain server of brainSOL: the recipe chatbot that turns a farmer's words into a few numbers, and the planner that plans the tracker for them"
 requires-python = ">=3.11"
 dependencies = [
   "fastapi>=0.110",
