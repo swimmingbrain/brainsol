@@ -2,8 +2,9 @@
   // the farmer's words become a recipe: a language model on the recipe server
   // reads the plant's name and the hours where the plant or the power comes
   // first, the plant table adds light target and highest temperature. a plant
-  // the table does not know is asked back with the known ones as chips. nothing
-  // here moves the tracker, the plan that follows the recipe comes later
+  // the table does not know is asked back with the known ones as chips. the
+  // planner next to it answers with its plan for the rest of the day. nothing
+  // here moves the tracker, the plan mode in the control tab does
   import { onMount } from 'svelte';
   import Group from '../parts/Group.svelte';
   import Note from '../parts/Note.svelte';
@@ -12,10 +13,11 @@
   import Chip from '$lib/ui/Chip.svelte';
   import { farm } from '$lib/farm/farm.svelte';
   import { PROMPT_MAX } from '$lib/farm/client';
+  import { inBlock, reasonText } from '$lib/farm/plan';
   import { minutes, type Window } from '$lib/farm/recipe';
   import { preferences } from '$lib/stores/preferences.svelte';
   import { toast } from '$lib/stores/toasts.svelte';
-  import { t, type Key } from '$lib/i18n';
+  import { fmt, t, type Key } from '$lib/i18n';
 
   onMount(() => void farm.init());
 
@@ -25,6 +27,10 @@
   });
 
   const recipe = $derived(farm.recipe);
+  const plan = $derived(farm.plan);
+  // the plant's light as a share of the revenue, in percent
+  const share = $derived(plan && plan.revenue.share !== null ? plan.revenue.share * 100 : null);
+  const band = $derived(plan?.light.end ?? null);
   const ready = $derived(!!farm.base && farm.prompt.trim() !== '' && !farm.pending);
 
   const question = $derived(farm.question);
@@ -131,6 +137,56 @@
 
   {/if}
 </Group>
+
+{#if recipe}
+  <Group title={t('admin.farm.plan')} hint={plan?.date && plan.now ? t('admin.farm.plan.when', { date: plan.date, time: plan.now }) : undefined}>
+    {#if plan}
+      {#if plan.reachable !== null}
+        <Note tone={plan.reachable ? 'ok' : 'warn'}>{plan.reachable ? t('admin.farm.plan.reach') : t('admin.farm.plan.short')}</Note>
+      {/if}
+      <div class="stats">
+        <Stat size="sm" label={t('admin.farm.plan.dli')} value={plan.light.dli} digits={1} unit="mol/m²" title={t('admin.farm.plan.dliHint')} />
+        <Stat size="sm" label={t('admin.farm.plan.cost')} value={plan.revenue.cost} digits={0} unit="€/ha" title={t('admin.farm.plan.costHint')} />
+        <Stat size="sm" label={t('admin.farm.plan.share')} value={share} digits={1} unit="%" />
+      </div>
+      {#if band}
+        <p class="table">
+          {t('admin.farm.plan.band', { lo: fmt(band[0], 1) ?? '', hi: fmt(band[2], 1) ?? '', target: fmt(plan.light.target ?? recipe.light_target, 1) ?? '' })}
+        </p>
+      {/if}
+      {#if plan.hours.length > 0}
+        <table class="hours">
+          <thead>
+            <tr>
+              <th scope="col">{t('admin.farm.plan.hour')}</th>
+              <th scope="col">{t('admin.farm.plan.offset')}</th>
+              <th scope="col">{t('admin.farm.plan.why')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each plan.hours as hour (hour.from)}
+              <tr class:bound={inBlock(hour, plan.block)}>
+                <td>{t('admin.farm.window', { from: hour.from, to: hour.to })}</td>
+                <td class="num">{hour.offset === null ? '' : `${fmt(hour.offset, 0)}°`}</td>
+                <td>{reasonText(hour.why, t)}</td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      {/if}
+      {#if plan.block}
+        <p class="table"><span class="swatch bound"></span>{t('admin.farm.plan.block', { from: plan.block.from, to: plan.block.to })}</p>
+      {/if}
+    {:else}
+      <Note>{t('admin.farm.plan.none')}</Note>
+    {/if}
+    {#if farm.planPage}
+      <div class="send">
+        <Button size="sm" icon="external" href={farm.planPage}>{t('admin.farm.plan.open')}</Button>
+      </div>
+    {/if}
+  </Group>
+{/if}
 
 <style>
   textarea {
@@ -272,5 +328,50 @@
     height: 8px;
     border-radius: 2px;
     flex-shrink: 0;
+  }
+
+  .hours {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hours th {
+    font-size: 11px;
+    font-weight: normal;
+    text-align: left;
+    color: var(--text-muted);
+    padding: 0 6px 4px;
+  }
+
+  .hours td {
+    padding: 3px 6px;
+    color: var(--text-primary);
+    border-top: 1px solid var(--border);
+  }
+
+  .hours .num {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .hours th:nth-child(2) {
+    text-align: right;
+  }
+
+  /* the binding block keeps an accent bar on its left */
+  .hours tr.bound td {
+    background: var(--accent-dim);
+  }
+
+  .hours tr.bound td:first-child {
+    box-shadow: inset 2px 0 0 var(--accent);
+  }
+
+  .swatch.bound {
+    display: inline-block;
+    margin-right: 6px;
+    background: var(--accent);
   }
 </style>
