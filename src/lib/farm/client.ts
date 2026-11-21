@@ -3,16 +3,18 @@
 // checked recipe or a short error code the tab turns into a sentence
 
 import { parseAsk, parseRecipe, type Ask, type Recipe } from './recipe';
+import { parsePlan, type DayPlan } from './plan';
 import type { Lang } from '$lib/stores/preferences.svelte';
 
 // bad: the server refused the words, llm: the model failed, timeout: too slow,
 // offline: nothing answered, none: no recipe kept yet, invalid: an answer the page cannot read
 export type RecipeError = 'bad' | 'llm' | 'timeout' | 'offline' | 'none' | 'invalid';
 
-// a recipe, or a question back when the plant is not in the server's table
+// a recipe with the plan of the planner when it runs, or a question back when
+// the plant is not in the server's table
 export type RecipeResult =
-  | { ok: true; recipe: Recipe; ask?: undefined }
-  | { ok: true; ask: Ask; recipe?: undefined }
+  | { ok: true; recipe: Recipe; plan?: DayPlan; ask?: undefined }
+  | { ok: true; ask: Ask; recipe?: undefined; plan?: undefined }
   | { ok: false; err: RecipeError; msg?: string };
 
 export interface ClientOptions {
@@ -53,7 +55,7 @@ async function call(url: string, init: RequestInit, options: ClientOptions): Pro
   } catch {
     return { ok: false, err: response.ok ? 'invalid' : 'llm' };
   }
-  const b = (body ?? {}) as { recipe?: unknown; ask?: unknown; err?: unknown; msg?: unknown };
+  const b = (body ?? {}) as { recipe?: unknown; ask?: unknown; plan?: unknown; err?: unknown; msg?: unknown };
   if (!response.ok) {
     const err = KNOWN.includes(b.err as RecipeError) ? (b.err as RecipeError) : 'llm';
     return { ok: false, err, msg: typeof b.msg === 'string' ? b.msg : undefined };
@@ -63,7 +65,10 @@ async function call(url: string, init: RequestInit, options: ClientOptions): Pro
     return ask ? { ok: true, ask } : { ok: false, err: 'invalid' };
   }
   const recipe = parseRecipe(b.recipe);
-  return recipe ? { ok: true, recipe } : { ok: false, err: 'invalid' };
+  if (!recipe) return { ok: false, err: 'invalid' };
+  // no plan while the planner is not ready, a plan the page cannot read leaves the recipe as it is
+  const plan = parsePlan(b.plan);
+  return plan ? { ok: true, recipe, plan } : { ok: true, recipe };
 }
 
 // asks the server to make a recipe out of the farmer's words. plant is the table
