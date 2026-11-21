@@ -1,0 +1,28 @@
+name: brain
+
+services:
+  brain:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: brainsol-brain:latest
+    # the language model runs in ollama on the host, the host's firewall lets only the host network reach it
+    network_mode: host
+    environment:
+      BRAIN_PORT: ${BRAIN_PORT:-8000}
+      LLM_BASE_URL: http://127.0.0.1:11434/v1
+      LLM_MODEL: ${LLM_MODEL:-brainsol-gemma4b}
+      LLM_TIMEOUT: "150"
+      DATA_DIR: /data/recipe
+      SONNENTEILER_DATA: /dataset
+      SONNENTEILER_WORK: /data/planner
+      ALLOWED_ORIGINS: ${BRAIN_ORIGINS:-https://sol.swimmingbrain.dev,http://localhost:5173,http://127.0.0.1:5173}
+    volumes:
+      - brain_data:/data
+      # the dataset of the data teammate's generator, read only
+      - ${SONNENTEILER_DATASET:-/mnt/ssd/sonnenteiler-data}:/dataset:ro
+    restart: unless-stopped
+    mem_limit: 768m
+
+volumes:
+  brain_data:
