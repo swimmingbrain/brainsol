@@ -23,8 +23,7 @@ export interface PlantNames {
 
 export interface Recipe {
   v: number;
-  // the exact column header of the price dataset (kaggle ksamiksha19/vegetable-prices),
-  // for example "Green Chilli", so the planner can price the recipe by it
+  // the plant's name in the plant table of the server, for example "Green chilli"
   plant: string;
   names: PlantNames;
   // daily light integral, mol/m²/day, from the plant table
